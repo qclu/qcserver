@@ -1,0 +1,39 @@
+Quality Control System HTTP Proxy protocol
+1. Instrument Management
+a. 	查询
+	Method:	GET
+	URL:	http://ip:port/instrument?pagecount=$pcnt&pagenum=$pnum
+	参数:	$pnum	指定每页obj数量
+			$pcnt	指定返回页的id（第几页）
+			如果参数未设置，则返回所有的结果
+	结果：	JSON串
+			{“instruments”:[
+				"obj_cnt": 3,
+				"objs": [
+					{},
+					{},
+					{},
+					{},
+					{}
+				]
+			}
+			
+			
+b. 修改
+	Method: POST
+	URL:	http://http://ip:port/instrument
+	参数：	参数存放到http data中，JSON串形式。
+	
+	
+c. 删除
+	Method: PUT
+	URL:	http://http://ip:port/instrument/id
+	参数：	id可以唯一标识obj
+	
+	
+d. 表结构查询
+	Method:	GET
+	URL：	http://ip:port/tabledec?tablename=xxx
+	结果：	{
+				”columname“： ["col1", "col2", "col3"]
+			}

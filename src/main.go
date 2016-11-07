@@ -388,7 +388,7 @@ func main_devmodel1() {
 	//}
 }
 
-func main() {
+func main_shwversion() {
 	defer time.Sleep(time.Second)
 	logger, err := log.NewLog("/var/log/", "qcserver", 0)
 	if err != nil {
@@ -517,4 +517,48 @@ func main() {
 			", Created: ", hwversions[i].Created,
 			", Updated: ", hwversions[i].Updated, "]")
 	}
+}
+
+func main() {
+	defer time.Sleep(time.Second)
+	logger, err := log.NewLog("/var/log/", "qcserver", 0)
+	if err != nil {
+		fmt.Println("Failed to init log module...")
+		return
+	}
+	logger.LogInfo("Info: log module start...")
+	dbSync, err := models.NewDBSync("mysql", "root:123qwe@/orm_test?charset=utf8")
+	if err != nil {
+		logger.LogError("Failed to init database module, error:", err)
+		return
+	}
+
+	fmt.Println("Create hospital...")
+	name := fmt.Sprintf("hospital_%v", 101)
+	addr := fmt.Sprintf("Beijing_%v", 10)
+	gis := fmt.Sprintf("%v, %v", 123.12, 12.123)
+	h := models.QcHospital{
+		Name:    name,
+		Addr:    addr,
+		Gis:     gis,
+		Created: time.Now().Format(models.TIME_FMT),
+		Updated: time.Now().Format(models.TIME_FMT),
+	}
+
+	err = dbSync.InsertQcHospital(&h)
+	if err != nil {
+		logger.LogError("Failed to insert new hospital, error: ", err)
+	}
+
+	logger.LogInfo("Get all methodology info...")
+	hs, err := dbSync.GetQcHospitals()
+	if err != nil {
+		logger.LogError("Failed to list all hospitals, error: ", err)
+		return
+	}
+	fmt.Println("-------------------------------------------------------------------------")
+	for i := 0; i < len(hs); i++ {
+		fmt.Println("hospital info: ", hs[i])
+	}
+	fmt.Println("-------------------------------------------------------------------------")
 }

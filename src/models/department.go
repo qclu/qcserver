@@ -31,36 +31,29 @@ func CreateQcDepartment(dbSync *DBSync, name string, hospital *QcHospital) (*QcD
 }
 
 func DeleteQcDepartment(dbSync *DBSync, dname, hname string) error {
-	hospital, err := dbSync.GetQcHospital(hname)
+	department, err := dbSync.GetQcDepartment(dname, hname)
 	if err != nil {
 		dbSync.logger.LogError("Failed to delete hospital[", name, "], error: ", err)
 		return err
 	}
-	err = hospital.Delete(dbSync)
+	err = department.Delete(dbSync)
 	return err
 }
 
-func (h *QcHospital) Delete(dbSync *DBSync) error {
+func (h *QcDepartment) Delete(dbSync *DBSync) error {
 	h.mutex.Lock()
 	defer h.mutex.Unlock()
-	err := dbSync.DeleteQcHospital(h)
+	err := dbSync.DeleteQcDepartment(h)
 	if err != nil {
-		dbSync.logger.LogError("Failed to delete hospital, error: ", err)
+		dbSync.logger.LogError("Failed to delete department, error: ", err)
 	}
 	return err
 }
 
-func (h *QcHospital) UpdateAddr(dbSync *DBSync, addr string) error {
+func (h *QcDepartment) UpdateName(dbSync *DBSync, name string) error {
 	h.mutex.Lock()
 	defer h.mutex.Unlock()
-	h.Addr = addr
-	err := dbSync.UpdateQcHospital(h)
+	h.Name = name
+	err := dbSync.UpdateQcDepartment(h)
 	return err
-}
-
-func (h *QcHospital) UpdateGis(dbSync *DBSync, gis string) error {
-	h.mutex.Lock()
-	defer h.mutex.Unlock()
-	h.Gis = gis
-	return dbSync.UpdateQcHospital(h)
 }

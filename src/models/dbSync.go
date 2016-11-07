@@ -219,6 +219,20 @@ func (d *DBSync) DeleteQcMethdology(m *QcMethodology) error {
 	return err
 }
 
+func (d *DBSync) DeleteQcDepartment(department *QcDepartment) error {
+	d.mutex.Lock()
+	defer d.mutex.Unlock()
+	ormer := orm.NewOrm()
+	var err error
+	for retry := 0; retry < RetryTime; retry++ {
+		_, err = ormer.Delete(department)
+		if err == nil {
+			return err
+		}
+	}
+	return err
+}
+
 func (d *DBSync) DeleteQcHospital(hospital *QcHospital) error {
 	d.mutex.Lock()
 	defer d.mutex.Unlock()
@@ -436,6 +450,30 @@ func (d *DBSync) GetQcHospital(name string) (*QcHospital, error) {
 	return &hospital, nil
 }
 
+func (d *DBSync) GetQcDepartment(dname, hname string) (*QcDepartment, error) {
+	var department QcDepartment
+	d.mutex.Lock()
+	defer d.mutex.Unlock()
+	ormer := orm.NewOrm()
+	var err error
+	for retry := 0; retry < RetryTime; retry++ {
+		err = ormer.QueryTable(DB_T_HOSPITAL).Filter("QcHospital__Name", hname).Filter("QcDepartment__Name", dname).Limit(1).One(&department)
+		if err != nil {
+			if err == orm.ErrNoRows {
+				return nil, errors.New(ERR_OBJ_NOT_EXIST)
+			} else {
+				d.logger.LogWarn(err)
+				continue
+			}
+		}
+		break
+	}
+	if err != nil {
+		return nil, err
+	}
+	return &department, nil
+}
+
 func (d *DBSync) UpdateQcAdmin(admin *QcAdministrator) error {
 	d.mutex.Lock()
 	defer d.mutex.Unlock()
@@ -504,6 +542,21 @@ func (d *DBSync) UpdateQcMethodology(m *QcMethodology) error {
 	m.Updated = time.Now().Format("2006-01-02 15:04:05")
 	for retry := 0; retry < RetryTime; retry++ {
 		_, err = ormer.Update(m)
+		if err == nil {
+			return err
+		}
+	}
+	return err
+}
+
+func (d *DBSync) UpdateQcDepartment(h *QcDepartment) error {
+	d.mutex.Lock()
+	defer d.mutex.Unlock()
+	ormer := orm.NewOrm()
+	var err error
+	h.Updated = time.Now().Format("2006-01-02 15:04:05")
+	for retry := 0; retry < RetryTime; retry++ {
+		_, err = ormer.Update(h)
 		if err == nil {
 			return err
 		}
