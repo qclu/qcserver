@@ -182,11 +182,11 @@ func getCaller(skip int) string {
 	return fmt.Sprintf("%s:%d: \n%s", fn, line, strings.Join(codes, "\n"))
 }
 
-func init() {
-	orm.RegisterDataBase("default", "mysql", "root:123qwe@/orm_test?charset=utf8", 30)
-	orm.RegisterModel(new(QcAdministrator))
-	orm.RunSyncdb("default", false, true)
-}
+//func init() {
+//	orm.RegisterDataBase("default", "mysql", "root:123qwe@/orm_test?charset=utf8", 30)
+//	orm.RegisterModel(new(QcAdministrator))
+//	orm.RunSyncdb("default", false, true)
+//}
 
 func TestORM(t *testing.T) {
 	fmt.Println("Test Administrator...")

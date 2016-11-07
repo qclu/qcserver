@@ -30,8 +30,8 @@ func NewDBSync(dbDriver, dbDataSource string) (*DBSync, error) {
 	orm.RegisterModel(new(QcHospital))
 	orm.RegisterModel(new(QcMethodology))
 	orm.RegisterModel(new(QcDevModel))
-	//orm.RegisterModel(new(Snapshot))
-	//orm.RegisterModel(new(Segment))
+	orm.RegisterModel(new(QcHwVersion))
+	orm.RegisterModel(new(QcSwVersion))
 	//orm.RegisterModel(new(SnapshotOperate))
 	//orm.RegisterModel(new(RecyleChunk))
 	//orm.RegisterModel(new(NodesGroup))
@@ -79,6 +79,34 @@ func (d *DBSync) InsertQcDevModel(obj *QcDevModel) error {
 	return err
 }
 
+func (d *DBSync) InsertQcSwVersion(obj *QcSwVersion) error {
+	d.mutex.Lock()
+	defer d.mutex.Unlock()
+	ormer := orm.NewOrm()
+	var err error
+	for retry := 0; retry < RetryTime; retry++ {
+		_, err = ormer.Insert(obj)
+		if err == nil {
+			return err
+		}
+	}
+	return err
+}
+
+func (d *DBSync) InsertQcHwVersion(obj *QcHwVersion) error {
+	d.mutex.Lock()
+	defer d.mutex.Unlock()
+	ormer := orm.NewOrm()
+	var err error
+	for retry := 0; retry < RetryTime; retry++ {
+		_, err = ormer.Insert(obj)
+		if err == nil {
+			return err
+		}
+	}
+	return err
+}
+
 func (d *DBSync) InsertQcMethodology(m *QcMethodology) error {
 	d.mutex.Lock()
 	defer d.mutex.Unlock()
@@ -86,6 +114,20 @@ func (d *DBSync) InsertQcMethodology(m *QcMethodology) error {
 	var err error
 	for retry := 0; retry < RetryTime; retry++ {
 		_, err = ormer.Insert(m)
+		if err == nil {
+			return err
+		}
+	}
+	return err
+}
+
+func (d *DBSync) InsertQcDepartment(department *QcDepartment) error {
+	d.mutex.Lock()
+	defer d.mutex.Unlock()
+	ormer := orm.NewOrm()
+	var err error
+	for retry := 0; retry < RetryTime; retry++ {
+		_, err = ormer.Insert(department)
 		if err == nil {
 			return err
 		}
@@ -114,6 +156,34 @@ func (d *DBSync) DeleteQcAdmin(admin *QcAdministrator) error {
 	var err error
 	for retry := 0; retry < RetryTime; retry++ {
 		_, err = ormer.Delete(admin)
+		if err == nil {
+			return err
+		}
+	}
+	return err
+}
+
+func (d *DBSync) DeleteQcSwVersion(obj *QcSwVersion) error {
+	d.mutex.Lock()
+	defer d.mutex.Unlock()
+	ormer := orm.NewOrm()
+	var err error
+	for retry := 0; retry < RetryTime; retry++ {
+		_, err = ormer.Delete(obj)
+		if err == nil {
+			return err
+		}
+	}
+	return err
+}
+
+func (d *DBSync) DeleteQcHwVersion(obj *QcHwVersion) error {
+	d.mutex.Lock()
+	defer d.mutex.Unlock()
+	ormer := orm.NewOrm()
+	var err error
+	for retry := 0; retry < RetryTime; retry++ {
+		_, err = ormer.Delete(obj)
 		if err == nil {
 			return err
 		}
@@ -192,34 +262,63 @@ func (d *DBSync) GetQcAdmin(username string) (*QcAdministrator, error) {
 	return &admin, nil
 }
 
-//func (d *DBSync) GetQcDevModel(name string) (*QcDevModel, error) {
-//	params := map[string]interface{}{"Name": name}
-//	var obj QcDevModel
-//	d.mutex.Lock()
-//	defer d.mutex.Unlock()
-//	ormer := orm.NewOrm()
-//	var err error
-//	for retry := 0; retry < RetryTime; retry++ {
-//		qs := ormer.QueryTable(DB_T_DEVMODEL)
-//		for k, v := range params {
-//			qs = qs.Filter(k, v)
-//		}
-//		err = qs.One(&obj)
-//		if err != nil {
-//			if err == orm.ErrNoRows {
-//				return nil, errors.New(ERR_OBJ_NOT_EXIST)
-//			} else {
-//				d.logger.LogWarn(err)
-//				continue
-//			}
-//		}
-//		break
-//	}
-//	if err != nil {
-//		return nil, err
-//	}
-//	return &obj, nil
-//}
+func (d *DBSync) GetQcSwVersion(version string) (*QcSwVersion, error) {
+	params := map[string]interface{}{"Version": version}
+	var obj QcSwVersion
+	d.mutex.Lock()
+	defer d.mutex.Unlock()
+	ormer := orm.NewOrm()
+	var err error
+	for retry := 0; retry < RetryTime; retry++ {
+		qs := ormer.QueryTable(DB_T_SWVERSION)
+		for k, v := range params {
+			qs = qs.Filter(k, v)
+		}
+		err = qs.One(&obj)
+		if err != nil {
+			if err == orm.ErrNoRows {
+				return nil, errors.New(ERR_OBJ_NOT_EXIST)
+			} else {
+				d.logger.LogWarn(err)
+				continue
+			}
+		}
+		break
+	}
+	if err != nil {
+		return nil, err
+	}
+	return &obj, nil
+}
+
+func (d *DBSync) GetQcHwVersion(version string) (*QcHwVersion, error) {
+	params := map[string]interface{}{"Version": version}
+	var obj QcHwVersion
+	d.mutex.Lock()
+	defer d.mutex.Unlock()
+	ormer := orm.NewOrm()
+	var err error
+	for retry := 0; retry < RetryTime; retry++ {
+		qs := ormer.QueryTable(DB_T_HWVERSION)
+		for k, v := range params {
+			qs = qs.Filter(k, v)
+		}
+		err = qs.One(&obj)
+		if err != nil {
+			if err == orm.ErrNoRows {
+				return nil, errors.New(ERR_OBJ_NOT_EXIST)
+			} else {
+				d.logger.LogWarn(err)
+				continue
+			}
+		}
+		break
+	}
+	if err != nil {
+		return nil, err
+	}
+	return &obj, nil
+}
 
 func (d *DBSync) GetQcDevModel(name string) (*QcDevModel, error) {
 	params := map[string]interface{}{"Name": name}
@@ -279,6 +378,35 @@ func (d *DBSync) GetQcMethodology(name string) (*QcMethodology, error) {
 	return &m, nil
 }
 
+func (d *DBSync) GetQcDepartment(dname string, hospital *QcHospital) (*QcDepartment, error) {
+	params := map[string]interface{}{"Name": name}
+	var hospital QcHospital
+	d.mutex.Lock()
+	defer d.mutex.Unlock()
+	ormer := orm.NewOrm()
+	var err error
+	for retry := 0; retry < RetryTime; retry++ {
+		qs := ormer.QueryTable(DB_T_HOSPITAL)
+		for k, v := range params {
+			qs = qs.Filter(k, v)
+		}
+		err = qs.One(&hospital)
+		if err != nil {
+			if err == orm.ErrNoRows {
+				return nil, errors.New(ERR_OBJ_NOT_EXIST)
+			} else {
+				d.logger.LogWarn(err)
+				continue
+			}
+		}
+		break
+	}
+	if err != nil {
+		return nil, err
+	}
+	return &hospital, nil
+}
+
 func (d *DBSync) GetQcHospital(name string) (*QcHospital, error) {
 	params := map[string]interface{}{"Name": name}
 	var hospital QcHospital
@@ -316,6 +444,36 @@ func (d *DBSync) UpdateQcAdmin(admin *QcAdministrator) error {
 	admin.Updated = time.Now().Format(TIME_FMT)
 	for retry := 0; retry < RetryTime; retry++ {
 		_, err = ormer.Update(admin)
+		if err == nil {
+			return err
+		}
+	}
+	return err
+}
+
+func (d *DBSync) UpdateQcSwVersion(obj *QcSwVersion) error {
+	d.mutex.Lock()
+	defer d.mutex.Unlock()
+	ormer := orm.NewOrm()
+	var err error
+	obj.Updated = time.Now().Format(TIME_FMT)
+	for retry := 0; retry < RetryTime; retry++ {
+		_, err = ormer.Update(obj)
+		if err == nil {
+			return err
+		}
+	}
+	return err
+}
+
+func (d *DBSync) UpdateQcHwVersion(obj *QcHwVersion) error {
+	d.mutex.Lock()
+	defer d.mutex.Unlock()
+	ormer := orm.NewOrm()
+	var err error
+	obj.Updated = time.Now().Format(TIME_FMT)
+	for retry := 0; retry < RetryTime; retry++ {
+		_, err = ormer.Update(obj)
 		if err == nil {
 			return err
 		}
@@ -384,6 +542,34 @@ func (d *DBSync) GetQcAdmins(role int) ([]*QcAdministrator, error) {
 		return nil, err
 	}
 	return admins, nil
+}
+
+func (d *DBSync) GetQcSwVersions() ([]*QcSwVersion, error) {
+	var objs []*QcSwVersion
+	var err error
+	d.mutex.Lock()
+	defer d.mutex.Unlock()
+	ormer := orm.NewOrm()
+	qs := ormer.QueryTable(DB_T_SWVERSION)
+	if _, err = qs.All(&objs); err != nil {
+		d.logger.LogError("Failed to list admins, error: ", err)
+		return nil, err
+	}
+	return objs, nil
+}
+
+func (d *DBSync) GetQcHwVersions() ([]*QcHwVersion, error) {
+	var objs []*QcHwVersion
+	var err error
+	d.mutex.Lock()
+	defer d.mutex.Unlock()
+	ormer := orm.NewOrm()
+	qs := ormer.QueryTable(DB_T_HWVERSION)
+	if _, err = qs.All(&objs); err != nil {
+		d.logger.LogError("Failed to list admins, error: ", err)
+		return nil, err
+	}
+	return objs, nil
 }
 
 func (d *DBSync) GetQcDevmodels() ([]*QcDevModel, error) {

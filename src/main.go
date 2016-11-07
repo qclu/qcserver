@@ -5,12 +5,14 @@ import (
 	//"errors"
 	"fmt"
 	_ "github.com/go-sql-driver/mysql"
+	"math/rand"
 	"models"
 	"time"
 	"util/log"
 )
 
-func main1() {
+func main_start() {
+	fmt.Println("start...")
 	orm.RegisterDataBase("default", "mysql", "root:123qwe@/orm_test?charset=utf8", 30)
 	orm.RegisterModel(new(models.QcAdministrator))
 	orm.RunSyncdb("default", false, true)
@@ -58,7 +60,7 @@ func main_admin() {
 		}
 	}
 
-	logger.LogError("Get all admins info...")
+	logger.LogInfo("Get all admins info...")
 	admins, err := dbSync.GetQcAdmins(-1)
 	if err != nil {
 		logger.LogError("Failed to list all admins, error: ", err)
@@ -243,7 +245,7 @@ func main_devmodel() {
 
 	time.Sleep(10 * time.Second)
 
-	fmt.Println("Update mths addr...")
+	fmt.Println("Update mths anno ...")
 	fmt.Println("-------------------------------------------------------------------------")
 	for i := 0; i < len(mths); i++ {
 		new_anno := fmt.Sprintf("%s_new", mths[i].Annotation)
@@ -290,7 +292,7 @@ func main_devmodel() {
 	}
 }
 
-func main() {
+func main_devmodel1() {
 	defer time.Sleep(time.Second)
 	logger, err := log.NewLog("/var/log/", "qcserver", 0)
 	if err != nil {
@@ -384,4 +386,135 @@ func main() {
 	//for i := 0; i < len(mths); i++ {
 	//	mths[i].Delete(dbSync)
 	//}
+}
+
+func main() {
+	defer time.Sleep(time.Second)
+	logger, err := log.NewLog("/var/log/", "qcserver", 0)
+	if err != nil {
+		fmt.Println("Failed to init log module...")
+		return
+	}
+	logger.LogInfo("Info: log module start...")
+	dbSync, err := models.NewDBSync("mysql", "root:123qwe@/orm_test?charset=utf8")
+	if err != nil {
+		logger.LogError("Failed to init database module, error:", err)
+		return
+	}
+
+	fmt.Println("Create methodology...")
+	name := fmt.Sprintf("methodology_%v", 101)
+	anno := fmt.Sprintf("annotation_%v", 10)
+	mt := models.QcMethodology{
+		Name:       name,
+		Annotation: anno,
+		Created:    time.Now().Format(models.TIME_FMT),
+		Updated:    time.Now().Format(models.TIME_FMT),
+	}
+
+	err = dbSync.InsertQcMethodology(&mt)
+	if err != nil {
+		logger.LogError("Failed to insert new methodology, error: ", err)
+	}
+
+	logger.LogInfo("Get all methodology info...")
+	mths, err := dbSync.GetQcMethodologys()
+	if err != nil {
+		logger.LogError("Failed to list all Methodology, error: ", err)
+		return
+	}
+	fmt.Println("-------------------------------------------------------------------------")
+	for i := 0; i < len(mths); i++ {
+		fmt.Println("methodology info: ", mths[i])
+	}
+	fmt.Println("-------------------------------------------------------------------------")
+
+	time.Sleep(10 * time.Second)
+
+	fmt.Println("Create Device Model...")
+	fmt.Println("-------------------------------------------------------------------------")
+	for i := 0; i < 10; i++ {
+		name := fmt.Sprintf("devmodel_%v", i)
+		model := fmt.Sprintf("0XNBC%vOCXX%v", i*3, i)
+		release := time.Now().Format(models.TIME_FMT)
+		anno := fmt.Sprintf("%v_anno", i)
+		devmodel, err := models.CreateQcDevModel(dbSync, name, model, release, mths[0], anno)
+		if err != nil {
+			logger.LogError("Failed to create device model, error: ", err)
+		} else {
+			fmt.Println("devmodel: ", devmodel)
+		}
+	}
+	fmt.Println("-------------------------------------------------------------------------")
+
+	fmt.Println("Get all dev models...")
+	devmodels, err := dbSync.GetQcDevmodels()
+	if err != nil {
+		logger.LogError("Failed to list device model info, err: ", err)
+	}
+	for i := 0; i < len(devmodels); i++ {
+		fmt.Println("device model[name: ", devmodels[i].Name, ", Model: ", devmodels[i].Model, ", Methodology: ", devmodels[i].Methodology, "]")
+	}
+
+	fmt.Println("-------------------------------------------------------------------------")
+	fmt.Println("Create hardware version...")
+	models_cnt := len(devmodels)
+	for i := 0; i < 20; i++ {
+		dmidx := rand.Intn(models_cnt)
+		devModel := devmodels[dmidx]
+		version := fmt.Sprintf("0XNBC%vOCXX%v", i*3, i)
+		anno := fmt.Sprintf("%v_anno", i)
+		hwversion, err := models.CreateQcHwVersion(dbSync, devModel, version, anno)
+		if err != nil {
+			logger.LogError("Failed to create hardware version, error: ", err)
+		} else {
+			fmt.Println("hwversion: ", hwversion)
+		}
+	}
+
+	fmt.Println("-------------------------------------------------------------------------")
+	fmt.Println("Get all hardware version...")
+	hwversions, err := dbSync.GetQcHwVersions()
+	if err != nil {
+		logger.LogError("Failed to list hardware version info, err: ", err)
+	}
+	for i := 0; i < len(hwversions); i++ {
+		fmt.Println("hardware version[DevModel: ", hwversions[i].DevModel,
+			", Version: ", hwversions[i].Version,
+			", Anno: ", hwversions[i].Annotation,
+			", Created: ", hwversions[i].Created,
+			", Updated: ", hwversions[i].Updated, "]")
+	}
+
+	fmt.Println("-------------------------------------------------------------------------")
+	fmt.Println("Create software version...")
+	hwversion_cnt := len(hwversions)
+	for i := 0; i < 20; i++ {
+		smidx := rand.Intn(hwversion_cnt)
+		hwv := hwversions[smidx]
+		version := fmt.Sprintf("0XNBC%vOCXX%v", i*3, i)
+		swtype := "RELEASE"
+		desp := fmt.Sprintf("%v_desp", i)
+		swversion, err := models.CreateQcSwVersion(dbSync, hwv, version, swtype, desp)
+		if err != nil {
+			logger.LogError("Failed to create software version, error: ", err)
+		} else {
+			fmt.Println("swversion: ", swversion)
+		}
+	}
+
+	fmt.Println("-------------------------------------------------------------------------")
+	fmt.Println("Get all software version...")
+	swversions, err := dbSync.GetQcSwVersions()
+	if err != nil {
+		logger.LogError("Failed to list software version info, err: ", err)
+	}
+	for i := 0; i < len(swversions); i++ {
+		fmt.Println("software version[HwVersion: ", swversions[i].HwVersion,
+			", Version: ", swversions[i].Version,
+			", SwType: ", swversions[i].SwType,
+			", Description: ", swversions[i].Description,
+			", Created: ", hwversions[i].Created,
+			", Updated: ", hwversions[i].Updated, "]")
+	}
 }
