@@ -1,0 +1,104 @@
+Hospital
+1.	创建
+	CURL:
+	curl -X POST  -d '{"Name":"BeiJing Hospital","Addr":"haidianqu", "Gis":"123.22, 64.12123"}' 127.0.0.1:8088/qcserver/hospital
+	Result:
+	{
+	  "Object": {
+		"Id": 1,
+		"Name": "BeiJing Hospital",
+		"Addr": "haidianqu",
+		"Gis": "123.22, 64.12123",
+		"Created": "2016-11-12 10:34:25",
+		"Updated": "2016-11-12 10:34:25"
+	  }
+	}
+	
+2. 删除
+	CURL:
+	curl -X DELETE http://127.0.0.1:8088/hospital?name="BeiJing+Hospital"
+	Result:
+	"Delete Success"
+	
+3. 查找
+	CURL:
+	curl -X GET http://127.0.0.1:8088/hospital?name="BeiJing+Hospital"
+	Result:
+	{
+	  "Id": 1,
+	  "Name": "BeiJing Hospital",
+	  "Addr": "haidianqu",
+	  "Gis": "123.22, 64.12123",
+	  "Created": "2016-11-12 12:48:22",
+	  "Updated": "2016-11-12 12:48:22"
+	}
+	
+4. 列表
+	pageidx：	page的index，从0开始
+				pageidx <=0 时，默认为0
+	pagesize: 	每页的item数量
+				pagesize <=0 时，获取全部的items
+	a) 	CURL:
+		curl -X  GET http://127.0.0.1:8088/hospital/list?pageidx=2\&pagesize=3
+		Result:
+		[
+		  {
+			"Id": 7,
+			"Name": "Shenzhen Hospital",
+			"Addr": "haidianqu",
+			"Gis": "123.22, 64.12123",
+			"Created": "2016-11-12 14:53:40",
+			"Updated": "2016-11-12 14:53:40"
+		  },
+		  {
+			"Id": 8,
+			"Name": "Shanghai Hospital",
+			"Addr": "haidianqu",
+			"Gis": "123.22, 64.12123",
+			"Created": "2016-11-12 14:53:56",
+			"Updated": "2016-11-12 14:53:56"
+		  }
+		]
+	b)	CURL:
+		curl -X  GET http://127.0.0.1:8088/hospital/list?pageidx=0\&pagesize=3
+		Result:
+		[
+		  {
+			"Id": 1,
+			"Name": "BeiJing Hospital",
+			"Addr": "haidianqu",
+			"Gis": "123.22, 64.12123",
+			"Created": "2016-11-12 14:52:44",
+			"Updated": "2016-11-12 14:52:44"
+		  },
+		  {
+			"Id": 2,
+			"Name": "Tianjin Hospital",
+			"Addr": "haidianqu",
+			"Gis": "123.22, 64.12123",
+			"Created": "2016-11-12 14:52:48",
+			"Updated": "2016-11-12 14:52:48"
+		  },
+		  {
+			"Id": 3,
+			"Name": "Nanjing Hospital",
+			"Addr": "haidianqu",
+			"Gis": "123.22, 64.12123",
+			"Created": "2016-11-12 14:52:51",
+			"Updated": "2016-11-12 14:52:51"
+		  }
+		]
+		
+5. 更新
+	CURL:
+		curl -X PUT http://127.0.0.1:8088/hospital?org_name="BeiJing+Hospital"\&name="Xiehe+Hospital"\&addr="chaoyangqu"
+	Result:
+		{
+		  "Id": 1,
+		  "Name": "Xiehe Hospital",
+		  "Addr": "chaoyangqu",
+		  "Gis": "123.22, 64.12123",
+		  "Created": "2016-11-12 14:52:44",
+		  "Updated": "2016-11-12 15:28:50"
+		}
+	
