@@ -8,7 +8,7 @@ import (
 
 type QcDepartment struct {
 	Id       int64       `orm: "pk;auto"`
-	Name     string      `orm:"size(256);unique"`
+	Name     string      `orm:"size(256)"`
 	Hospital *QcHospital `orm:"rel(fk);on_delete(do_nothing)"` // RelForeignKey relation
 	Created  string      `orm:"size(20)"`
 	Updated  string      `orm:"size(20)"`
@@ -36,14 +36,9 @@ func DeleteQcDepartment(dbSync *DBSync, dname, hname string) error {
 		dbSync.logger.LogError("Failed to delete department[", dname, "] hospital[", hname, "], error: ", err)
 		return err
 	}
-	err = department.Delete(dbSync)
-	return err
-}
-
-func (h *QcDepartment) Delete(dbSync *DBSync) error {
-	h.mutex.Lock()
-	defer h.mutex.Unlock()
-	err := dbSync.DeleteQcDepartment(h)
+	dbSync.logger.LogInfo("delete department: ", department)
+	//err = department.Delete(dbSync)
+	err = dbSync.DeleteQcDepartment(department)
 	if err != nil {
 		dbSync.logger.LogError("Failed to delete department, error: ", err)
 	}

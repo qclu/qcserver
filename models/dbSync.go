@@ -52,7 +52,10 @@ func NewDBSync(dbDriver, dbDataSource string) (*DBSync, error) {
 	orm.RegisterModel(new(QcSwVersion))
 	orm.RegisterModel(new(QcDepartment))
 	orm.RegisterModel(new(QcDevRel))
-	//orm.RegisterModel(new(NodesGroup))
+	orm.RegisterModel(new(QcReagentModel))
+	orm.RegisterModel(new(QcReagentProduce))
+	orm.RegisterModel(new(QcReagentRel))
+	orm.RegisterModel(new(QcQcProduct))
 
 	orm.SetMaxOpenConns(database, 10)
 	orm.SetMaxIdleConns(database, 10)
@@ -100,6 +103,76 @@ func (d *DBSync) InsertQcAdmin(admin *QcAdministrator) error {
 	var err error
 	for retry := 0; retry < RetryTime; retry++ {
 		_, err = ormer.Insert(admin)
+		if err == nil {
+			return err
+		}
+	}
+	return err
+}
+
+func (d *DBSync) InsertQcQcLotnum(obj *QcQcLotnum) error {
+	d.mutex.Lock()
+	defer d.mutex.Unlock()
+	ormer := orm.NewOrm()
+	var err error
+	for retry := 0; retry < RetryTime; retry++ {
+		_, err = ormer.Insert(obj)
+		if err == nil {
+			return err
+		}
+	}
+	return err
+}
+
+func (d *DBSync) InsertQcQcProduct(obj *QcQcProduct) error {
+	d.mutex.Lock()
+	defer d.mutex.Unlock()
+	ormer := orm.NewOrm()
+	var err error
+	for retry := 0; retry < RetryTime; retry++ {
+		_, err = ormer.Insert(obj)
+		if err == nil {
+			return err
+		}
+	}
+	return err
+}
+
+func (d *DBSync) InsertQcReagentRel(obj *QcReagentRel) error {
+	d.mutex.Lock()
+	defer d.mutex.Unlock()
+	ormer := orm.NewOrm()
+	var err error
+	for retry := 0; retry < RetryTime; retry++ {
+		_, err = ormer.Insert(obj)
+		if err == nil {
+			return err
+		}
+	}
+	return err
+}
+
+func (d *DBSync) InsertQcReagentProduce(obj *QcReagentProduce) error {
+	d.mutex.Lock()
+	defer d.mutex.Unlock()
+	ormer := orm.NewOrm()
+	var err error
+	for retry := 0; retry < RetryTime; retry++ {
+		_, err = ormer.Insert(obj)
+		if err == nil {
+			return err
+		}
+	}
+	return err
+}
+
+func (d *DBSync) InsertQcReagentModel(obj *QcReagentModel) error {
+	d.mutex.Lock()
+	defer d.mutex.Unlock()
+	ormer := orm.NewOrm()
+	var err error
+	for retry := 0; retry < RetryTime; retry++ {
+		_, err = ormer.Insert(obj)
 		if err == nil {
 			return err
 		}
@@ -170,6 +243,20 @@ func (d *DBSync) InsertQcMethodology(m *QcMethodology) error {
 	var err error
 	for retry := 0; retry < RetryTime; retry++ {
 		_, err = ormer.Insert(m)
+		if err == nil {
+			return err
+		}
+	}
+	return err
+}
+
+func (d *DBSync) InsertQcDevLog(log_ent *QcDevLog) error {
+	d.mutex.Lock()
+	defer d.mutex.Unlock()
+	ormer := orm.NewOrm()
+	var err error
+	for retry := 0; retry < RetryTime; retry++ {
+		_, err = ormer.Insert(log_ent)
 		if err == nil {
 			return err
 		}
@@ -261,6 +348,76 @@ func (d *DBSync) DeleteQcDevRel(obj *QcDevRel) error {
 	return err
 }
 
+func (d *DBSync) DeleteQcQcLotnum(obj *QcQcLotnum) error {
+	d.mutex.Lock()
+	defer d.mutex.Unlock()
+	ormer := orm.NewOrm()
+	var err error
+	for retry := 0; retry < RetryTime; retry++ {
+		_, err = ormer.Delete(obj)
+		if err == nil {
+			return err
+		}
+	}
+	return err
+}
+
+func (d *DBSync) DeleteQcQcQcProduct(obj *QcQcProduct) error {
+	d.mutex.Lock()
+	defer d.mutex.Unlock()
+	ormer := orm.NewOrm()
+	var err error
+	for retry := 0; retry < RetryTime; retry++ {
+		_, err = ormer.Delete(obj)
+		if err == nil {
+			return err
+		}
+	}
+	return err
+}
+
+func (d *DBSync) DeleteQcReagentRel(obj *QcReagentRel) error {
+	d.mutex.Lock()
+	defer d.mutex.Unlock()
+	ormer := orm.NewOrm()
+	var err error
+	for retry := 0; retry < RetryTime; retry++ {
+		_, err = ormer.Delete(obj)
+		if err == nil {
+			return err
+		}
+	}
+	return err
+}
+
+func (d *DBSync) DeleteQcReagentProduce(obj *QcReagentProduce) error {
+	d.mutex.Lock()
+	defer d.mutex.Unlock()
+	ormer := orm.NewOrm()
+	var err error
+	for retry := 0; retry < RetryTime; retry++ {
+		_, err = ormer.Delete(obj)
+		if err == nil {
+			return err
+		}
+	}
+	return err
+}
+
+func (d *DBSync) DeleteQcReagentModel(obj *QcReagentModel) error {
+	d.mutex.Lock()
+	defer d.mutex.Unlock()
+	ormer := orm.NewOrm()
+	var err error
+	for retry := 0; retry < RetryTime; retry++ {
+		_, err = ormer.Delete(obj)
+		if err == nil {
+			return err
+		}
+	}
+	return err
+}
+
 func (d *DBSync) DeleteQcDevModel(obj *QcDevModel) error {
 	d.mutex.Lock()
 	defer d.mutex.Unlock()
@@ -289,9 +446,21 @@ func (d *DBSync) DeleteQcMethdology(m *QcMethodology) error {
 	return err
 }
 
+func (d *DBSync) DeleteQcDepartmentSQL(hname, dname string) error {
+	d.mutex.Lock()
+	defer d.mutex.Unlock()
+	//sql := "delete from " + DB_T_DEPARTMENT + " using " + DB_T_DEPARTMENT + ", " + DB_T_HOSPITAL +
+	//" where " + DB_T_DEPARTMENT + ".hospital_id=" + DB_T_HOSPITAL + ".id and " + DB_T_HOSPITAL + ".name='" + hname + "'"
+	o := orm.NewOrm()
+	_, err := o.Raw("delete from ? using ?, ? where ?.hospital_id=?.id and ?.name=?", DB_T_DEPARTMENT, DB_T_DEPARTMENT,
+		DB_T_HOSPITAL, DB_T_DEPARTMENT, DB_T_HOSPITAL, DB_T_HOSPITAL, hname).Exec()
+	return err
+}
+
 func (d *DBSync) DeleteQcDepartment(department *QcDepartment) error {
 	d.mutex.Lock()
 	defer d.mutex.Unlock()
+	dbSync.logger.LogInfo("delete department: ", department)
 	ormer := orm.NewOrm()
 	var err error
 	for retry := 0; retry < RetryTime; retry++ {
@@ -300,6 +469,7 @@ func (d *DBSync) DeleteQcDepartment(department *QcDepartment) error {
 			return err
 		}
 	}
+	dbSync.logger.LogInfo("delete department: ", department)
 	return err
 }
 
@@ -384,6 +554,151 @@ func (d *DBSync) GetQcHwVersion(version string) (*QcHwVersion, error) {
 	var err error
 	for retry := 0; retry < RetryTime; retry++ {
 		qs := ormer.QueryTable(DB_T_HWVERSION)
+		for k, v := range params {
+			qs = qs.Filter(k, v)
+		}
+		err = qs.One(&obj)
+		if err != nil {
+			if err == orm.ErrNoRows {
+				return nil, errors.New(ERR_OBJ_NOT_EXIST)
+			} else {
+				d.logger.LogWarn(err)
+				continue
+			}
+		}
+		break
+	}
+	if err != nil {
+		return nil, err
+	}
+	return &obj, nil
+}
+
+func (d *DBSync) GetQcQcLotnum(id int64) (*QcQcLotnum, error) {
+	params := map[string]interface{}{"Id": id}
+	var obj QcQcLotnum
+	d.mutex.Lock()
+	defer d.mutex.Unlock()
+	ormer := orm.NewOrm()
+	var err error
+	for retry := 0; retry < RetryTime; retry++ {
+		qs := ormer.QueryTable(DB_T_QCLOTNUM)
+		for k, v := range params {
+			qs = qs.Filter(k, v)
+		}
+		err = qs.One(&obj)
+		if err != nil {
+			if err == orm.ErrNoRows {
+				return nil, errors.New(ERR_OBJ_NOT_EXIST)
+			} else {
+				d.logger.LogWarn(err)
+				continue
+			}
+		}
+		break
+	}
+	if err != nil {
+		return nil, err
+	}
+	return &obj, nil
+}
+
+func (d *DBSync) GetQcQcProduct(name string) (*QcQcProduct, error) {
+	params := map[string]interface{}{"Name": name}
+	var obj QcQcProduct
+	d.mutex.Lock()
+	defer d.mutex.Unlock()
+	ormer := orm.NewOrm()
+	var err error
+	for retry := 0; retry < RetryTime; retry++ {
+		qs := ormer.QueryTable(DB_T_QCPRODUCT)
+		for k, v := range params {
+			qs = qs.Filter(k, v)
+		}
+		err = qs.One(&obj)
+		if err != nil {
+			if err == orm.ErrNoRows {
+				return nil, errors.New(ERR_OBJ_NOT_EXIST)
+			} else {
+				d.logger.LogWarn(err)
+				continue
+			}
+		}
+		break
+	}
+	if err != nil {
+		return nil, err
+	}
+	return &obj, nil
+}
+
+func (d *DBSync) GetQcReagentRel(rel_serial string) (*QcReagentRel, error) {
+	params := map[string]interface{}{"ReleaseSerial": rel_serial}
+	var obj QcReagentRel
+	d.mutex.Lock()
+	defer d.mutex.Unlock()
+	ormer := orm.NewOrm()
+	var err error
+	for retry := 0; retry < RetryTime; retry++ {
+		qs := ormer.QueryTable(DB_T_REGREL)
+		for k, v := range params {
+			qs = qs.Filter(k, v)
+		}
+		err = qs.One(&obj)
+		if err != nil {
+			if err == orm.ErrNoRows {
+				return nil, errors.New(ERR_OBJ_NOT_EXIST)
+			} else {
+				d.logger.LogWarn(err)
+				continue
+			}
+		}
+		break
+	}
+	if err != nil {
+		return nil, err
+	}
+	return &obj, nil
+}
+
+func (d *DBSync) GetQcReagentProduce(serial string) (*QcReagentProduce, error) {
+	params := map[string]interface{}{"SerialNum": serial}
+	var obj QcReagentProduce
+	d.mutex.Lock()
+	defer d.mutex.Unlock()
+	ormer := orm.NewOrm()
+	var err error
+	for retry := 0; retry < RetryTime; retry++ {
+		qs := ormer.QueryTable(DB_T_REGPRODUCE)
+		for k, v := range params {
+			qs = qs.Filter(k, v)
+		}
+		err = qs.One(&obj)
+		if err != nil {
+			if err == orm.ErrNoRows {
+				return nil, errors.New(ERR_OBJ_NOT_EXIST)
+			} else {
+				d.logger.LogWarn(err)
+				continue
+			}
+		}
+		break
+	}
+	if err != nil {
+		return nil, err
+	}
+	return &obj, nil
+}
+
+func (d *DBSync) GetQcReagentModel(name string) (*QcReagentModel, error) {
+	params := map[string]interface{}{"Name": name}
+	var obj QcReagentModel
+	d.mutex.Lock()
+	defer d.mutex.Unlock()
+	ormer := orm.NewOrm()
+	var err error
+	for retry := 0; retry < RetryTime; retry++ {
+		qs := ormer.QueryTable(DB_T_DEVMODEL)
 		for k, v := range params {
 			qs = qs.Filter(k, v)
 		}
@@ -562,17 +877,13 @@ func (d *DBSync) GetQcDepartment(dname, hname string) (*QcDepartment, error) {
 	d.mutex.Lock()
 	defer d.mutex.Unlock()
 	ormer := orm.NewOrm()
-	for retry := 0; retry < RetryTime; retry++ {
-		err = ormer.QueryTable(DB_T_DEPARTMENT).Filter("Name", dname).Filter("Hospital", hospital.Id).RelatedSel().Limit(1).One(&department)
-		if err != nil {
-			if err == orm.ErrNoRows {
-				return nil, errors.New(ERR_OBJ_NOT_EXIST)
-			} else {
-				d.logger.LogWarn(err)
-				continue
-			}
+	err = ormer.QueryTable(DB_T_DEPARTMENT).Filter("Name", dname).Filter("Hospital", hospital.Id).RelatedSel().Limit(1).One(&department)
+	if err != nil {
+		if err == orm.ErrNoRows {
+			return nil, errors.New(ERR_OBJ_NOT_EXIST)
+		} else {
+			d.logger.LogWarn(err)
 		}
-		break
 	}
 	if err != nil {
 		return nil, err
