@@ -102,3 +102,146 @@ Hospital
 		  "Updated": "2016-11-12 15:28:50"
 		}
 	
+Department
+1. 创建
+	CURL:
+	curl -X POST  -d '{"Name":Xiaohuaneike"}' 127.0.0.1:8088/department?hname="Shanghai+Hospital"
+	Result:
+	{
+	  "Id": 1,
+	  "Name": "Xiaohuaneike",
+	  "Hospital": {
+		"Id": 1,
+		"Name": "Shanghai Hospital",
+		"Addr": "haidianqu",
+		"Gis": "123.22, 64.12123",
+		"Created": "2016-11-12 21:41:53",
+		"Updated": "2016-11-12 21:41:53"
+	  },
+	  "Created": "2016-11-12 21:41:56",
+	  "Updated": "2016-11-12 21:41:56"
+	}
+	
+2. 删除
+	CURL:
+		curl -XDELETE 127.0.0.1:8088/department?hname="Shanghai+Hospital"\&dname="Xiaohuaneike"
+	Result:
+		"delete success"
+
+Administrator
+1.	创建
+	CURL:
+	curl -X POST  -d '{"Role":1,"Username":"wocao", "Password":"123.22, 64.12123"}' 127.0.0.1:8088/administrator
+	Result:
+	{
+	  "Id": 5,
+	  "Role": 1,
+	  "Username": "wocao",
+	  "Password": "123.22, 64.12123",
+	  "Created": "2016-11-13 00:19:14",
+	  "Updated": "2016-11-13 00:19:14"
+	}
+	
+2. 删除
+	CURL:
+	curl -X DELETE 127.0.0.1:8088/administrator?name=luqichao
+	Result:
+	"delete success"
+	
+3. 查找
+	CURL:
+	curl -X GET 127.0.0.1:8088/administrator?name=tianqi
+	Result:
+	{
+	  "Id": 3,
+	  "Role": 1,
+	  "Username": "tianqi",
+	  "Password": "123.22, 64.12123",
+	  "Created": "2016-11-13 00:18:59",
+	  "Updated": "2016-11-13 00:18:59"
+	}
+	
+4. 列表
+	pageidx：	page的index，从0开始
+				pageidx <=0 时，默认为0
+	pagesize: 	每页的item数量
+				pagesize <=0 时，获取全部的items
+	a) 	CURL:
+		curl -X GET 127.0.0.1:8088/administrator/list?pageidx=0\&pagesize=3
+		Result:
+		[
+		  {
+			"Id": 1,
+			"Role": 1,
+			"Username": "zhenshabi",
+			"Password": "123.22, 64.12123",
+			"Created": "2016-11-13 00:16:42",
+			"Updated": "2016-11-13 00:16:42"
+		  },
+		  {
+			"Id": 2,
+			"Role": 1,
+			"Username": "qichao",
+			"Password": "123.22, 64.12123",
+			"Created": "2016-11-13 00:18:52",
+			"Updated": "2016-11-13 00:18:52"
+		  },
+		  {
+			"Id": 3,
+			"Role": 1,
+			"Username": "tianqi",
+			"Password": "123.22, 64.12123",
+			"Created": "2016-11-13 00:18:59",
+			"Updated": "2016-11-13 00:18:59"
+		  }
+		]
+	b)	CURL:
+		curl -X GET 127.0.0.1:8088/administrator/list?pageidx=0\&pagesize=0
+		Result:
+		[
+		  {
+			"Id": 1,
+			"Role": 1,
+			"Username": "zhenshabi",
+			"Password": "123.22, 64.12123",
+			"Created": "2016-11-13 00:16:42",
+			"Updated": "2016-11-13 00:16:42"
+		  },
+		  {
+			"Id": 3,
+			"Role": 1,
+			"Username": "tianqi",
+			"Password": "123.22, 64.12123",
+			"Created": "2016-11-13 00:18:59",
+			"Updated": "2016-11-13 00:18:59"
+		  },
+		  {
+			"Id": 4,
+			"Role": 1,
+			"Username": "ming",
+			"Password": "123.22, 64.12123",
+			"Created": "2016-11-13 00:19:07",
+			"Updated": "2016-11-13 00:19:07"
+		  },
+		  {
+			"Id": 5,
+			"Role": 1,
+			"Username": "wocao",
+			"Password": "123.22, 64.12123",
+			"Created": "2016-11-13 00:19:14",
+			"Updated": "2016-11-13 00:19:14"
+		  }
+		]
+		
+5. 更新
+	CURL:
+		curl -X  PUT 127.0.0.1:8088/administrator?org_name=qichao\&name=luqichao
+	Result:
+	{
+	  "Id": 2,
+	  "Role": 1,
+	  "Username": "luqichao",
+	  "Password": "123.22, 64.12123",
+	  "Created": "2016-11-13 00:18:52",
+	  "Updated": "2016-11-13 00:20:52"
+	}

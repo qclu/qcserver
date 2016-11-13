@@ -65,7 +65,7 @@ func main_admin() {
 	}
 
 	logger.LogInfo("Get all admins info...")
-	admins, err := dbSync.GetQcAdmins(-1)
+	admins, err := dbSync.GetQcAdmins(0, 0, "")
 	if err != nil {
 		logger.LogError("Failed to list all admins, error: ", err)
 		return
@@ -94,7 +94,7 @@ func main_admin() {
 	}
 	fmt.Println("-------------------------------------------------------------------------")
 
-	admin_0, err := dbSync.GetQcAdmins(0)
+	admin_0, err := dbSync.GetQcAdmins(0, 0, "")
 	if err != nil {
 		logger.LogError("Failed to get admins of role 0, error: ", err)
 	}
@@ -260,7 +260,7 @@ func main_devmodel() {
 	}
 
 	logger.LogInfo("Get all methodology info...")
-	mths, err := dbSync.GetQcMethodologys()
+	mths, err := dbSync.GetQcMethodologys(0, 0, "")
 	if err != nil {
 		logger.LogError("Failed to list all Methodology, error: ", err)
 		return
@@ -307,7 +307,7 @@ func main_devmodel() {
 	}
 	fmt.Println("-------------------------------------------------------------------------")
 
-	devmodels, err := dbSync.GetQcDevmodels()
+	devmodels, err := dbSync.GetQcDevmodels(0, 0, "")
 	if err != nil {
 		logger.LogError("Failed to list device model info, err: ", err)
 	}
@@ -350,7 +350,7 @@ func main_devmodel1() {
 	}
 
 	logger.LogInfo("Get all methodology info...")
-	mths, err := dbSync.GetQcMethodologys()
+	mths, err := dbSync.GetQcMethodologys(0, 0, "")
 	if err != nil {
 		logger.LogError("Failed to list all Methodology, error: ", err)
 		return
@@ -403,7 +403,7 @@ func main_devmodel1() {
 		logger.LogInfo("Total ", cnt, "dev models belongs to methodology[", mths[0], "]")
 	}
 
-	devmodels, err := dbSync.GetQcDevmodels()
+	devmodels, err := dbSync.GetQcDevmodels(0, 0, "")
 	if err != nil {
 		logger.LogError("Failed to list device model info, err: ", err)
 	}
@@ -446,7 +446,7 @@ func main_shwversion() {
 	}
 
 	logger.LogInfo("Get all methodology info...")
-	mths, err := dbSync.GetQcMethodologys()
+	mths, err := dbSync.GetQcMethodologys(0, 0, "")
 	if err != nil {
 		logger.LogError("Failed to list all Methodology, error: ", err)
 		return
@@ -476,7 +476,7 @@ func main_shwversion() {
 	fmt.Println("-------------------------------------------------------------------------")
 
 	fmt.Println("Get all dev models...")
-	devmodels, err := dbSync.GetQcDevmodels()
+	devmodels, err := dbSync.GetQcDevmodels(0, 0, "")
 	if err != nil {
 		logger.LogError("Failed to list device model info, err: ", err)
 	}
@@ -654,6 +654,9 @@ func main_department() {
 	} else {
 		fmt.Println("Department info: ", department, "   ", department.Hospital.Name)
 	}
+	fmt.Println("Delete department ...")
+	err = dbSync.DeleteQcDepartmentSQL(hs[0].Name, "department_1")
+	fmt.Println("err: ", err)
 }
 
 func main_devrel() {
@@ -748,7 +751,7 @@ func main_devrel() {
 	}
 
 	logger.LogInfo("Get all methodology info...")
-	mths, err := dbSync.GetQcMethodologys()
+	mths, err := dbSync.GetQcMethodologys(0, 0, "")
 	if err != nil {
 		logger.LogError("Failed to list all Methodology, error: ", err)
 		return
@@ -778,7 +781,7 @@ func main_devrel() {
 	fmt.Println("-------------------------------------------------------------------------")
 
 	fmt.Println("Get all dev models...")
-	devmodels, err := dbSync.GetQcDevmodels()
+	devmodels, err := dbSync.GetQcDevmodels(0, 0, "")
 	if err != nil {
 		logger.LogError("Failed to list device model info, err: ", err)
 	}

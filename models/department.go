@@ -38,7 +38,7 @@ func DeleteQcDepartment(dbSync *DBSync, dname, hname string) error {
 	}
 	dbSync.logger.LogInfo("delete department: ", department)
 	//err = department.Delete(dbSync)
-	err = dbSync.DeleteQcDepartment(department)
+	err = dbSync.DeleteQcDepartmentSQL(hname, dname)
 	if err != nil {
 		dbSync.logger.LogError("Failed to delete department, error: ", err)
 	}

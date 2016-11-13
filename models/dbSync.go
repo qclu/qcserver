@@ -292,6 +292,26 @@ func (d *DBSync) InsertQcHospital(hospital *QcHospital) error {
 	return err
 }
 
+func (d *DBSync) DeleteQcMethdologySQL(name string) error {
+	d.mutex.Lock()
+	defer d.mutex.Unlock()
+	sql := "delete from " + DB_T_METHODOLOGY + " where name='" + name + "'"
+	o := orm.NewOrm()
+	d.logger.LogInfo(sql)
+	_, err := o.Raw(sql).Exec()
+	return err
+}
+
+func (d *DBSync) DeleteQcAdminSQL(username string) error {
+	d.mutex.Lock()
+	defer d.mutex.Unlock()
+	sql := "delete from " + DB_T_ADMINISTRATOR + " where username='" + username + "'"
+	o := orm.NewOrm()
+	d.logger.LogInfo(sql)
+	_, err := o.Raw(sql).Exec()
+	return err
+}
+
 func (d *DBSync) DeleteQcAdmin(admin *QcAdministrator) error {
 	d.mutex.Lock()
 	defer d.mutex.Unlock()
@@ -418,6 +438,16 @@ func (d *DBSync) DeleteQcReagentModel(obj *QcReagentModel) error {
 	return err
 }
 
+func (d *DBSync) DeleteQcDevModelSQL(name string) error {
+	d.mutex.Lock()
+	defer d.mutex.Unlock()
+	sql := "delete from " + DB_T_DEVMODEL + " where name='" + name + "'"
+	o := orm.NewOrm()
+	d.logger.LogInfo(sql)
+	_, err := o.Raw(sql).Exec()
+	return err
+}
+
 func (d *DBSync) DeleteQcDevModel(obj *QcDevModel) error {
 	d.mutex.Lock()
 	defer d.mutex.Unlock()
@@ -449,11 +479,12 @@ func (d *DBSync) DeleteQcMethdology(m *QcMethodology) error {
 func (d *DBSync) DeleteQcDepartmentSQL(hname, dname string) error {
 	d.mutex.Lock()
 	defer d.mutex.Unlock()
-	//sql := "delete from " + DB_T_DEPARTMENT + " using " + DB_T_DEPARTMENT + ", " + DB_T_HOSPITAL +
-	//" where " + DB_T_DEPARTMENT + ".hospital_id=" + DB_T_HOSPITAL + ".id and " + DB_T_HOSPITAL + ".name='" + hname + "'"
+	sql := "delete from " + DB_T_DEPARTMENT + " using " + DB_T_DEPARTMENT + ", " + DB_T_HOSPITAL +
+		" where " + DB_T_DEPARTMENT + ".hospital_id=" + DB_T_HOSPITAL + ".id and " + DB_T_HOSPITAL + ".name='" + hname + "'"
 	o := orm.NewOrm()
-	_, err := o.Raw("delete from ? using ?, ? where ?.hospital_id=?.id and ?.name=?", DB_T_DEPARTMENT, DB_T_DEPARTMENT,
-		DB_T_HOSPITAL, DB_T_DEPARTMENT, DB_T_HOSPITAL, DB_T_HOSPITAL, hname).Exec()
+	d.logger.LogInfo(sql)
+	_, err := o.Raw(sql).Exec()
+	d.logger.LogInfo("delete department")
 	return err
 }
 
@@ -485,6 +516,35 @@ func (d *DBSync) DeleteQcHospital(hospital *QcHospital) error {
 		}
 	}
 	return err
+}
+
+func (d *DBSync) GetQcDevmodel(name string) (*QcDevModel, error) {
+	params := map[string]interface{}{"name": name}
+	var devmodel QcDevModel
+	d.mutex.Lock()
+	defer d.mutex.Unlock()
+	ormer := orm.NewOrm()
+	var err error
+	for retry := 0; retry < RetryTime; retry++ {
+		qs := ormer.QueryTable(DB_T_DEVMODEL)
+		for k, v := range params {
+			qs = qs.Filter(k, v)
+		}
+		err = qs.One(&devmodel)
+		if err != nil {
+			if err == orm.ErrNoRows {
+				return nil, errors.New(ERR_OBJ_NOT_EXIST)
+			} else {
+				d.logger.LogWarn(err)
+				continue
+			}
+		}
+		break
+	}
+	if err != nil {
+		return nil, err
+	}
+	return &devmodel, nil
 }
 
 func (d *DBSync) GetQcAdmin(username string) (*QcAdministrator, error) {
@@ -1012,17 +1072,13 @@ func (d *DBSync) UpdateQcHospital(h *QcHospital) error {
 }
 
 //if role is set to -1, all admins info will be listed
-func (d *DBSync) GetQcAdmins(role int) ([]*QcAdministrator, error) {
+func (d *DBSync) GetQcAdmins(pgidx, pgsize int, conditions string) ([]*QcAdministrator, error) {
 	var admins []*QcAdministrator
 	var err error
 	d.mutex.Lock()
 	defer d.mutex.Unlock()
-	ormer := orm.NewOrm()
-	qs := ormer.QueryTable(DB_T_ADMINISTRATOR)
-	if role != -1 {
-		qs = qs.Filter("Role", role)
-	}
-	if _, err = qs.All(&admins); err != nil {
+	_, _, qs := d.GetPagesInfo(DB_T_ADMINISTRATOR, pgidx, pgsize, conditions)
+	if _, err = qs.QueryRows(&admins); err != nil {
 		d.logger.LogError("Failed to list admins, error: ", err)
 		return nil, err
 	}
@@ -1057,28 +1113,26 @@ func (d *DBSync) GetQcHwVersions() ([]*QcHwVersion, error) {
 	return objs, nil
 }
 
-func (d *DBSync) GetQcDevmodels() ([]*QcDevModel, error) {
+func (d *DBSync) GetQcDevmodels(pgidx, pgsize int, conditions string) ([]*QcDevModel, error) {
 	var objs []*QcDevModel
 	var err error
 	d.mutex.Lock()
 	defer d.mutex.Unlock()
-	ormer := orm.NewOrm()
-	qs := ormer.QueryTable(DB_T_DEVMODEL)
-	if _, err = qs.All(&objs); err != nil {
-		d.logger.LogError("Failed to list admins, error: ", err)
+	_, _, qs := d.GetPagesInfo(DB_T_DEVMODEL, pgidx, pgsize, conditions)
+	if _, err = qs.QueryRows(&objs); err != nil {
+		d.logger.LogError("Failed to list devmodels, error: ", err)
 		return nil, err
 	}
 	return objs, nil
 }
 
-func (d *DBSync) GetQcMethodologys() ([]*QcMethodology, error) {
+func (d *DBSync) GetQcMethodologys(pgidx, pgsize int, conditions string) ([]*QcMethodology, error) {
 	var ms []*QcMethodology
 	var err error
 	d.mutex.Lock()
 	defer d.mutex.Unlock()
-	ormer := orm.NewOrm()
-	qs := ormer.QueryTable(DB_T_METHODOLOGY)
-	if _, err = qs.All(&ms); err != nil {
+	_, _, qs := d.GetPagesInfo(DB_T_METHODOLOGY, pgidx, pgsize, conditions)
+	if _, err = qs.QueryRows(&ms); err != nil {
 		d.logger.LogError("Failed to list methodologies, error: ", err)
 		return nil, err
 	}

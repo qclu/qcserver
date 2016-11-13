@@ -14,10 +14,25 @@ import (
 )
 
 func init() {
-	ns := beego.NewNamespace("/hospital",
+	hns := beego.NewNamespace("/hospital",
 		beego.NSInclude(
 			&controllers.QcHospitalCtl{},
 		),
 	)
-	beego.AddNamespace(ns)
+	beego.AddNamespace(hns)
+	dns := beego.NewNamespace("/department",
+		beego.NSInclude(
+			&controllers.QcDepartmentCtl{},
+		),
+	)
+	beego.AddNamespace(dns)
+	adminns := beego.NewNamespace("/administrator",
+		beego.NSInclude(
+			&controllers.QcAdministratorCtl{},
+		),
+	)
+	beego.AddNamespace(adminns)
+	//beego.Router("/hospital", &controllers.QcHospitalCtl{})
+	//beego.Router("/department", &controllers.QcDepartmentCtl{})
+	//beego.Router("/admin", &controllers.QcAdministratorCtl{})
 }
