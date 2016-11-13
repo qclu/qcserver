@@ -759,4 +759,126 @@ DevRel
 		  "Created": "2016-11-13 22:57:52",
 		  "Updated": "2016-11-13 23:18:27"
 		}
-	
+
+ReagentModel
+	1. 创建
+	CURL：
+		curl -X POST -d '{"Name":"regmodel1", "Annotation":"anno1"}' 127.0.0.1:8088/reagentmodel?devmodel=devmodel1
+	Result:
+		{
+		  "Id": 1,
+		  "Name": "regmodel1",
+		  "DevModel": {
+			"Id": 4,
+			"Name": "devmodel1",
+			"Model": "xx112233",
+			"Release": "ssaadd",
+			"Methodology": {
+			  "Id": 3,
+			  "Name": "",
+			  "Annotation": "",
+			  "Created": "",
+			  "Updated": ""
+			},
+			"Annotation": "anno1",
+			"Created": "2016-11-13 20:02:05",
+			"Updated": "2016-11-13 20:02:05"
+		  },
+		  "Annotation": "anno1",
+		  "Created": "2016-11-14 00:04:54",
+		  "Updated": "2016-11-14 00:04:54"
+		}
+	2. 删除
+	CURL:
+		curl -X DELETE 127.0.0.1:8088/reagentmodel?name=regmodel9
+	Result:
+		"delete success"
+	3. 查找
+	CURL:
+		curl -X GET 127.0.0.1:8088/reagentmodel?name=regmodel9
+	Result:
+		{
+		  "Id": 10,
+		  "Name": "regmodel9",
+		  "DevModel": {
+			"Id": 4,
+			"Name": "",
+			"Model": "",
+			"Release": "",
+			"Methodology": null,
+			"Annotation": "",
+			"Created": "",
+			"Updated": ""
+		  },
+		  "Annotation": "anno1",
+		  "Created": "2016-11-14 00:12:17",
+		  "Updated": "2016-11-14 00:12:17"
+		}
+	4. 列表
+	CURL:
+		curl -X  GET  127.0.0.1:8088/reagentmodel/list?pageidx=1\&pagesize=2
+	Result:
+		[
+		  {
+			"Id": 3,
+			"Name": "regmodel3",
+			"DevModel": {
+			  "Id": 4,
+			  "Name": "",
+			  "Model": "",
+			  "Release": "",
+			  "Methodology": null,
+			  "Annotation": "",
+			  "Created": "",
+			  "Updated": ""
+			},
+			"Annotation": "anno1",
+			"Created": "2016-11-14 00:06:17",
+			"Updated": "2016-11-14 00:06:17"
+		  },
+		  {
+			"Id": 4,
+			"Name": "regmodel4",
+			"DevModel": {
+			  "Id": 4,
+			  "Name": "",
+			  "Model": "",
+			  "Release": "",
+			  "Methodology": null,
+			  "Annotation": "",
+			  "Created": "",
+			  "Updated": ""
+			},
+			"Annotation": "anno1",
+			"Created": "2016-11-14 00:06:22",
+			"Updated": "2016-11-14 00:06:22"
+		  }
+		]
+	5. 更新
+	CURL:
+		curl -X  PUT  127.0.0.1:8088/reagentmodel?org_name=regmodel4\&devmodel=newdevmodel
+	Result:
+		{
+		  "Id": 4,
+		  "Name": "regmodel4",
+		  "DevModel": {
+			"Id": 6,
+			"Name": "newdevmodel",
+			"Model": "x11x442233",
+			"Release": "ssaadd",
+			"Methodology": {
+			  "Id": 3,
+			  "Name": "",
+			  "Annotation": "",
+			  "Created": "",
+			  "Updated": ""
+			},
+			"Annotation": "anno1",
+			"Created": "2016-11-13 20:04:25",
+			"Updated": "2016-11-13 20:10:10"
+		  },
+		  "Annotation": "anno1",
+		  "Created": "2016-11-14 00:06:22",
+		  "Updated": "2016-11-14 00:17:22"
+		}
+		

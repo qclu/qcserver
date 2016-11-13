@@ -448,6 +448,16 @@ func (d *DBSync) DeleteQcReagentModel(obj *QcReagentModel) error {
 	return err
 }
 
+func (d *DBSync) DeleteQcReagentModelSQL(name string) error {
+	d.mutex.Lock()
+	defer d.mutex.Unlock()
+	sql := "delete from " + DB_T_REGMODEL + " where name='" + name + "'"
+	o := orm.NewOrm()
+	d.logger.LogInfo(sql)
+	_, err := o.Raw(sql).Exec()
+	return err
+}
+
 func (d *DBSync) DeleteQcDevRelSQL(sn string) error {
 	d.mutex.Lock()
 	defer d.mutex.Unlock()
@@ -780,6 +790,19 @@ func (d *DBSync) GetQcReagentProduce(serial string) (*QcReagentProduce, error) {
 	return &obj, nil
 }
 
+func (d *DBSync) GetQcReagentModels(pgidx, pgsize int, conditions string) ([]*QcReagentModel, error) {
+	var objs []*QcReagentModel
+	var err error
+	d.mutex.Lock()
+	defer d.mutex.Unlock()
+	_, _, qs := d.GetPagesInfo(DB_T_REGMODEL, pgidx, pgsize, conditions)
+	if _, err = qs.QueryRows(&objs); err != nil {
+		d.logger.LogError("Failed to list reagent models, error: ", err)
+		return nil, err
+	}
+	return objs, nil
+}
+
 func (d *DBSync) GetQcReagentModel(name string) (*QcReagentModel, error) {
 	params := map[string]interface{}{"Name": name}
 	var obj QcReagentModel
@@ -788,7 +811,7 @@ func (d *DBSync) GetQcReagentModel(name string) (*QcReagentModel, error) {
 	ormer := orm.NewOrm()
 	var err error
 	for retry := 0; retry < RetryTime; retry++ {
-		qs := ormer.QueryTable(DB_T_DEVMODEL)
+		qs := ormer.QueryTable(DB_T_REGMODEL)
 		for k, v := range params {
 			qs = qs.Filter(k, v)
 		}
@@ -1028,6 +1051,21 @@ func (d *DBSync) UpdateQcHwVersion(obj *QcHwVersion) error {
 }
 
 func (d *DBSync) UpdateQcDevRel(obj *QcDevRel) error {
+	d.mutex.Lock()
+	defer d.mutex.Unlock()
+	ormer := orm.NewOrm()
+	var err error
+	obj.Updated = time.Now().Format(TIME_FMT)
+	for retry := 0; retry < RetryTime; retry++ {
+		_, err = ormer.Update(obj)
+		if err == nil {
+			return err
+		}
+	}
+	return err
+}
+
+func (d *DBSync) UpdateQcReagentModel(obj *QcReagentModel) error {
 	d.mutex.Lock()
 	defer d.mutex.Unlock()
 	ormer := orm.NewOrm()

@@ -230,6 +230,41 @@ func init() {
 			AllowHTTPMethods: []string{"PUT"},
 			Params: nil})
 
+	beego.GlobalControllerRouter["qcserver/controllers:QcReagentModelCtl"] = append(beego.GlobalControllerRouter["qcserver/controllers:QcReagentModelCtl"],
+		beego.ControllerComments{
+			Method: "Post",
+			Router: `/`,
+			AllowHTTPMethods: []string{"post"},
+			Params: nil})
+
+	beego.GlobalControllerRouter["qcserver/controllers:QcReagentModelCtl"] = append(beego.GlobalControllerRouter["qcserver/controllers:QcReagentModelCtl"],
+		beego.ControllerComments{
+			Method: "Delete",
+			Router: `/`,
+			AllowHTTPMethods: []string{"delete"},
+			Params: nil})
+
+	beego.GlobalControllerRouter["qcserver/controllers:QcReagentModelCtl"] = append(beego.GlobalControllerRouter["qcserver/controllers:QcReagentModelCtl"],
+		beego.ControllerComments{
+			Method: "Get",
+			Router: `/`,
+			AllowHTTPMethods: []string{"get"},
+			Params: nil})
+
+	beego.GlobalControllerRouter["qcserver/controllers:QcReagentModelCtl"] = append(beego.GlobalControllerRouter["qcserver/controllers:QcReagentModelCtl"],
+		beego.ControllerComments{
+			Method: "GetList",
+			Router: `/list`,
+			AllowHTTPMethods: []string{"get"},
+			Params: nil})
+
+	beego.GlobalControllerRouter["qcserver/controllers:QcReagentModelCtl"] = append(beego.GlobalControllerRouter["qcserver/controllers:QcReagentModelCtl"],
+		beego.ControllerComments{
+			Method: "Update",
+			Router: `/`,
+			AllowHTTPMethods: []string{"PUT"},
+			Params: nil})
+
 	beego.GlobalControllerRouter["qcserver/controllers:QcSwVersionCtl"] = append(beego.GlobalControllerRouter["qcserver/controllers:QcSwVersionCtl"],
 		beego.ControllerComments{
 			Method: "Post",
