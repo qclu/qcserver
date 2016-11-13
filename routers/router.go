@@ -56,4 +56,10 @@ func init() {
 		),
 	)
 	beego.AddNamespace(swvns)
+	devrelns := beego.NewNamespace("/devrel",
+		beego.NSInclude(
+			&controllers.QcDevRelCtl{},
+		),
+	)
+	beego.AddNamespace(devrelns)
 }

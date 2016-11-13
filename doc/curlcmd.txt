@@ -600,4 +600,163 @@ SwVersion
 		  "Created": "2016-11-13 21:16:50",
 		  "Updated": "2016-11-13 21:28:43"
 		}
-		
+
+DevRel
+	1. 创建
+	CURL:
+		curl -X POST -d '{"Sn":"2012qws", "Date":"20161113", "SmCard":"aaaa"}' 127.0.0.1:8088/devrel?swversion=swv1\&hospital="Shanghai+Hospital"\&department="Xiaohuaneike"
+	Result:
+		{
+		  "Id": 1,
+		  "SwVersion": {
+			"Id": 1,
+			"HwVersion": {
+			  "Id": 5,
+			  "DevModel": null,
+			  "Version": "",
+			  "Annotation": "",
+			  "Created": "",
+			  "Updated": ""
+			},
+			"Version": "swv1",
+			"SwType": "RELEASE",
+			"Description": "fix bug 1",
+			"Created": "2016-11-13 21:16:18",
+			"Updated": "2016-11-13 21:16:18"
+		  },
+		  "Sn": "2012qws",
+		  "Date": "20161113",
+		  "SmCard": "aaaa",
+		  "Receiver": {
+			"Id": 5,
+			"Name": "Xiaohuaneike",
+			"Hospital": {
+			  "Id": 1,
+			  "Name": "Shanghai Hospital",
+			  "Addr": "haidianqu",
+			  "Gis": "123.22, 64.12123",
+			  "Created": "2016-11-13 22:25:16",
+			  "Updated": "2016-11-13 22:25:16"
+			},
+			"Created": "2016-11-13 22:55:32",
+			"Updated": "2016-11-13 22:55:32"
+		  },
+		  "Created": "2016-11-13 22:56:28",
+		  "Updated": "2016-11-13 22:56:28"
+		}
+	2. 删除
+	CURL:
+		curl -X DELETE 127.0.0.1:8088/devrel?sn=20189s
+	Result:
+		"delete success"
+	3. 查找
+	CURL:
+		curl -X GET 127.0.0.1:8088/devrel?sn=2016ws
+	Result:
+		{
+		  "Id": 5,
+		  "SwVersion": {
+			"Id": 1,
+			"HwVersion": null,
+			"Version": "",
+			"SwType": "",
+			"Description": "",
+			"Created": "",
+			"Updated": ""
+		  },
+		  "Sn": "2016ws",
+		  "Date": "20161113",
+		  "SmCard": "aaaa",
+		  "Receiver": {
+			"Id": 5,
+			"Name": "",
+			"Hospital": null,
+			"Created": "",
+			"Updated": ""
+		  },
+		  "Created": "2016-11-13 22:57:59",
+		  "Updated": "2016-11-13 22:57:59"
+		}
+	4. 列表
+	CURL:
+		curl -X  GET  127.0.0.1:8088/devrel/list?pageidx=1\&pagesize=2
+	Result:
+		[
+		  {
+			"Id": 3,
+			"SwVersion": {
+			  "Id": 1,
+			  "HwVersion": null,
+			  "Version": "",
+			  "SwType": "",
+			  "Description": "",
+			  "Created": "",
+			  "Updated": ""
+			},
+			"Sn": "2014ws",
+			"Date": "20161113",
+			"SmCard": "aaaa",
+			"Receiver": {
+			  "Id": 5,
+			  "Name": "",
+			  "Hospital": null,
+			  "Created": "",
+			  "Updated": ""
+			},
+			"Created": "2016-11-13 22:57:42",
+			"Updated": "2016-11-13 22:57:42"
+		  },
+		  {
+			"Id": 4,
+			"SwVersion": {
+			  "Id": 1,
+			  "HwVersion": null,
+			  "Version": "",
+			  "SwType": "",
+			  "Description": "",
+			  "Created": "",
+			  "Updated": ""
+			},
+			"Sn": "2015ws",
+			"Date": "20161113",
+			"SmCard": "aaaa",
+			"Receiver": {
+			  "Id": 5,
+			  "Name": "",
+			  "Hospital": null,
+			  "Created": "",
+			  "Updated": ""
+			},
+			"Created": "2016-11-13 22:57:52",
+			"Updated": "2016-11-13 22:57:52"
+		  }
+		]
+	5. 更新
+	CURL:
+		curl -X  PUT 127.0.0.1:8088/devrel?org_sn=2015ws\&smcard=cccc
+	Result:
+		{
+		  "Id": 4,
+		  "SwVersion": {
+			"Id": 1,
+			"HwVersion": null,
+			"Version": "",
+			"SwType": "",
+			"Description": "",
+			"Created": "",
+			"Updated": ""
+		  },
+		  "Sn": "2015ws",
+		  "Date": "20161113",
+		  "SmCard": "cccc",
+		  "Receiver": {
+			"Id": 5,
+			"Name": "",
+			"Hospital": null,
+			"Created": "",
+			"Updated": ""
+		  },
+		  "Created": "2016-11-13 22:57:52",
+		  "Updated": "2016-11-13 23:18:27"
+		}
+	

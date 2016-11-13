@@ -448,6 +448,16 @@ func (d *DBSync) DeleteQcReagentModel(obj *QcReagentModel) error {
 	return err
 }
 
+func (d *DBSync) DeleteQcDevRelSQL(sn string) error {
+	d.mutex.Lock()
+	defer d.mutex.Unlock()
+	sql := "delete from " + DB_T_DEVREL + " where sn='" + sn + "'"
+	o := orm.NewOrm()
+	d.logger.LogInfo(sql)
+	_, err := o.Raw(sql).Exec()
+	return err
+}
+
 func (d *DBSync) DeleteQcHwVersionSQL(version string) error {
 	d.mutex.Lock()
 	defer d.mutex.Unlock()
@@ -948,6 +958,7 @@ func (d *DBSync) GetQcHospital(name string) (*QcHospital, error) {
 }
 
 func (d *DBSync) GetQcDepartment(dname, hname string) (*QcDepartment, error) {
+	d.logger.LogInfo("Get department[hospital: ", hname, " department: ", dname, "]")
 	var department QcDepartment
 	var err error
 	hospital, err := d.GetQcHospital(hname)
@@ -1142,6 +1153,19 @@ func (d *DBSync) GetQcDevmodels(pgidx, pgsize int, conditions string) ([]*QcDevM
 		return nil, err
 	}
 	return objs, nil
+}
+
+func (d *DBSync) GetQcDevRels(pgidx, pgsize int, conditions string) ([]*QcDevRel, error) {
+	var ms []*QcDevRel
+	var err error
+	d.mutex.Lock()
+	defer d.mutex.Unlock()
+	_, _, qs := d.GetPagesInfo(DB_T_DEVREL, pgidx, pgsize, conditions)
+	if _, err = qs.QueryRows(&ms); err != nil {
+		d.logger.LogError("Failed to list devrels, error: ", err)
+		return nil, err
+	}
+	return ms, nil
 }
 
 func (d *DBSync) GetQcMethodologys(pgidx, pgsize int, conditions string) ([]*QcMethodology, error) {
