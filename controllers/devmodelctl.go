@@ -31,6 +31,7 @@ func (o *QcDevModelCtl) Post() {
 	}
 	var ob models.QcDevModel
 	json.Unmarshal(o.Ctx.Input.RequestBody, &ob)
+	o.logger.LogInfo("devmodel: ", ob)
 	pob, err := models.CreateQcDevModel(o.dbSync, ob.Name, ob.Model, ob.Release, mth, ob.Annotation)
 	if err != nil {
 		o.logger.LogError("database operation err: ", err)

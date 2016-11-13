@@ -245,3 +245,111 @@ Administrator
 	  "Created": "2016-11-13 00:18:52",
 	  "Updated": "2016-11-13 00:20:52"
 	}
+	
+DevModel
+	1. 创建
+	CURL:
+		curl -XPOST  -d '{"Name":"devmodel1", "Model":"xxxaapo0", "Release":"ssaasdda", "Annotation":"annotation"}' 127.0.0.1:8088/devmodel?methodology=NewMethodology
+	Release:
+		{
+		  "Id": 1,
+		  "Name": "devmodel1",
+		  "Model": "xxxaapo0",
+		  "Release": "ssaasdda",
+		  "Methodology": {
+			"Id": 6,
+			"Name": "NewMethodology",
+			"Annotation": "annotation test",
+			"Created": "2016-11-13 10:56:51",
+			"Updated": "2016-11-13 10:59:03"
+		  },
+		  "Annotation": "annotation",
+		  "Created": "2016-11-13 11:01:46",
+		  "Updated": "2016-11-13 11:01:46"
+		}
+		
+	2. 删除
+	CURL:
+		curl -X DELETE  127.0.0.1:8088/devmodel?name=devmodel1
+	Result:
+		"delete success"
+		
+	3. 查找
+	CURL:
+		curl -X GET 127.0.0.1:8088/devmodel?name=devmodel1
+	Result:
+		{
+		  "Id": 2,
+		  "Name": "devmodel1",
+		  "Model": "xxxaapo0",
+		  "Release": "ssaasdda",
+		  "Methodology": {
+			"Id": 6,
+			"Name": "",
+			"Annotation": "",
+			"Created": "",
+			"Updated": ""
+		  },
+		  "Annotation": "annotation",
+		  "Created": "2016-11-13 19:47:40",
+		  "Updated": "2016-11-13 19:47:40"
+		}
+	
+	4. 列表
+	CURL:
+		curl -X  GET  127.0.0.1:8088/devmodel/list?pageidx=0\&pagesize=2
+	Result:
+		[
+		  {
+			"Id": 4,
+			"Name": "devmodel1",
+			"Model": "xx112233",
+			"Release": "ssaadd",
+			"Methodology": {
+			  "Id": 3,
+			  "Name": "",
+			  "Annotation": "",
+			  "Created": "",
+			  "Updated": ""
+			},
+			"Annotation": "anno1",
+			"Created": "2016-11-13 20:02:05",
+			"Updated": "2016-11-13 20:02:05"
+		  },
+		  {
+			"Id": 5,
+			"Name": "devmodel2",
+			"Model": "xx442233",
+			"Release": "ssaadd",
+			"Methodology": {
+			  "Id": 3,
+			  "Name": "",
+			  "Annotation": "",
+			  "Created": "",
+			  "Updated": ""
+			},
+			"Annotation": "anno1",
+			"Created": "2016-11-13 20:02:51",
+			"Updated": "2016-11-13 20:02:51"
+		  }
+		]
+	5. 更新
+	CURL:
+		curl -X  PUT  127.0.0.1:8088/devmodel?org_name=devmodel3\&name=newdevmodel
+	Result:
+		{
+		  "Id": 6,
+		  "Name": "newdevmodel",
+		  "Model": "x11x442233",
+		  "Release": "ssaadd",
+		  "Methodology": {
+			"Id": 3,
+			"Name": "",
+			"Annotation": "",
+			"Created": "",
+			"Updated": ""
+		  },
+		  "Annotation": "anno1",
+		  "Created": "2016-11-13 20:04:25",
+		  "Updated": "2016-11-13 20:10:10"
+		}

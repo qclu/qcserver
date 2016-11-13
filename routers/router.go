@@ -32,6 +32,18 @@ func init() {
 		),
 	)
 	beego.AddNamespace(adminns)
+	mthns := beego.NewNamespace("/methodology",
+		beego.NSInclude(
+			&controllers.QcMethodologyCtl{},
+		),
+	)
+	beego.AddNamespace(mthns)
+	devmodelns := beego.NewNamespace("/devmodel",
+		beego.NSInclude(
+			&controllers.QcDevModelCtl{},
+		),
+	)
+	beego.AddNamespace(devmodelns)
 	//beego.Router("/hospital", &controllers.QcHospitalCtl{})
 	//beego.Router("/department", &controllers.QcDepartmentCtl{})
 	//beego.Router("/admin", &controllers.QcAdministratorCtl{})

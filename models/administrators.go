@@ -1,6 +1,7 @@
 package models
 
 import (
+	"errors"
 	_ "github.com/go-sql-driver/mysql"
 	"sync"
 	"time"
@@ -17,6 +18,14 @@ type QcAdministrator struct {
 }
 
 func CreateQcAdmin(dbSync *DBSync, username, passwd string, role int) (*QcAdministrator, error) {
+	if len(username) <= 0 {
+		dbSync.logger.LogError("username cannot be empty...")
+		return nil, errors.New("empty username to create administrator")
+	}
+	if len(passwd) <= 0 {
+		dbSync.logger.LogError("password cannot be empty...")
+		return nil, errors.New("empty password to create administrator")
+	}
 	admin := &QcAdministrator{
 		Username: username,
 		Role:     role,
