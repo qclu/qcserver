@@ -353,3 +353,251 @@ DevModel
 		  "Created": "2016-11-13 20:04:25",
 		  "Updated": "2016-11-13 20:10:10"
 		}
+
+HwVersion
+	1. 创建
+	CURL:
+		curl -X POST -d '{"Version":"v1", "Annotation":"annotatio1"}' 127.0.0.1:8088/hwversion?devmodel=newdevmodel
+	Result:
+		{
+		  "Id": 1,
+		  "DevModel": {
+			"Id": 6,
+			"Name": "newdevmodel",
+			"Model": "x11x442233",
+			"Release": "ssaadd",
+			"Methodology": {
+			  "Id": 3,
+			  "Name": "",
+			  "Annotation": "",
+			  "Created": "",
+			  "Updated": ""
+			},
+			"Annotation": "anno1",
+			"Created": "2016-11-13 20:04:25",
+			"Updated": "2016-11-13 20:10:10"
+		  },
+		  "Version": "v1",
+		  "Annotation": "annotatio1",
+		  "Created": "2016-11-13 20:35:30",
+		  "Updated": "2016-11-13 20:35:30"
+		}
+	2. 删除
+	CURL:
+		curl -X  DELETE 127.0.0.1:8088/hwversion?version=v1
+	Result:
+		"delete success"
+	3. 查找
+	CURL:
+		curl -X GET 127.0.0.1:8088/hwversion?version=v1
+	Result:
+		{
+		  "Id": 6,
+		  "DevModel": {
+			"Id": 6,
+			"Name": "",
+			"Model": "",
+			"Release": "",
+			"Methodology": null,
+			"Annotation": "",
+			"Created": "",
+			"Updated": ""
+		  },
+		  "Version": "v1",
+		  "Annotation": "annotatio1",
+		  "Created": "2016-11-13 20:38:58",
+		  "Updated": "2016-11-13 20:38:58"
+		}
+	4. 列表
+	CURL:
+		curl -X  GET  127.0.0.1:8088/hwversion/list?pageidx=0\&pagesize=3
+	Result:
+		[
+		  {
+			"Id": 2,
+			"DevModel": {
+			  "Id": 6,
+			  "Name": "",
+			  "Model": "",
+			  "Release": "",
+			  "Methodology": null,
+			  "Annotation": "",
+			  "Created": "",
+			  "Updated": ""
+			},
+			"Version": "v2",
+			"Annotation": "annotatio1",
+			"Created": "2016-11-13 20:37:22",
+			"Updated": "2016-11-13 20:37:22"
+		  },
+		  {
+			"Id": 3,
+			"DevModel": {
+			  "Id": 6,
+			  "Name": "",
+			  "Model": "",
+			  "Release": "",
+			  "Methodology": null,
+			  "Annotation": "",
+			  "Created": "",
+			  "Updated": ""
+			},
+			"Version": "v3",
+			"Annotation": "annotatio1",
+			"Created": "2016-11-13 20:37:27",
+			"Updated": "2016-11-13 20:37:27"
+		  },
+		  {
+			"Id": 4,
+			"DevModel": {
+			  "Id": 6,
+			  "Name": "",
+			  "Model": "",
+			  "Release": "",
+			  "Methodology": null,
+			  "Annotation": "",
+			  "Created": "",
+			  "Updated": ""
+			},
+			"Version": "v4",
+			"Annotation": "annotatio1",
+			"Created": "2016-11-13 20:37:33",
+			"Updated": "2016-11-13 20:37:33"
+		  }
+		]
+	5. 更新
+	CURL:
+		curl -X  PUT  127.0.0.1:8088/hwversion?org_version=v4\&version=v9
+	Result:
+		{
+		  "Id": 4,
+		  "DevModel": {
+			"Id": 6,
+			"Name": "",
+			"Model": "",
+			"Release": "",
+			"Methodology": null,
+			"Annotation": "",
+			"Created": "",
+			"Updated": ""
+		  },
+		  "Version": "v9",
+		  "Annotation": "annotatio1",
+		  "Created": "2016-11-13 20:37:33",
+		  "Updated": "2016-11-13 20:42:38"
+		}
+	
+SwVersion
+	1. 创建
+	CURL:
+		curl -X POST -d '{"Version":"swv7", "SwType":"RELEASE", "Description":"fix bug 1"}' 127.0.0.1:8088/swversion?hwversion=v5
+	Result:
+		{
+		  "Id": 7,
+		  "HwVersion": {
+			"Id": 5,
+			"DevModel": {
+			  "Id": 6,
+			  "Name": "",
+			  "Model": "",
+			  "Release": "",
+			  "Methodology": null,
+			  "Annotation": "",
+			  "Created": "",
+			  "Updated": ""
+			},
+			"Version": "v5",
+			"Annotation": "annotatio1",
+			"Created": "2016-11-13 20:37:39",
+			"Updated": "2016-11-13 20:37:39"
+		  },
+		  "Version": "swv7",
+		  "SwType": "RELEASE",
+		  "Description": "fix bug 1",
+		  "Created": "2016-11-13 21:16:56",
+		  "Updated": "2016-11-13 21:16:56"
+		}
+	2. 删除
+	CURL:
+		curl -X DELETE 127.0.0.1:8088/swversion?version=swv7
+	Result:
+		"delete success"
+	3. 查找
+	CURL:
+		curl -X GET 127.0.0.1:8088/swversion?version=swv6
+	Release:
+		{
+		  "Id": 6,
+		  "HwVersion": {
+			"Id": 5,
+			"DevModel": null,
+			"Version": "",
+			"Annotation": "",
+			"Created": "",
+			"Updated": ""
+		  },
+		  "Version": "swv6",
+		  "SwType": "RELEASE",
+		  "Description": "fix bug 1",
+		  "Created": "2016-11-13 21:16:50",
+		  "Updated": "2016-11-13 21:16:50"
+		}
+	4. 列表
+	CURL:
+		curl -X  GET  127.0.0.1:8088/swversion/list?pageidx=1\&pagesize=2
+	Release:
+		[
+		 {
+			"Id": 5,
+			"HwVersion": {
+			  "Id": 5,
+			  "DevModel": null,
+			  "Version": "",
+			  "Annotation": "",
+			  "Created": "",
+			  "Updated": ""
+			},
+			"Version": "swv5",
+			"SwType": "RELEASE",
+			"Description": "fix bug 1",
+			"Created": "2016-11-13 21:16:44",
+			"Updated": "2016-11-13 21:16:44"
+		  },
+		  {
+			"Id": 6,
+			"HwVersion": {
+			  "Id": 5,
+			  "DevModel": null,
+			  "Version": "",
+			  "Annotation": "",
+			  "Created": "",
+			  "Updated": ""
+			},
+			"Version": "swv6",
+			"SwType": "RELEASE",
+			"Description": "fix bug 1",
+			"Created": "2016-11-13 21:16:50",
+			"Updated": "2016-11-13 21:16:50"
+		  }
+		]
+	5. 更新
+	CURL：
+		curl -X PUT   127.0.0.1:8088/swversion?org_version=swv6\&swtype=DEBUG
+	Result:
+		{
+		  "Id": 6,
+		  "HwVersion": {
+			"Id": 5,
+			"DevModel": null,
+			"Version": "",
+			"Annotation": "",
+			"Created": "",
+			"Updated": ""
+		  },
+		  "Version": "swv6",
+		  "SwType": "DEBUG",
+		  "Description": "fix bug 1",
+		  "Created": "2016-11-13 21:16:50",
+		  "Updated": "2016-11-13 21:28:43"
+		}
+		

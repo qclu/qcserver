@@ -44,7 +44,16 @@ func init() {
 		),
 	)
 	beego.AddNamespace(devmodelns)
-	//beego.Router("/hospital", &controllers.QcHospitalCtl{})
-	//beego.Router("/department", &controllers.QcDepartmentCtl{})
-	//beego.Router("/admin", &controllers.QcAdministratorCtl{})
+	hwvns := beego.NewNamespace("/hwversion",
+		beego.NSInclude(
+			&controllers.QcHwVersionCtl{},
+		),
+	)
+	beego.AddNamespace(hwvns)
+	swvns := beego.NewNamespace("/swversion",
+		beego.NSInclude(
+			&controllers.QcSwVersionCtl{},
+		),
+	)
+	beego.AddNamespace(swvns)
 }

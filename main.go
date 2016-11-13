@@ -502,7 +502,7 @@ func main_shwversion() {
 
 	fmt.Println("-------------------------------------------------------------------------")
 	fmt.Println("Get all hardware version...")
-	hwversions, err := dbSync.GetQcHwVersions()
+	hwversions, err := dbSync.GetQcHwVersions(0, 0, "")
 	if err != nil {
 		logger.LogError("Failed to list hardware version info, err: ", err)
 	}
@@ -533,7 +533,7 @@ func main_shwversion() {
 
 	fmt.Println("-------------------------------------------------------------------------")
 	fmt.Println("Get all software version...")
-	swversions, err := dbSync.GetQcSwVersions()
+	swversions, err := dbSync.GetQcSwVersions(0, 0, "")
 	if err != nil {
 		logger.LogError("Failed to list software version info, err: ", err)
 	}
@@ -807,7 +807,7 @@ func main_devrel() {
 
 	fmt.Println("-------------------------------------------------------------------------")
 	fmt.Println("Get all hardware version...")
-	hwversions, err := dbSync.GetQcHwVersions()
+	hwversions, err := dbSync.GetQcHwVersions(0, 0, "")
 	if err != nil {
 		logger.LogError("Failed to list hardware version info, err: ", err)
 	}
@@ -838,7 +838,7 @@ func main_devrel() {
 
 	fmt.Println("-------------------------------------------------------------------------")
 	fmt.Println("Get all software version...")
-	swversions, err := dbSync.GetQcSwVersions()
+	swversions, err := dbSync.GetQcSwVersions(0, 0, "")
 	if err != nil {
 		logger.LogError("Failed to list software version info, err: ", err)
 	}

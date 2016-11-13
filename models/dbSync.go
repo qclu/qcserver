@@ -326,6 +326,16 @@ func (d *DBSync) DeleteQcAdmin(admin *QcAdministrator) error {
 	return err
 }
 
+func (d *DBSync) DeleteQcSwVersionSQL(version string) error {
+	d.mutex.Lock()
+	defer d.mutex.Unlock()
+	sql := "delete from " + DB_T_SWVERSION + " where version='" + version + "'"
+	o := orm.NewOrm()
+	d.logger.LogInfo(sql)
+	_, err := o.Raw(sql).Exec()
+	return err
+}
+
 func (d *DBSync) DeleteQcSwVersion(obj *QcSwVersion) error {
 	d.mutex.Lock()
 	defer d.mutex.Unlock()
@@ -435,6 +445,16 @@ func (d *DBSync) DeleteQcReagentModel(obj *QcReagentModel) error {
 			return err
 		}
 	}
+	return err
+}
+
+func (d *DBSync) DeleteQcHwVersionSQL(version string) error {
+	d.mutex.Lock()
+	defer d.mutex.Unlock()
+	sql := "delete from " + DB_T_HWVERSION + " where version='" + version + "'"
+	o := orm.NewOrm()
+	d.logger.LogInfo(sql)
+	_, err := o.Raw(sql).Exec()
 	return err
 }
 
@@ -1085,29 +1105,27 @@ func (d *DBSync) GetQcAdmins(pgidx, pgsize int, conditions string) ([]*QcAdminis
 	return admins, nil
 }
 
-func (d *DBSync) GetQcSwVersions() ([]*QcSwVersion, error) {
+func (d *DBSync) GetQcSwVersions(pgidx, pgsize int, conditions string) ([]*QcSwVersion, error) {
 	var objs []*QcSwVersion
 	var err error
 	d.mutex.Lock()
 	defer d.mutex.Unlock()
-	ormer := orm.NewOrm()
-	qs := ormer.QueryTable(DB_T_SWVERSION)
-	if _, err = qs.All(&objs); err != nil {
-		d.logger.LogError("Failed to list admins, error: ", err)
+	_, _, qs := d.GetPagesInfo(DB_T_SWVERSION, pgidx, pgsize, conditions)
+	if _, err = qs.QueryRows(&objs); err != nil {
+		d.logger.LogError("Failed to list swversions, error: ", err)
 		return nil, err
 	}
 	return objs, nil
 }
 
-func (d *DBSync) GetQcHwVersions() ([]*QcHwVersion, error) {
+func (d *DBSync) GetQcHwVersions(pgidx, pgsize int, conditions string) ([]*QcHwVersion, error) {
 	var objs []*QcHwVersion
 	var err error
 	d.mutex.Lock()
 	defer d.mutex.Unlock()
-	ormer := orm.NewOrm()
-	qs := ormer.QueryTable(DB_T_HWVERSION)
-	if _, err = qs.All(&objs); err != nil {
-		d.logger.LogError("Failed to list admins, error: ", err)
+	_, _, qs := d.GetPagesInfo(DB_T_HWVERSION, pgidx, pgsize, conditions)
+	if _, err = qs.QueryRows(&objs); err != nil {
+		d.logger.LogError("Failed to list devmodels, error: ", err)
 		return nil, err
 	}
 	return objs, nil
