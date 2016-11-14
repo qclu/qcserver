@@ -43,23 +43,3 @@ func CreateQcQcProduct(dbSync *DBSync, regmodel *QcReagentModel, tea, cv, percen
 	}
 	return obj, nil
 }
-
-func DeleteQcQcQcProduct(dbSync *DBSync, name string) error {
-	obj, err := dbSync.GetQcQcProduct(name)
-	if err != nil {
-		dbSync.logger.LogError("Failed to delete quality control product[", name, "], error: ", err)
-		return err
-	}
-	err = obj.Delete(dbSync)
-	return err
-}
-
-func (obj *QcQcProduct) Delete(dbSync *DBSync) error {
-	obj.mutex.Lock()
-	defer obj.mutex.Unlock()
-	err := dbSync.DeleteQcQcQcProduct(obj)
-	if err != nil {
-		dbSync.logger.LogError("Failed to delete quality control product, error: ", err)
-	}
-	return err
-}

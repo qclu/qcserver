@@ -881,4 +881,129 @@ ReagentModel
 		  "Created": "2016-11-14 00:06:22",
 		  "Updated": "2016-11-14 00:17:22"
 		}
+
+ReagentProduce
+	1. 创建
+	CURL:
+		curl -X POST -d '{"SerialNum":"serial1", "LotNum":"lotnum1", "ExpiredTime":"20201114", "Annotation":"anno1"}' 127.0.0.1:8088/reagentproduce?reagentmodel=regmodel4
+	Result:
+		{
+		  "Id": 1,
+		  "SerialNum": "serial1",
+		  "LotNum": "lotnum1",
+		  "RegModel": {
+			"Id": 4,
+			"Name": "regmodel4",
+			"DevModel": {
+			  "Id": 6,
+			  "Name": "",
+			  "Model": "",
+			  "Release": "",
+			  "Methodology": null,
+			  "Annotation": "",
+			  "Created": "",
+			  "Updated": ""
+			},
+			"Annotation": "anno1",
+			"Created": "2016-11-14 00:06:22",
+			"Updated": "2016-11-14 00:17:22"
+		  },
+		  "ExpiredTime": "20201114",
+		  "Annotation": "anno1",
+		  "Created": "2016-11-14 19:53:33",
+		  "Updated": "2016-11-14 19:53:33"
+		}
+	2. 删除
+	CURL:
+		curl -X DELETE 127.0.0.1:8088/reagentproduce?serialnum=serial7
+	Result:
+		"delete success"
+	3. 查找
+	CURL:
+		curl -X GET 127.0.0.1:8088/reagentproduce?serialnum=serial6
+	Result:
+		{
+		  "Id": 7,
+		  "SerialNum": "serial6",
+		  "LotNum": "lotnum6",
+		  "RegModel": {
+			"Id": 4,
+			"Name": "",
+			"DevModel": null,
+			"Annotation": "",
+			"Created": "",
+			"Updated": ""
+		  },
+		  "ExpiredTime": "20201114",
+		  "Annotation": "anno1",
+		  "Created": "2016-11-14 19:56:42",
+		  "Updated": "2016-11-14 19:56:42"
+		}
+	4. 列表
+	CURL:
+		curl -X  GET  127.0.0.1:8088/reagentproduce/list?pageidx=1\&pagesize=2
+	Result:
+		[
+		  {
+			"Id": 4,
+			"SerialNum": "serial3",
+			"LotNum": "lotnum3",
+			"RegModel": {
+			  "Id": 4,
+			  "Name": "",
+			  "DevModel": null,
+			  "Annotation": "",
+			  "Created": "",
+			  "Updated": ""
+			},
+			"ExpiredTime": "20201114",
+			"Annotation": "anno1",
+			"Created": "2016-11-14 19:55:58",
+			"Updated": "2016-11-14 19:55:58"
+		  },
+		  {
+			"Id": 5,
+			"SerialNum": "serial4",
+			"LotNum": "lotnum4",
+			"RegModel": {
+			  "Id": 4,
+			  "Name": "",
+			  "DevModel": null,
+			  "Annotation": "",
+			  "Created": "",
+			  "Updated": ""
+			},
+			"ExpiredTime": "20201114",
+			"Annotation": "anno1",
+			"Created": "2016-11-14 19:56:11",
+			"Updated": "2016-11-14 19:56:11"
+		  }
+		]
+	5. 更新
+	CURL:
+		curl -X  PUT  127.0.0.1:8088/reagentproduce/?org_serialnum=serial4\&annotation="Test"
+	Result:
+		{
+		  "Id": 5,
+		  "SerialNum": "serial4",
+		  "LotNum": "lotnum4",
+		  "RegModel": {
+			"Id": 4,
+			"Name": "",
+			"DevModel": null,
+			"Annotation": "",
+			"Created": "",
+			"Updated": ""
+		  },
+		  "ExpiredTime": "20201114",
+		  "Annotation": "Test",
+		  "Created": "2016-11-14 19:56:11",
+		  "Updated": "2016-11-14 20:01:35"
+		}
+QcProduct
+	1. 创建	curl -X POST -d '{"Tea":1.1243, "Cv":0.987, "Percent":"0.89", "FixedDeviation":0.0014, "Nsd":1.0012, "Range":"range1", "Name":"name1", "Annotation":"anno1"}' 127.0.0.1:8088/qcproduct?reagentmodel=regmodel4
+	2. 删除	curl -X DELETE 127.0.0.1:8088/qcproduct?name="name1"
+	3. 查找	curl -X GET 127.0.0.1:8088/qcproduct?name="name1"
+	4. 列表 curl -X  GET  127.0.0.1:8088/qcproduct/list?pageidx=0\&pagesize=2
+	5. 更新	curl -X  PUT 127.0.0.1:8088/qcproduct?org_name="name1"\&tea=0.899
 		

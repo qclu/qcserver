@@ -392,7 +392,7 @@ func (d *DBSync) DeleteQcQcLotnum(obj *QcQcLotnum) error {
 	return err
 }
 
-func (d *DBSync) DeleteQcQcQcProduct(obj *QcQcProduct) error {
+func (d *DBSync) DeleteQcQcProduct(obj *QcQcProduct) error {
 	d.mutex.Lock()
 	defer d.mutex.Unlock()
 	ormer := orm.NewOrm()
@@ -445,6 +445,26 @@ func (d *DBSync) DeleteQcReagentModel(obj *QcReagentModel) error {
 			return err
 		}
 	}
+	return err
+}
+
+func (d *DBSync) DeleteQcQcProductSQL(name string) error {
+	d.mutex.Lock()
+	defer d.mutex.Unlock()
+	sql := "delete from " + DB_T_QCPRODUCT + " where name='" + name + "'"
+	o := orm.NewOrm()
+	d.logger.LogInfo(sql)
+	_, err := o.Raw(sql).Exec()
+	return err
+}
+
+func (d *DBSync) DeleteQcReagentProduceSQL(serial string) error {
+	d.mutex.Lock()
+	defer d.mutex.Unlock()
+	sql := "delete from " + DB_T_REGPRODUCE + " where serial_num='" + serial + "'"
+	o := orm.NewOrm()
+	d.logger.LogInfo(sql)
+	_, err := o.Raw(sql).Exec()
 	return err
 }
 
@@ -703,6 +723,19 @@ func (d *DBSync) GetQcQcLotnum(id int64) (*QcQcLotnum, error) {
 	return &obj, nil
 }
 
+func (d *DBSync) GetQcQcProducts(pgidx, pgsize int, conditions string) ([]*QcQcProduct, error) {
+	var objs []*QcQcProduct
+	var err error
+	d.mutex.Lock()
+	defer d.mutex.Unlock()
+	_, _, qs := d.GetPagesInfo(DB_T_QCPRODUCT, pgidx, pgsize, conditions)
+	if _, err = qs.QueryRows(&objs); err != nil {
+		d.logger.LogError("Failed to list qcproducts, error: ", err)
+		return nil, err
+	}
+	return objs, nil
+}
+
 func (d *DBSync) GetQcQcProduct(name string) (*QcQcProduct, error) {
 	params := map[string]interface{}{"Name": name}
 	var obj QcQcProduct
@@ -788,6 +821,19 @@ func (d *DBSync) GetQcReagentProduce(serial string) (*QcReagentProduce, error) {
 		return nil, err
 	}
 	return &obj, nil
+}
+
+func (d *DBSync) GetQcReagentProduces(pgidx, pgsize int, conditions string) ([]*QcReagentProduce, error) {
+	var objs []*QcReagentProduce
+	var err error
+	d.mutex.Lock()
+	defer d.mutex.Unlock()
+	_, _, qs := d.GetPagesInfo(DB_T_REGPRODUCE, pgidx, pgsize, conditions)
+	if _, err = qs.QueryRows(&objs); err != nil {
+		d.logger.LogError("Failed to list reagent products, error: ", err)
+		return nil, err
+	}
+	return objs, nil
 }
 
 func (d *DBSync) GetQcReagentModels(pgidx, pgsize int, conditions string) ([]*QcReagentModel, error) {
@@ -1051,6 +1097,36 @@ func (d *DBSync) UpdateQcHwVersion(obj *QcHwVersion) error {
 }
 
 func (d *DBSync) UpdateQcDevRel(obj *QcDevRel) error {
+	d.mutex.Lock()
+	defer d.mutex.Unlock()
+	ormer := orm.NewOrm()
+	var err error
+	obj.Updated = time.Now().Format(TIME_FMT)
+	for retry := 0; retry < RetryTime; retry++ {
+		_, err = ormer.Update(obj)
+		if err == nil {
+			return err
+		}
+	}
+	return err
+}
+
+func (d *DBSync) UpdateQcReagentProduce(obj *QcReagentProduce) error {
+	d.mutex.Lock()
+	defer d.mutex.Unlock()
+	ormer := orm.NewOrm()
+	var err error
+	obj.Updated = time.Now().Format(TIME_FMT)
+	for retry := 0; retry < RetryTime; retry++ {
+		_, err = ormer.Update(obj)
+		if err == nil {
+			return err
+		}
+	}
+	return err
+}
+
+func (d *DBSync) UpdateQcQcProduct(obj *QcQcProduct) error {
 	d.mutex.Lock()
 	defer d.mutex.Unlock()
 	ormer := orm.NewOrm()
