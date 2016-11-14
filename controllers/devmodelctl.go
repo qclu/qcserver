@@ -28,6 +28,7 @@ func (o *QcDevModelCtl) Post() {
 		o.logger.LogError("database operation err: ", err)
 		o.Data["json"] = "failed to get methodology[" + mname + "] info, err: " + err.Error()
 		o.ServeJSON()
+		return
 	}
 	var ob models.QcDevModel
 	json.Unmarshal(o.Ctx.Input.RequestBody, &ob)
@@ -37,9 +38,11 @@ func (o *QcDevModelCtl) Post() {
 		o.logger.LogError("database operation err: ", err)
 		o.Data["json"] = string("database operation err:") + err.Error()
 		o.ServeJSON()
+		return
 	}
 	o.Data["json"] = pob
 	o.ServeJSON()
+	return
 }
 
 // @router / [delete]
@@ -50,9 +53,11 @@ func (h *QcDevModelCtl) Delete() {
 		h.logger.LogError("database operation err: ", err)
 		h.Data["json"] = "database operation err: " + err.Error()
 		h.ServeJSON()
+		return
 	}
 	h.Data["json"] = "delete success"
 	h.ServeJSON()
+	return
 }
 
 // @router / [get]
@@ -63,9 +68,11 @@ func (h *QcDevModelCtl) Get() {
 		h.logger.LogError("database operation err: ", err)
 		h.Data["json"] = "database operation err: " + err.Error()
 		h.ServeJSON()
+		return
 	}
 	h.Data["json"] = devmodel
 	h.ServeJSON()
+	return
 }
 
 // @router /list [get]
@@ -77,6 +84,7 @@ func (h *QcDevModelCtl) GetList() {
 		h.logger.LogError("failed to parse 'pageidx' from request, err: ", err)
 		h.Data["json"] = "invalid parse 'pageidx' from request, err: " + err.Error()
 		h.ServeJSON()
+		return
 	}
 	pgsize_str := h.GetString("pagesize")
 	h.logger.LogInfo("pagesize: ", pgsize_str)
@@ -85,6 +93,7 @@ func (h *QcDevModelCtl) GetList() {
 		h.logger.LogError("failed to parse 'pagesize' from request, err: ", err)
 		h.Data["json"] = "invalid parse 'pagesize' from request, err: " + err.Error()
 		h.ServeJSON()
+		return
 	}
 	h.logger.LogInfo("list hospital info(pageidx: ", pgidx, ", pagesize: ", pgsize, ")")
 	devmodels, err := h.dbSync.GetQcDevmodels(pgidx, pgsize, "")
@@ -92,9 +101,14 @@ func (h *QcDevModelCtl) GetList() {
 		h.logger.LogError("database operation err: ", err)
 		h.Data["json"] = "invalid parse 'pagesize' from request, err: " + err.Error()
 		h.ServeJSON()
+		return
 	}
-	h.Data["json"] = devmodels
+	entcnt, _ := h.dbSync.GetTotalCnt(models.DB_T_DEVMODEL)
+	entcnt_str := strconv.Itoa(entcnt)
+	objs_bytes, _ := json.Marshal(devmodels)
+	h.Data["json"] = map[string]string{"totalnum": entcnt_str, "objects": string(objs_bytes)}
 	h.ServeJSON()
+	return
 }
 
 // @router / [PUT]
@@ -104,12 +118,14 @@ func (h *QcDevModelCtl) Update() {
 		h.logger.LogError("failed to parse devmodel name from request")
 		h.Data["json"] = "failed to parse devmodel name from request"
 		h.ServeJSON()
+		return
 	}
 	devmodel, err := h.dbSync.GetQcDevModel(hname)
 	if err != nil {
 		h.logger.LogError("failed to get devmodel[", hname, "] from database, err: ", err)
 		h.Data["json"] = "failed to get devmodel[" + hname + "] from database, err: " + err.Error()
 		h.ServeJSON()
+		return
 	}
 	new_name := h.GetString("name")
 	if len(new_name) > 0 {
@@ -126,6 +142,7 @@ func (h *QcDevModelCtl) Update() {
 			h.logger.LogError("failed to get methodology[", new_mth, "] info, err: ", err)
 			h.Data["json"] = "failed to get methodology[" + new_mth + "] info, err: " + err.Error()
 			h.ServeJSON()
+			return
 		}
 		devmodel.Methodology = new_mth_obj
 	}
@@ -138,7 +155,9 @@ func (h *QcDevModelCtl) Update() {
 		h.logger.LogError("failed to update devmodel[", hname, "], err: ", err)
 		h.Data["json"] = "failed to update devmodel[" + hname + "], err: " + err.Error()
 		h.ServeJSON()
+		return
 	}
 	h.Data["json"] = devmodel
 	h.ServeJSON()
+	return
 }

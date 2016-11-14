@@ -102,7 +102,10 @@ func (h *QcReagentProduceCtl) GetList() {
 		h.ServeJSON()
 		return
 	}
-	h.Data["json"] = regproduces
+	entcnt, _ := h.dbSync.GetTotalCnt(models.DB_T_REGPRODUCE)
+	entcnt_str := strconv.Itoa(entcnt)
+	objs_bytes, _ := json.Marshal(regproduces)
+	h.Data["json"] = map[string]string{"totalnum": entcnt_str, "objects": string(objs_bytes)}
 	h.ServeJSON()
 	return
 }

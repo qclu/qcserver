@@ -724,7 +724,7 @@ func main_devrel() {
 	}
 	fmt.Println("-------------------------------------------------------------------------")
 	fmt.Println("Get all departments...")
-	departments, err := dbSync.GetQcDepartments()
+	departments, err := dbSync.GetQcDepartments(0, 0, "")
 	if err != nil {
 		logger.LogError("Failed to list all hospitals, error: ", err)
 		return

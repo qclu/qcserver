@@ -28,6 +28,7 @@ func (o *QcHwVersionCtl) Post() {
 		o.logger.LogError("database operation err: ", err)
 		o.Data["json"] = "failed to get devmodel[" + dname + "] info, err: " + err.Error()
 		o.ServeJSON()
+		return
 	}
 	var hwv models.QcHwVersion
 	json.Unmarshal(o.Ctx.Input.RequestBody, &hwv)
@@ -36,9 +37,11 @@ func (o *QcHwVersionCtl) Post() {
 		o.logger.LogError("database operation err: ", err)
 		o.Data["json"] = string("database operation err:") + err.Error()
 		o.ServeJSON()
+		return
 	}
 	o.Data["json"] = pob
 	o.ServeJSON()
+	return
 }
 
 // @router / [delete]
@@ -49,9 +52,11 @@ func (h *QcHwVersionCtl) Delete() {
 		h.logger.LogError("database operation err: ", err)
 		h.Data["json"] = "database operation err: " + err.Error()
 		h.ServeJSON()
+		return
 	}
 	h.Data["json"] = "delete success"
 	h.ServeJSON()
+	return
 }
 
 // @router / [get]
@@ -62,9 +67,11 @@ func (h *QcHwVersionCtl) Get() {
 		h.logger.LogError("database operation err: ", err)
 		h.Data["json"] = "database operation err: " + err.Error()
 		h.ServeJSON()
+		return
 	}
 	h.Data["json"] = hwv
 	h.ServeJSON()
+	return
 }
 
 // @router /list [get]
@@ -76,6 +83,7 @@ func (h *QcHwVersionCtl) GetList() {
 		h.logger.LogError("failed to parse 'pageidx' from request, err: ", err)
 		h.Data["json"] = "invalid parse 'pageidx' from request, err: " + err.Error()
 		h.ServeJSON()
+		return
 	}
 	pgsize_str := h.GetString("pagesize")
 	h.logger.LogInfo("pagesize: ", pgsize_str)
@@ -84,6 +92,7 @@ func (h *QcHwVersionCtl) GetList() {
 		h.logger.LogError("failed to parse 'pagesize' from request, err: ", err)
 		h.Data["json"] = "invalid parse 'pagesize' from request, err: " + err.Error()
 		h.ServeJSON()
+		return
 	}
 	h.logger.LogInfo("list hospital info(pageidx: ", pgidx, ", pagesize: ", pgsize, ")")
 	hwvs, err := h.dbSync.GetQcHwVersions(pgidx, pgsize, "")
@@ -91,9 +100,14 @@ func (h *QcHwVersionCtl) GetList() {
 		h.logger.LogError("database operation err: ", err)
 		h.Data["json"] = "invalid parse 'pagesize' from request, err: " + err.Error()
 		h.ServeJSON()
+		return
 	}
-	h.Data["json"] = hwvs
+	entcnt, _ := h.dbSync.GetTotalCnt(models.DB_T_HWVERSION)
+	entcnt_str := strconv.Itoa(entcnt)
+	objs_bytes, _ := json.Marshal(hwvs)
+	h.Data["json"] = map[string]string{"totalnum": entcnt_str, "objects": string(objs_bytes)}
 	h.ServeJSON()
+	return
 }
 
 // @router / [PUT]
@@ -103,12 +117,14 @@ func (h *QcHwVersionCtl) Update() {
 		h.logger.LogError("failed to parse version info from request")
 		h.Data["json"] = "failed to parse version info from request"
 		h.ServeJSON()
+		return
 	}
 	hwv, err := h.dbSync.GetQcHwVersion(version)
 	if err != nil {
 		h.logger.LogError("failed to get hwversion[", version, "] from database, err: ", err)
 		h.Data["json"] = "failed to get hwversion[" + version + "] from database, err: " + err.Error()
 		h.ServeJSON()
+		return
 	}
 	new_version := h.GetString("version")
 	if len(new_version) > 0 {
@@ -125,6 +141,7 @@ func (h *QcHwVersionCtl) Update() {
 			h.logger.LogError("failed to get devmodel[", new_devmodel, "] info, err: ", err)
 			h.Data["json"] = "failed to get devmodel[" + new_devmodel + "] info, err: " + err.Error()
 			h.ServeJSON()
+			return
 		}
 		hwv.DevModel = new_devmodel_obj
 	}
@@ -133,7 +150,9 @@ func (h *QcHwVersionCtl) Update() {
 		h.logger.LogError("failed to update hwversion[", version, "], err: ", err)
 		h.Data["json"] = "failed to update hwversion[" + version + "], err: " + err.Error()
 		h.ServeJSON()
+		return
 	}
 	h.Data["json"] = hwv
 	h.ServeJSON()
+	return
 }

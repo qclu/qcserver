@@ -28,6 +28,7 @@ func (o *QcDevRelCtl) Post() {
 		o.logger.LogError("database operation err: ", err)
 		o.Data["json"] = "failed to get swversion[" + swversion_str + "] info, err: " + err.Error()
 		o.ServeJSON()
+		return
 	}
 	hospital_str := o.GetString("hospital")
 	department_str := o.GetString("department")
@@ -36,6 +37,7 @@ func (o *QcDevRelCtl) Post() {
 		o.logger.LogError("database operation err: ", err)
 		o.Data["json"] = "failed to get department[" + department_str + ":" + hospital_str + "] info, err: " + err.Error()
 		o.ServeJSON()
+		return
 	}
 	o.logger.LogInfo("department info: ", department)
 	var devrel models.QcDevRel
@@ -45,9 +47,11 @@ func (o *QcDevRelCtl) Post() {
 		o.logger.LogError("database operation err: ", err)
 		o.Data["json"] = string("database operation err:") + err.Error()
 		o.ServeJSON()
+		return
 	}
 	o.Data["json"] = pob
 	o.ServeJSON()
+	return
 }
 
 // @router / [delete]
@@ -58,9 +62,11 @@ func (h *QcDevRelCtl) Delete() {
 		h.logger.LogError("database operation err: ", err)
 		h.Data["json"] = "database operation err: " + err.Error()
 		h.ServeJSON()
+		return
 	}
 	h.Data["json"] = "delete success"
 	h.ServeJSON()
+	return
 }
 
 // @router / [get]
@@ -71,9 +77,11 @@ func (h *QcDevRelCtl) Get() {
 		h.logger.LogError("database operation err: ", err)
 		h.Data["json"] = "database operation err: " + err.Error()
 		h.ServeJSON()
+		return
 	}
 	h.Data["json"] = devrel
 	h.ServeJSON()
+	return
 }
 
 // @router /list [get]
@@ -85,6 +93,7 @@ func (h *QcDevRelCtl) GetList() {
 		h.logger.LogError("failed to parse 'pageidx' from request, err: ", err)
 		h.Data["json"] = "invalid parse 'pageidx' from request, err: " + err.Error()
 		h.ServeJSON()
+		return
 	}
 	pgsize_str := h.GetString("pagesize")
 	h.logger.LogInfo("pagesize: ", pgsize_str)
@@ -93,6 +102,7 @@ func (h *QcDevRelCtl) GetList() {
 		h.logger.LogError("failed to parse 'pagesize' from request, err: ", err)
 		h.Data["json"] = "invalid parse 'pagesize' from request, err: " + err.Error()
 		h.ServeJSON()
+		return
 	}
 	h.logger.LogInfo("list hospital info(pageidx: ", pgidx, ", pagesize: ", pgsize, ")")
 	devrels, err := h.dbSync.GetQcDevRels(pgidx, pgsize, "")
@@ -100,9 +110,14 @@ func (h *QcDevRelCtl) GetList() {
 		h.logger.LogError("database operation err: ", err)
 		h.Data["json"] = "failed to get dev rels list, err: " + err.Error()
 		h.ServeJSON()
+		return
 	}
-	h.Data["json"] = devrels
+	entcnt, _ := h.dbSync.GetTotalCnt(models.DB_T_DEVREL)
+	entcnt_str := strconv.Itoa(entcnt)
+	objs_bytes, _ := json.Marshal(devrels)
+	h.Data["json"] = map[string]string{"totalnum": entcnt_str, "objects": string(objs_bytes)}
 	h.ServeJSON()
+	return
 }
 
 // @router / [PUT]
@@ -112,12 +127,14 @@ func (h *QcDevRelCtl) Update() {
 		h.logger.LogError("failed to parse sn info from request")
 		h.Data["json"] = "failed to parse sn info from request"
 		h.ServeJSON()
+		return
 	}
 	devrel, err := h.dbSync.GetQcDevRel(sn)
 	if err != nil {
 		h.logger.LogError("failed to get devrel[sn: ", sn, "] from database, err: ", err)
 		h.Data["json"] = "failed to get devrel[sn:" + sn + "] from database, err: " + err.Error()
 		h.ServeJSON()
+		return
 	}
 	new_sn := h.GetString("sn")
 	if len(new_sn) > 0 {
@@ -138,6 +155,7 @@ func (h *QcDevRelCtl) Update() {
 			h.logger.LogError("failed to get swversion[", new_swv, "] info, err: ", err)
 			h.Data["json"] = "failed to get swversion[" + new_swv + "] info, err: " + err.Error()
 			h.ServeJSON()
+			return
 		}
 		devrel.SwVersion = new_swv_obj
 	}
@@ -149,18 +167,22 @@ func (h *QcDevRelCtl) Update() {
 			h.logger.LogError("failed to get receiver[", new_hospital, ":", new_department, "] info, err: ", err)
 			h.Data["json"] = "failed to get receiver[" + new_hospital + ":" + new_department + "] info, err: " + err.Error()
 			h.ServeJSON()
+			return
 		}
 		devrel.Receiver = new_receiver
 	} else if len(new_hospital)+len(new_department) > 0 {
 		h.Data["json"] = "hospital and department if one set must both are set"
 		h.ServeJSON()
+		return
 	}
 	err = h.dbSync.UpdateQcDevRel(devrel)
 	if err != nil {
 		h.logger.LogError("failed to update devrel[", sn, "], err: ", err)
 		h.Data["json"] = "failed to update devrel[" + sn + "], err: " + err.Error()
 		h.ServeJSON()
+		return
 	}
 	h.Data["json"] = devrel
 	h.ServeJSON()
+	return
 }

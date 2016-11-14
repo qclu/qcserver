@@ -36,9 +36,11 @@ func (o *QcHospitalCtl) Post() {
 		o.logger.LogError("database operation err: ", err)
 		o.Data["json"] = string("database operation err:") + err.Error()
 		o.ServeJSON()
+		return
 	}
 	o.Data["json"] = map[string]models.QcHospital{"Object": *pob}
 	o.ServeJSON()
+	return
 }
 
 // @router / [delete]
@@ -52,6 +54,7 @@ func (h *QcHospitalCtl) Delete() {
 	}
 	h.Data["json"] = h
 	h.ServeJSON()
+	return
 }
 
 // @router / [get]
@@ -65,6 +68,7 @@ func (h *QcHospitalCtl) Get() {
 	}
 	h.Data["json"] = hospital
 	h.ServeJSON()
+	return
 }
 
 // @router /list [get]
@@ -76,6 +80,7 @@ func (h *QcHospitalCtl) GetList() {
 		h.logger.LogError("failed to parse 'pageidx' from request, err: ", err)
 		h.Data["json"] = "invalid parse 'pageidx' from request, err: " + err.Error()
 		h.ServeJSON()
+		return
 	}
 	pgsize_str := h.GetString("pagesize")
 	h.logger.LogInfo("pagesize: ", pgsize_str)
@@ -84,6 +89,7 @@ func (h *QcHospitalCtl) GetList() {
 		h.logger.LogError("failed to parse 'pagesize' from request, err: ", err)
 		h.Data["json"] = "invalid parse 'pagesize' from request, err: " + err.Error()
 		h.ServeJSON()
+		return
 	}
 	h.logger.LogInfo("list hospital info(pageidx: ", pgidx, ", pagesize: ", pgsize, ")")
 	hospitals, err := h.dbSync.GetQcHospitals(pgidx, pgsize, "")
@@ -91,8 +97,12 @@ func (h *QcHospitalCtl) GetList() {
 		h.logger.LogError("database operation err: ", err)
 		h.Abort("501")
 	}
-	h.Data["json"] = hospitals
+	entcnt, _ := h.dbSync.GetTotalCnt(models.DB_T_HOSPITAL)
+	entcnt_str := strconv.Itoa(entcnt)
+	objs_bytes, _ := json.Marshal(hospitals)
+	h.Data["json"] = map[string]string{"totalnum": entcnt_str, "objects": string(objs_bytes)}
 	h.ServeJSON()
+	return
 }
 
 // @router / [PUT]
@@ -103,12 +113,14 @@ func (h *QcHospitalCtl) Update() {
 		h.logger.LogError("failed to parse hospital name from request")
 		h.Data["json"] = "failed to parse hospital name from request"
 		h.ServeJSON()
+		return
 	}
 	hospital, err := h.dbSync.GetQcHospital(hname)
 	if err != nil {
 		h.logger.LogError("failed to get hospital[", hname, "] from database, err: ", err)
 		h.Data["json"] = "failed to get hospital[" + hname + "] from database, err: " + err.Error()
 		h.ServeJSON()
+		return
 	}
 	new_name := h.GetString("name")
 	if len(new_name) > 0 {
@@ -127,7 +139,9 @@ func (h *QcHospitalCtl) Update() {
 		h.logger.LogError("failed to update hospital[", hname, "], err: ", err)
 		h.Data["json"] = "failed to update hospital[" + hname + "], err: " + err.Error()
 		h.ServeJSON()
+		return
 	}
 	h.Data["json"] = hospital
 	h.ServeJSON()
+	return
 }

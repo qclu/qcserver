@@ -101,6 +101,10 @@ func (h *QcQcProductCtl) GetList() {
 		h.ServeJSON()
 		return
 	}
+	entcnt, _ := h.dbSync.GetTotalCnt(models.DB_T_QCPRODUCT)
+	entcnt_str := strconv.Itoa(entcnt)
+	objs_bytes, _ := json.Marshal(qcps)
+	h.Data["json"] = map[string]string{"totalnum": entcnt_str, "objects": string(objs_bytes)}
 	h.Data["json"] = qcps
 	h.ServeJSON()
 	return

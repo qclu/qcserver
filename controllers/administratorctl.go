@@ -30,9 +30,11 @@ func (o *QcAdministratorCtl) Post() {
 		o.logger.LogError("database operation err: ", err)
 		o.Data["json"] = string("database operation err:") + err.Error()
 		o.ServeJSON()
+		return
 	}
 	o.Data["json"] = pob
 	o.ServeJSON()
+	return
 }
 
 // @router / [delete]
@@ -43,9 +45,11 @@ func (h *QcAdministratorCtl) Delete() {
 		h.logger.LogError("database operation err: ", err)
 		h.Data["json"] = "database operation err: " + err.Error()
 		h.ServeJSON()
+		return
 	}
 	h.Data["json"] = "delete success"
 	h.ServeJSON()
+	return
 }
 
 // @router / [get]
@@ -56,9 +60,11 @@ func (h *QcAdministratorCtl) Get() {
 		h.logger.LogError("database operation err: ", err)
 		h.Data["json"] = "database operation err: " + err.Error()
 		h.ServeJSON()
+		return
 	}
 	h.Data["json"] = admin
 	h.ServeJSON()
+	return
 }
 
 // @router /list [get]
@@ -70,6 +76,7 @@ func (h *QcAdministratorCtl) GetList() {
 		h.logger.LogError("failed to parse 'pageidx' from request, err: ", err)
 		h.Data["json"] = "invalid parse 'pageidx' from request, err: " + err.Error()
 		h.ServeJSON()
+		return
 	}
 	pgsize_str := h.GetString("pagesize")
 	h.logger.LogInfo("pagesize: ", pgsize_str)
@@ -78,6 +85,7 @@ func (h *QcAdministratorCtl) GetList() {
 		h.logger.LogError("failed to parse 'pagesize' from request, err: ", err)
 		h.Data["json"] = "invalid parse 'pagesize' from request, err: " + err.Error()
 		h.ServeJSON()
+		return
 	}
 	h.logger.LogInfo("list hospital info(pageidx: ", pgidx, ", pagesize: ", pgsize, ")")
 	admins, err := h.dbSync.GetQcAdmins(pgidx, pgsize, "")
@@ -85,9 +93,14 @@ func (h *QcAdministratorCtl) GetList() {
 		h.logger.LogError("database operation err: ", err)
 		h.Data["json"] = "invalid parse 'pagesize' from request, err: " + err.Error()
 		h.ServeJSON()
+		return
 	}
-	h.Data["json"] = admins
+	entcnt, _ := h.dbSync.GetTotalCnt(models.DB_T_ADMINISTRATOR)
+	entcnt_str := strconv.Itoa(entcnt)
+	objs_bytes, _ := json.Marshal(admins)
+	h.Data["json"] = map[string]string{"totalnum": entcnt_str, "objects": string(objs_bytes)}
 	h.ServeJSON()
+	return
 }
 
 // @router / [PUT]
@@ -97,12 +110,14 @@ func (h *QcAdministratorCtl) Update() {
 		h.logger.LogError("failed to parse admin name from request")
 		h.Data["json"] = "failed to parse admin name from request"
 		h.ServeJSON()
+		return
 	}
 	admin, err := h.dbSync.GetQcAdmin(hname)
 	if err != nil {
 		h.logger.LogError("failed to get admin[", hname, "] from database, err: ", err)
 		h.Data["json"] = "failed to get admin[" + hname + "] from database, err: " + err.Error()
 		h.ServeJSON()
+		return
 	}
 	new_name := h.GetString("name")
 	if len(new_name) > 0 {
@@ -119,6 +134,7 @@ func (h *QcAdministratorCtl) Update() {
 			h.logger.LogError("invalid parameter value for role, err: ", err)
 			h.Data["json"] = "invalid parameter value for role, err: " + err.Error()
 			h.ServeJSON()
+			return
 		}
 		admin.Role = new_role
 	}
@@ -127,7 +143,9 @@ func (h *QcAdministratorCtl) Update() {
 		h.logger.LogError("failed to update hospital[", hname, "], err: ", err)
 		h.Data["json"] = "failed to update hospital[" + hname + "], err: " + err.Error()
 		h.ServeJSON()
+		return
 	}
 	h.Data["json"] = admin
 	h.ServeJSON()
+	return
 }

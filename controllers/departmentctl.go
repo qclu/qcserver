@@ -5,7 +5,7 @@ import (
 	"github.com/astaxie/beego"
 	"qcserver/models"
 	"qcserver/util/log"
-	//"strconv"
+	"strconv"
 )
 
 // Operations about object
@@ -54,4 +54,106 @@ func (h *QcDepartmentCtl) Delete() {
 	}
 	h.Data["json"] = "delete success"
 	h.ServeJSON()
+}
+
+// @router / [get]
+func (h *QcDepartmentCtl) Get() {
+	hname := h.GetString("hname")
+	dname := h.GetString("dname")
+	department, err := h.dbSync.GetQcDepartment(dname, hname)
+	if err != nil {
+		h.logger.LogError("database operation err: ", err)
+		h.Data["json"] = "database operation err: " + err.Error()
+		h.ServeJSON()
+		return
+	}
+	h.Data["json"] = department
+	h.ServeJSON()
+	return
+}
+
+// @router /list [get]
+func (h *QcDepartmentCtl) GetList() {
+	pgidx_str := h.GetString("pageidx")
+	h.logger.LogInfo("pageidx: ", pgidx_str)
+	pgidx, err := strconv.Atoi(pgidx_str)
+	if err != nil {
+		h.logger.LogError("failed to parse 'pageidx' from request, err: ", err)
+		h.Data["json"] = "invalid parse 'pageidx' from request, err: " + err.Error()
+		h.ServeJSON()
+		return
+	}
+	pgsize_str := h.GetString("pagesize")
+	h.logger.LogInfo("pagesize: ", pgsize_str)
+	pgsize, err := strconv.Atoi(pgsize_str)
+	if err != nil {
+		h.logger.LogError("failed to parse 'pagesize' from request, err: ", err)
+		h.Data["json"] = "invalid parse 'pagesize' from request, err: " + err.Error()
+		h.ServeJSON()
+		return
+	}
+	h.logger.LogInfo("list hospital info(pageidx: ", pgidx, ", pagesize: ", pgsize, ")")
+	departments, err := h.dbSync.GetQcDepartments(pgidx, pgsize, "")
+	if err != nil {
+		h.logger.LogError("database operation err: ", err)
+		h.Data["json"] = "invalid parse 'pagesize' from request, err: " + err.Error()
+		h.ServeJSON()
+		return
+	}
+	entcnt, _ := h.dbSync.GetTotalCnt(models.DB_T_DEPARTMENT)
+	entcnt_str := strconv.Itoa(entcnt)
+	objs_bytes, _ := json.Marshal(departments)
+	h.Data["json"] = map[string]string{"totalnum": entcnt_str, "objects": string(objs_bytes)}
+	h.ServeJSON()
+	return
+}
+
+// @router / [PUT]
+func (h *QcDepartmentCtl) Update() {
+	hname := h.GetString("org_hname")
+	if len(hname) == 0 {
+		h.logger.LogError("failed to parse department hospital name from request")
+		h.Data["json"] = "failed to parse department hospital name from request"
+		h.ServeJSON()
+		return
+	}
+	dname := h.GetString("org_dname")
+	if len(hname) == 0 {
+		h.logger.LogError("failed to parse department name from request")
+		h.Data["json"] = "failed to parse department name from request"
+		h.ServeJSON()
+		return
+	}
+	department, err := h.dbSync.GetQcDepartment(dname, hname)
+	if err != nil {
+		h.logger.LogError("failed to get department[", hname, ":", dname, "] from database, err: ", err)
+		h.Data["json"] = "failed to get devmodel[" + hname + ":" + dname + "] from database, err: " + err.Error()
+		h.ServeJSON()
+		return
+	}
+	new_name := h.GetString("name")
+	if len(new_name) > 0 {
+		department.Name = new_name
+	}
+	new_hname := h.GetString("hospital")
+	if len(new_hname) > 0 {
+		new_hospital, err := h.dbSync.GetQcHospital(new_hname)
+		if err != nil {
+			h.logger.LogError("failed to get hospital[", new_hname, "] info, err: ", err)
+			h.Data["json"] = "failed to get hospital[" + new_hname + "] info, err: " + err.Error()
+			h.ServeJSON()
+			return
+		}
+		department.Hospital = new_hospital
+	}
+	err = h.dbSync.UpdateQcDepartment(department)
+	if err != nil {
+		h.logger.LogError("failed to update department[", hname, ":", dname, "], err: ", err)
+		h.Data["json"] = "failed to update department[" + hname + ":" + dname + "], err: " + err.Error()
+		h.ServeJSON()
+		return
+	}
+	h.Data["json"] = department
+	h.ServeJSON()
+	return
 }

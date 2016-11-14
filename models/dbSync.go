@@ -983,20 +983,6 @@ func (d *DBSync) GetQcDepartmentsWithHospital(hname string) ([]*QcDepartment, er
 	return objs, nil
 }
 
-func (d *DBSync) GetQcDepartments() ([]*QcDepartment, error) {
-	var objs []*QcDepartment
-	var err error
-	d.mutex.Lock()
-	defer d.mutex.Unlock()
-	ormer := orm.NewOrm()
-	qs := ormer.QueryTable(DB_T_DEPARTMENT)
-	if _, err = qs.All(&objs); err != nil {
-		d.logger.LogError("Failed to list all departments, error: ", err)
-		return nil, err
-	}
-	return objs, nil
-}
-
 func (d *DBSync) GetQcHospital(name string) (*QcHospital, error) {
 	params := map[string]interface{}{"Name": name}
 	var hospital QcHospital
@@ -1249,6 +1235,35 @@ func (d *DBSync) GetQcHwVersions(pgidx, pgsize int, conditions string) ([]*QcHwV
 	d.mutex.Lock()
 	defer d.mutex.Unlock()
 	_, _, qs := d.GetPagesInfo(DB_T_HWVERSION, pgidx, pgsize, conditions)
+	if _, err = qs.QueryRows(&objs); err != nil {
+		d.logger.LogError("Failed to list devmodels, error: ", err)
+		return nil, err
+	}
+	return objs, nil
+}
+
+func (d *DBSync) GetTotalCnt(table string) (int, error) {
+	d.mutex.Lock()
+	defer d.mutex.Unlock()
+	var totalcnt int
+	totalcnt = 0
+	sql := "select count(*) from " + DB_T_ADMINISTRATOR
+	o := orm.NewOrm()
+	d.logger.LogInfo(sql)
+	err := o.Raw(sql).QueryRow(&totalcnt)
+	if err != nil {
+		d.logger.LogError("Failed to get elements count from ", table, ", error: ", err)
+		return 0, err
+	}
+	return totalcnt, nil
+}
+
+func (d *DBSync) GetQcDepartments(pgidx, pgsize int, conditions string) ([]*QcDepartment, error) {
+	var objs []*QcDepartment
+	var err error
+	d.mutex.Lock()
+	defer d.mutex.Unlock()
+	_, _, qs := d.GetPagesInfo(DB_T_DEPARTMENT, pgidx, pgsize, conditions)
 	if _, err = qs.QueryRows(&objs); err != nil {
 		d.logger.LogError("Failed to list devmodels, error: ", err)
 		return nil, err

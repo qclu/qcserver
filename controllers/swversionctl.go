@@ -28,6 +28,7 @@ func (o *QcSwVersionCtl) Post() {
 		o.logger.LogError("database operation err: ", err)
 		o.Data["json"] = "failed to get hwversion[" + hwversion + "] info, err: " + err.Error()
 		o.ServeJSON()
+		return
 	}
 	var swv models.QcSwVersion
 	json.Unmarshal(o.Ctx.Input.RequestBody, &swv)
@@ -36,9 +37,11 @@ func (o *QcSwVersionCtl) Post() {
 		o.logger.LogError("database operation err: ", err)
 		o.Data["json"] = string("database operation err:") + err.Error()
 		o.ServeJSON()
+		return
 	}
 	o.Data["json"] = pob
 	o.ServeJSON()
+	return
 }
 
 // @router / [delete]
@@ -49,9 +52,12 @@ func (h *QcSwVersionCtl) Delete() {
 		h.logger.LogError("database operation err: ", err)
 		h.Data["json"] = "database operation err: " + err.Error()
 		h.ServeJSON()
+		return
 	}
 	h.Data["json"] = "delete success"
 	h.ServeJSON()
+
+	return
 }
 
 // @router / [get]
@@ -62,9 +68,11 @@ func (h *QcSwVersionCtl) Get() {
 		h.logger.LogError("database operation err: ", err)
 		h.Data["json"] = "database operation err: " + err.Error()
 		h.ServeJSON()
+		return
 	}
 	h.Data["json"] = Swv
 	h.ServeJSON()
+	return
 }
 
 // @router /list [get]
@@ -76,6 +84,7 @@ func (h *QcSwVersionCtl) GetList() {
 		h.logger.LogError("failed to parse 'pageidx' from request, err: ", err)
 		h.Data["json"] = "invalid parse 'pageidx' from request, err: " + err.Error()
 		h.ServeJSON()
+		return
 	}
 	pgsize_str := h.GetString("pagesize")
 	h.logger.LogInfo("pagesize: ", pgsize_str)
@@ -84,6 +93,7 @@ func (h *QcSwVersionCtl) GetList() {
 		h.logger.LogError("failed to parse 'pagesize' from request, err: ", err)
 		h.Data["json"] = "invalid parse 'pagesize' from request, err: " + err.Error()
 		h.ServeJSON()
+		return
 	}
 	h.logger.LogInfo("list hospital info(pageidx: ", pgidx, ", pagesize: ", pgsize, ")")
 	swvs, err := h.dbSync.GetQcSwVersions(pgidx, pgsize, "")
@@ -91,9 +101,14 @@ func (h *QcSwVersionCtl) GetList() {
 		h.logger.LogError("database operation err: ", err)
 		h.Data["json"] = "invalid parse 'pagesize' from request, err: " + err.Error()
 		h.ServeJSON()
+		return
 	}
-	h.Data["json"] = swvs
+	entcnt, _ := h.dbSync.GetTotalCnt(models.DB_T_SWVERSION)
+	entcnt_str := strconv.Itoa(entcnt)
+	objs_bytes, _ := json.Marshal(swvs)
+	h.Data["json"] = map[string]string{"totalnum": entcnt_str, "objects": string(objs_bytes)}
 	h.ServeJSON()
+	return
 }
 
 // @router / [PUT]
@@ -103,12 +118,14 @@ func (h *QcSwVersionCtl) Update() {
 		h.logger.LogError("failed to parse version info from request")
 		h.Data["json"] = "failed to parse version info from request"
 		h.ServeJSON()
+		return
 	}
 	swv, err := h.dbSync.GetQcSwVersion(version)
 	if err != nil {
 		h.logger.LogError("failed to get swversion[", version, "] from database, err: ", err)
 		h.Data["json"] = "failed to get swversion[" + version + "] from database, err: " + err.Error()
 		h.ServeJSON()
+		return
 	}
 	new_version := h.GetString("version")
 	if len(new_version) > 0 {
@@ -129,6 +146,7 @@ func (h *QcSwVersionCtl) Update() {
 			h.logger.LogError("failed to get hwversion[", new_hwv, "] info, err: ", err)
 			h.Data["json"] = "failed to get hwversion[" + new_hwv + "] info, err: " + err.Error()
 			h.ServeJSON()
+			return
 		}
 		swv.HwVersion = new_hwv_obj
 	}
@@ -137,7 +155,9 @@ func (h *QcSwVersionCtl) Update() {
 		h.logger.LogError("failed to update swversion[", version, "], err: ", err)
 		h.Data["json"] = "failed to update swversion[" + version + "], err: " + err.Error()
 		h.ServeJSON()
+		return
 	}
 	h.Data["json"] = swv
 	h.ServeJSON()
+	return
 }
