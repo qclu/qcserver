@@ -1247,7 +1247,7 @@ func (d *DBSync) GetTotalCnt(table string) (int, error) {
 	defer d.mutex.Unlock()
 	var totalcnt int
 	totalcnt = 0
-	sql := "select count(*) from " + DB_T_ADMINISTRATOR
+	sql := "select count(*) from " + table
 	o := orm.NewOrm()
 	d.logger.LogInfo(sql)
 	err := o.Raw(sql).QueryRow(&totalcnt)

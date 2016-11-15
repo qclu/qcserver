@@ -98,9 +98,10 @@ func (h *QcHospitalCtl) GetList() {
 		h.Abort("501")
 	}
 	entcnt, _ := h.dbSync.GetTotalCnt(models.DB_T_HOSPITAL)
-	entcnt_str := strconv.Itoa(entcnt)
-	objs_bytes, _ := json.Marshal(hospitals)
-	h.Data["json"] = map[string]string{"totalnum": entcnt_str, "objects": string(objs_bytes)}
+	res_data := make(map[string]interface{})
+	res_data["totalnum"] = entcnt
+	res_data["objects"] = hospitals
+	h.Data["json"] = res_data
 	h.ServeJSON()
 	return
 }

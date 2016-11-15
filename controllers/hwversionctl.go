@@ -103,9 +103,10 @@ func (h *QcHwVersionCtl) GetList() {
 		return
 	}
 	entcnt, _ := h.dbSync.GetTotalCnt(models.DB_T_HWVERSION)
-	entcnt_str := strconv.Itoa(entcnt)
-	objs_bytes, _ := json.Marshal(hwvs)
-	h.Data["json"] = map[string]string{"totalnum": entcnt_str, "objects": string(objs_bytes)}
+	res_data := make(map[string]interface{})
+	res_data["totalnum"] = entcnt
+	res_data["objects"] = hwvs
+	h.Data["json"] = res_data
 	h.ServeJSON()
 	return
 }

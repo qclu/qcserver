@@ -101,9 +101,10 @@ func (h *QcDepartmentCtl) GetList() {
 		return
 	}
 	entcnt, _ := h.dbSync.GetTotalCnt(models.DB_T_DEPARTMENT)
-	entcnt_str := strconv.Itoa(entcnt)
-	objs_bytes, _ := json.Marshal(departments)
-	h.Data["json"] = map[string]string{"totalnum": entcnt_str, "objects": string(objs_bytes)}
+	res_data := make(map[string]interface{})
+	res_data["totalnum"] = entcnt
+	res_data["objects"] = departments
+	h.Data["json"] = res_data
 	h.ServeJSON()
 	return
 }

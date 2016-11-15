@@ -55,6 +55,27 @@ func init() {
 			AllowHTTPMethods: []string{"delete"},
 			Params: nil})
 
+	beego.GlobalControllerRouter["qcserver/controllers:QcDepartmentCtl"] = append(beego.GlobalControllerRouter["qcserver/controllers:QcDepartmentCtl"],
+		beego.ControllerComments{
+			Method: "Get",
+			Router: `/`,
+			AllowHTTPMethods: []string{"get"},
+			Params: nil})
+
+	beego.GlobalControllerRouter["qcserver/controllers:QcDepartmentCtl"] = append(beego.GlobalControllerRouter["qcserver/controllers:QcDepartmentCtl"],
+		beego.ControllerComments{
+			Method: "GetList",
+			Router: `/list`,
+			AllowHTTPMethods: []string{"get"},
+			Params: nil})
+
+	beego.GlobalControllerRouter["qcserver/controllers:QcDepartmentCtl"] = append(beego.GlobalControllerRouter["qcserver/controllers:QcDepartmentCtl"],
+		beego.ControllerComments{
+			Method: "Update",
+			Router: `/`,
+			AllowHTTPMethods: []string{"PUT"},
+			Params: nil})
+
 	beego.GlobalControllerRouter["qcserver/controllers:QcDevModelCtl"] = append(beego.GlobalControllerRouter["qcserver/controllers:QcDevModelCtl"],
 		beego.ControllerComments{
 			Method: "Post",
