@@ -292,6 +292,16 @@ func (d *DBSync) InsertQcHospital(hospital *QcHospital) error {
 	return err
 }
 
+func (d *DBSync) DeleteQcHospitalSQL(name string) error {
+	d.mutex.Lock()
+	defer d.mutex.Unlock()
+	sql := "delete from " + DB_T_HOSPITAL + " where name='" + name + "'"
+	o := orm.NewOrm()
+	d.logger.LogInfo(sql)
+	_, err := o.Raw(sql).Exec()
+	return err
+}
+
 func (d *DBSync) DeleteQcMethdologySQL(name string) error {
 	d.mutex.Lock()
 	defer d.mutex.Unlock()
@@ -445,6 +455,16 @@ func (d *DBSync) DeleteQcReagentModel(obj *QcReagentModel) error {
 			return err
 		}
 	}
+	return err
+}
+
+func (d *DBSync) DeleteQcReagentRelSQL(serial string) error {
+	d.mutex.Lock()
+	defer d.mutex.Unlock()
+	sql := "delete from " + DB_T_REGREL + " where release_serial='" + serial + "'"
+	o := orm.NewOrm()
+	d.logger.LogInfo(sql)
+	_, err := o.Raw(sql).Exec()
 	return err
 }
 
@@ -823,6 +843,19 @@ func (d *DBSync) GetQcReagentProduce(serial string) (*QcReagentProduce, error) {
 	return &obj, nil
 }
 
+func (d *DBSync) GetQcReagentRels(pgidx, pgsize int, conditions string) ([]*QcReagentProduce, error) {
+	var objs []*QcReagentProduce
+	var err error
+	d.mutex.Lock()
+	defer d.mutex.Unlock()
+	_, _, qs := d.GetPagesInfo(DB_T_REGREL, pgidx, pgsize, conditions)
+	if _, err = qs.QueryRows(&objs); err != nil {
+		d.logger.LogError("Failed to list reagent release, error: ", err)
+		return nil, err
+	}
+	return objs, nil
+}
+
 func (d *DBSync) GetQcReagentProduces(pgidx, pgsize int, conditions string) ([]*QcReagentProduce, error) {
 	var objs []*QcReagentProduce
 	var err error
@@ -1113,6 +1146,21 @@ func (d *DBSync) UpdateQcReagentProduce(obj *QcReagentProduce) error {
 }
 
 func (d *DBSync) UpdateQcQcProduct(obj *QcQcProduct) error {
+	d.mutex.Lock()
+	defer d.mutex.Unlock()
+	ormer := orm.NewOrm()
+	var err error
+	obj.Updated = time.Now().Format(TIME_FMT)
+	for retry := 0; retry < RetryTime; retry++ {
+		_, err = ormer.Update(obj)
+		if err == nil {
+			return err
+		}
+	}
+	return err
+}
+
+func (d *DBSync) UpdateQcReagentRel(obj *QcReagentRel) error {
 	d.mutex.Lock()
 	defer d.mutex.Unlock()
 	ormer := orm.NewOrm()

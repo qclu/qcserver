@@ -52,7 +52,7 @@ func (h *QcHospitalCtl) Delete() {
 		h.logger.LogError("database operation err: ", err)
 		h.Abort("501")
 	}
-	h.Data["json"] = h
+	h.Data["json"] = "delete success"
 	h.ServeJSON()
 	return
 }
