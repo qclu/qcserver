@@ -55,10 +55,35 @@ func (h *QcMethodologyCtl) Delete() {
 // @router / [get]
 func (h *QcMethodologyCtl) Get() {
 	hname := h.GetString("name")
-	mt, err := h.dbSync.GetQcMethodology(hname)
-	if err != nil {
-		h.logger.LogError("database operation err: ", err)
-		h.Data["json"] = "database operation err: " + err.Error()
+	idstr := h.GetString("id")
+	var mt *models.QcMethodology
+	var err error
+	if len(hname) > 0 {
+		mt, err = h.dbSync.GetQcMethodology(hname)
+		if err != nil {
+			h.logger.LogError("database operation err: ", err)
+			h.Data["json"] = "database operation err: " + err.Error()
+			h.ServeJSON()
+			return
+		}
+	} else if len(idstr) > 0 {
+		h.logger.LogInfo("id: ", idstr)
+		id, err := strconv.Atoi(idstr)
+		if err != nil {
+			h.logger.LogError("invalid id value to get methodology")
+			h.Data["json"] = "invalid id value to get methodology"
+			h.ServeJSON()
+			return
+		}
+		mt, err = h.dbSync.GetQcMethodologyWithId(id)
+		if err != nil {
+			h.logger.LogError("database operation err: ", err)
+			h.Data["json"] = "database operation err: " + err.Error()
+			h.ServeJSON()
+			return
+		}
+	} else {
+		h.Data["json"] = "invalid parameter for methodology get"
 		h.ServeJSON()
 		return
 	}

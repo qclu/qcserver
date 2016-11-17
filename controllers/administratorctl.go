@@ -55,10 +55,35 @@ func (h *QcAdministratorCtl) Delete() {
 // @router / [get]
 func (h *QcAdministratorCtl) Get() {
 	hname := h.GetString("name")
-	admin, err := h.dbSync.GetQcAdmin(hname)
-	if err != nil {
-		h.logger.LogError("database operation err: ", err)
-		h.Data["json"] = "database operation err: " + err.Error()
+	idstr := h.GetString("id")
+	var admin *models.QcAdministrator
+	var err error
+	if len(hname) > 0 {
+		admin, err = h.dbSync.GetQcAdmin(hname)
+		if err != nil {
+			h.logger.LogError("database operation err: ", err)
+			h.Data["json"] = "database operation err: " + err.Error()
+			h.ServeJSON()
+			return
+		}
+	} else if len(idstr) > 0 {
+		h.logger.LogInfo("id: ", idstr)
+		id, err := strconv.Atoi(idstr)
+		if err != nil {
+			h.logger.LogError("invalid id value to get admin")
+			h.Data["json"] = "invalid id value to get admin"
+			h.ServeJSON()
+			return
+		}
+		admin, err = h.dbSync.GetQcAdminWithId(id)
+		if err != nil {
+			h.logger.LogError("database operation err: ", err)
+			h.Data["json"] = "database operation err: " + err.Error()
+			h.ServeJSON()
+			return
+		}
+	} else {
+		h.Data["json"] = "invalid parameter for admin get"
 		h.ServeJSON()
 		return
 	}

@@ -969,6 +969,64 @@ func (d *DBSync) GetQcDevRel(sn string) (*QcDevRel, error) {
 	return &obj, nil
 }
 
+func (d *DBSync) GetQcAdminWithId(id int) (*QcAdministrator, error) {
+	params := map[string]interface{}{"Id": id}
+	var admin QcAdministrator
+	d.mutex.Lock()
+	defer d.mutex.Unlock()
+	ormer := orm.NewOrm()
+	var err error
+	for retry := 0; retry < RetryTime; retry++ {
+		qs := ormer.QueryTable(DB_T_ADMINISTRATOR)
+		for k, v := range params {
+			qs = qs.Filter(k, v)
+		}
+		err = qs.One(&admin)
+		if err != nil {
+			if err == orm.ErrNoRows {
+				return nil, errors.New(ERR_OBJ_NOT_EXIST)
+			} else {
+				d.logger.LogWarn(err)
+				continue
+			}
+		}
+		break
+	}
+	if err != nil {
+		return nil, err
+	}
+	return &admin, nil
+}
+
+func (d *DBSync) GetQcMethodologyWithId(id int) (*QcMethodology, error) {
+	params := map[string]interface{}{"Id": id}
+	var m QcMethodology
+	d.mutex.Lock()
+	defer d.mutex.Unlock()
+	ormer := orm.NewOrm()
+	var err error
+	for retry := 0; retry < RetryTime; retry++ {
+		qs := ormer.QueryTable(DB_T_METHODOLOGY)
+		for k, v := range params {
+			qs = qs.Filter(k, v)
+		}
+		err = qs.One(&m)
+		if err != nil {
+			if err == orm.ErrNoRows {
+				return nil, errors.New(ERR_OBJ_NOT_EXIST)
+			} else {
+				d.logger.LogWarn(err)
+				continue
+			}
+		}
+		break
+	}
+	if err != nil {
+		return nil, err
+	}
+	return &m, nil
+}
+
 func (d *DBSync) GetQcMethodology(name string) (*QcMethodology, error) {
 	params := map[string]interface{}{"Name": name}
 	var m QcMethodology
