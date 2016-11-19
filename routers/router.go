@@ -68,6 +68,12 @@ func init() {
 		),
 	)
 	beego.AddNamespace(regmodelns)
+	regrelns := beego.NewNamespace("/reagentrel",
+		beego.NSInclude(
+			&controllers.QcReagentRelCtl{},
+		),
+	)
+	beego.AddNamespace(regrelns)
 	regproducens := beego.NewNamespace("/reagentproduce",
 		beego.NSInclude(
 			&controllers.QcReagentProduceCtl{},

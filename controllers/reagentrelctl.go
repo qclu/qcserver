@@ -30,17 +30,29 @@ func (o *QcReagentRelCtl) Post() {
 		o.logger.LogError("database operation err: ", err)
 		o.Data["json"] = "failed to get department[" + hname + ":" + dname + "] info, err: " + err.Error()
 		o.ServeJSON()
+		return
+	}
+	regmodelname := o.GetString("regmodel")
+	o.logger.LogInfo("regmodel: ", regmodelname)
+	regmodel, err := o.dbSync.GetQcReagentModel(regmodelname)
+	if err != nil {
+		o.logger.LogError("database operation err: ", err)
+		o.Data["json"] = "failed to get regmodel[" + regmodelname + "] info, err: " + err.Error()
+		o.ServeJSON()
+		return
 	}
 	var ob models.QcReagentRel
 	json.Unmarshal(o.Ctx.Input.RequestBody, &ob)
-	pob, err := models.CreateQcReagentRel(o.dbSync, ob.ReleaseTime, ob.ReleaseSerial, ob.CarId, ob.Annotation, department_obj)
+	pob, err := models.CreateQcReagentRel(o.dbSync, ob.ReleaseTime, ob.ReleaseSerial, ob.Annotation, ob.Amounts, regmodel, department_obj)
 	if err != nil {
 		o.logger.LogError("database operation err: ", err)
 		o.Data["json"] = string("database operation err:") + err.Error()
 		o.ServeJSON()
+		return
 	}
 	o.Data["json"] = pob
 	o.ServeJSON()
+	return
 }
 
 // @router / [delete]

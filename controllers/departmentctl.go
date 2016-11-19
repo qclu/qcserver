@@ -29,6 +29,7 @@ func (o *QcDepartmentCtl) Post() {
 		o.logger.LogError("database operation err: ", err)
 		o.Data["json"] = "failed to get hospital[" + hname + "] info, err: " + err.Error()
 		o.ServeJSON()
+		return
 	}
 	var ob models.QcDepartment
 	json.Unmarshal(o.Ctx.Input.RequestBody, &ob)
@@ -38,9 +39,11 @@ func (o *QcDepartmentCtl) Post() {
 		o.logger.LogError("database operation err: ", err)
 		o.Data["json"] = string("database operation err:") + err.Error()
 		o.ServeJSON()
+		return
 	}
 	o.Data["json"] = pob
 	o.ServeJSON()
+	return
 }
 
 // @router / [delete]
