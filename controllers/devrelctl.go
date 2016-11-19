@@ -222,7 +222,7 @@ func (h *QcDevRelCtl) Update() {
 	new_hospital := h.GetString("hospital")
 	new_department := h.GetString("department")
 	if len(new_hospital) > 0 && len(new_department) > 0 {
-		new_receiver, err := h.dbSync.GetQcDepartment(new_hospital, new_department)
+		new_receiver, err := h.dbSync.GetQcDepartment(new_department, new_hospital)
 		if err != nil {
 			h.logger.LogError("failed to get receiver[", new_hospital, ":", new_department, "] info, err: ", err)
 			h.Data["json"] = "failed to get receiver[" + new_hospital + ":" + new_department + "] info, err: " + err.Error()
