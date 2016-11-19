@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"encoding/json"
+	"fmt"
 	"github.com/astaxie/beego"
 	"qcserver/models"
 	"qcserver/util/log"
@@ -131,6 +132,7 @@ func (h *QcMethodologyCtl) GetList() {
 // @router / [PUT]
 func (h *QcMethodologyCtl) Update() {
 	idstr := h.GetString("id")
+	fmt.Println(h.Ctx.Request.RequestURI)
 	if len(idstr) == 0 {
 		h.logger.LogError("failed to parse admin id from request")
 		h.Data["json"] = "failed to parse admin id from request"
@@ -146,6 +148,7 @@ func (h *QcMethodologyCtl) Update() {
 		return
 	}
 	new_name := h.GetString("name")
+	fmt.Println(new_name)
 	if len(new_name) > 0 {
 		mth.Name = new_name
 	}

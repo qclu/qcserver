@@ -166,8 +166,6 @@ Administrator
 				pageidx <=0 时，默认为0
 	pagesize: 	每页的item数量
 				pagesize <=0 时，获取全部的items
-	hospitalid:		医院id
-		curl -X  GET  127.0.0.1:8088/department/list?pageidx=0\&pagesize=0\&hospitalid=2
 	a) 	CURL:
 		curl -X GET 127.0.0.1:8088/administrator/list?pageidx=0\&pagesize=3
 		Result:
@@ -1050,3 +1048,8 @@ QcReagentRel
 				2. startdate/enddate 	c出厂日期
 				3. hospitalid 		医院id
 				4. departmentid		科室id
+				
+				
+QcDepartment
+	根据hospitalid list		医院id
+		curl -X  GET  127.0.0.1:8088/department/list?pageidx=0\&pagesize=0\&hospitalid=2

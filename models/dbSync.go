@@ -185,10 +185,10 @@ func (d *DBSync) GetQcDevRelsCond(pgid, pgsize, devid, serial, startdate, enddat
 		fromsql += " and a.sn = '" + serial + "'"
 	}
 	if len(startdate) > 0 {
-		fromsql += " and STR_TO_DATE(a.date, '%Y-%m-%d %H:%i:%s') >= STR_TO_DATE(" + startdate + ") "
+		fromsql += " and STR_TO_DATE(a.date, '%Y-%m-%d %H:%i:%s') >= STR_TO_DATE('" + startdate + "', '%Y-%m-%d %H:%i:%s') "
 	}
 	if len(enddate) > 0 {
-		fromsql += " and STR_TO_DATE(a.date, '%Y-%m-%d %H:%i:%s') <= STR_TO_DATE(" + enddate + ") "
+		fromsql += " and STR_TO_DATE(a.date, '%Y-%m-%d %H:%i:%s') <= STR_TO_DATE('" + enddate + "', '%Y-%m-%d %H:%i:%s') "
 	}
 	if len(departmentid) > 0 {
 		fromsql += " and a.receiver_id=" + departmentid
