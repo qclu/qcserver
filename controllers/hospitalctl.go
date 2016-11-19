@@ -45,12 +45,20 @@ func (o *QcHospitalCtl) Post() {
 
 // @router / [delete]
 func (h *QcHospitalCtl) Delete() {
-	hname := h.GetString("name")
-	h.logger.LogInfo("delete hospital info, name: ", hname)
-	err := models.DeleteQcHospital(h.dbSync, hname)
+	idstr := h.GetString("id")
+	_, err := strconv.Atoi(idstr)
+	if err != nil {
+		h.logger.LogError("invalid id value to delete hospital")
+		h.Data["json"] = "invalid id value to delete hospital"
+		h.ServeJSON()
+		return
+	}
+	err = h.dbSync.DeleteQcHospitalSQL(idstr)
 	if err != nil {
 		h.logger.LogError("database operation err: ", err)
-		h.Abort("501")
+		h.Data["json"] = "internal database operation error"
+		h.ServeJSON()
+		return
 	}
 	h.Data["json"] = "delete success"
 	h.ServeJSON()

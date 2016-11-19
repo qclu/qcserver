@@ -466,10 +466,10 @@ func (d *DBSync) InsertQcHospital(hospital *QcHospital) error {
 	return err
 }
 
-func (d *DBSync) DeleteQcHospitalSQL(name string) error {
+func (d *DBSync) DeleteQcHospitalSQL(id string) error {
 	d.mutex.Lock()
 	defer d.mutex.Unlock()
-	sql := "delete from " + DB_T_HOSPITAL + " where name='" + name + "'"
+	sql := "delete from " + DB_T_HOSPITAL + " where id=" + id
 	o := orm.NewOrm()
 	d.logger.LogInfo(sql)
 	_, err := o.Raw(sql).Exec()
