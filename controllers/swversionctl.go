@@ -63,14 +63,38 @@ func (h *QcSwVersionCtl) Delete() {
 // @router / [get]
 func (h *QcSwVersionCtl) Get() {
 	version := h.GetString("version")
-	Swv, err := h.dbSync.GetQcSwVersion(version)
-	if err != nil {
-		h.logger.LogError("database operation err: ", err)
-		h.Data["json"] = "database operation err: " + err.Error()
+	idstr := h.GetString("id")
+	var swv *models.QcSwVersion
+	var err error
+	if len(version) > 0 {
+		swv, err = h.dbSync.GetQcSwVersion(version)
+		if err != nil {
+			h.logger.LogError("database operation err: ", err)
+			h.Data["json"] = "database operation err: " + err.Error()
+			h.ServeJSON()
+			return
+		}
+	} else if len(idstr) > 0 {
+		id, err := strconv.Atoi(idstr)
+		if err != nil {
+			h.logger.LogError("invalid id value to get software version")
+			h.Data["json"] = "invalid id value to get software version"
+			h.ServeJSON()
+			return
+		}
+		swv, err = h.dbSync.GetQcSwVersionWithId(id)
+		if err != nil {
+			h.logger.LogError("database operation err: ", err)
+			h.Data["json"] = "database operation err: " + err.Error()
+			h.ServeJSON()
+			return
+		}
+	} else {
+		h.Data["json"] = "invalid parameter for software version get"
 		h.ServeJSON()
 		return
 	}
-	h.Data["json"] = Swv
+	h.Data["json"] = swv
 	h.ServeJSON()
 	return
 }

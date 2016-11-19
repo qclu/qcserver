@@ -62,10 +62,34 @@ func (h *QcReagentProduceCtl) Delete() {
 // @router / [get]
 func (h *QcReagentProduceCtl) Get() {
 	serial := h.GetString("serialnum")
-	regproduce, err := h.dbSync.GetQcReagentProduce(serial)
-	if err != nil {
-		h.logger.LogError("database operation err: ", err)
-		h.Data["json"] = "database operation err: " + err.Error()
+	idstr := h.GetString("id")
+	var regproduce *models.QcReagentProduce
+	var err error
+	if len(serial) > 0 {
+		regproduce, err = h.dbSync.GetQcReagentProduce(serial)
+		if err != nil {
+			h.logger.LogError("database operation err: ", err)
+			h.Data["json"] = "database operation err: " + err.Error()
+			h.ServeJSON()
+			return
+		}
+	} else if len(idstr) > 0 {
+		id, err := strconv.Atoi(idstr)
+		if err != nil {
+			h.logger.LogError("invalid id value to get reagent produce")
+			h.Data["json"] = "invalid id value to get reagent produce"
+			h.ServeJSON()
+			return
+		}
+		regproduce, err = h.dbSync.GetQcReagentProduceWithId(id)
+		if err != nil {
+			h.logger.LogError("database operation err: ", err)
+			h.Data["json"] = "database operation err: " + err.Error()
+			h.ServeJSON()
+			return
+		}
+	} else {
+		h.Data["json"] = "invalid parameter for reagent produce get"
 		h.ServeJSON()
 		return
 	}

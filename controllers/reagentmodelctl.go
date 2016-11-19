@@ -62,10 +62,34 @@ func (h *QcReagentModelCtl) Delete() {
 // @router / [get]
 func (h *QcReagentModelCtl) Get() {
 	hname := h.GetString("name")
-	regmodel, err := h.dbSync.GetQcReagentModel(hname)
-	if err != nil {
-		h.logger.LogError("database operation err: ", err)
-		h.Data["json"] = "database operation err: " + err.Error()
+	idstr := h.GetString("id")
+	var regmodel *models.QcReagentModel
+	var err error
+	if len(hname) > 0 {
+		regmodel, err = h.dbSync.GetQcReagentModel(hname)
+		if err != nil {
+			h.logger.LogError("database operation err: ", err)
+			h.Data["json"] = "database operation err: " + err.Error()
+			h.ServeJSON()
+			return
+		}
+	} else if len(idstr) > 0 {
+		id, err := strconv.Atoi(idstr)
+		if err != nil {
+			h.logger.LogError("invalid id value to get reagent model")
+			h.Data["json"] = "invalid id value to get reagent model"
+			h.ServeJSON()
+			return
+		}
+		regmodel, err = h.dbSync.GetQcReagentModelWithId(id)
+		if err != nil {
+			h.logger.LogError("database operation err: ", err)
+			h.Data["json"] = "database operation err: " + err.Error()
+			h.ServeJSON()
+			return
+		}
+	} else {
+		h.Data["json"] = "invalid parameter for reagent model get"
 		h.ServeJSON()
 		return
 	}

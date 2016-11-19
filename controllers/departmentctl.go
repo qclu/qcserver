@@ -60,10 +60,34 @@ func (h *QcDepartmentCtl) Delete() {
 func (h *QcDepartmentCtl) Get() {
 	hname := h.GetString("hname")
 	dname := h.GetString("dname")
-	department, err := h.dbSync.GetQcDepartment(dname, hname)
-	if err != nil {
-		h.logger.LogError("database operation err: ", err)
-		h.Data["json"] = "database operation err: " + err.Error()
+	idstr := h.GetString("id")
+	var department *models.QcDepartment
+	var err error
+	if len(hname) > 0 && len(dname) > 0 {
+		department, err = h.dbSync.GetQcDepartment(dname, hname)
+		if err != nil {
+			h.logger.LogError("database operation err: ", err)
+			h.Data["json"] = "database operation err: " + err.Error()
+			h.ServeJSON()
+			return
+		}
+	} else if len(idstr) > 0 {
+		id, err := strconv.Atoi(idstr)
+		if err != nil {
+			h.logger.LogError("invalid id value to get department")
+			h.Data["json"] = "invalid id value to get department"
+			h.ServeJSON()
+			return
+		}
+		department, err = h.dbSync.GetQcDepartmentWithId(id)
+		if err != nil {
+			h.logger.LogError("database operation err: ", err)
+			h.Data["json"] = "database operation err: " + err.Error()
+			h.ServeJSON()
+			return
+		}
+	} else {
+		h.Data["json"] = "invalid parameter for department get"
 		h.ServeJSON()
 		return
 	}

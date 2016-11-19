@@ -72,10 +72,34 @@ func (h *QcDevRelCtl) Delete() {
 // @router / [get]
 func (h *QcDevRelCtl) Get() {
 	sn := h.GetString("sn")
-	devrel, err := h.dbSync.GetQcDevRel(sn)
-	if err != nil {
-		h.logger.LogError("database operation err: ", err)
-		h.Data["json"] = "database operation err: " + err.Error()
+	idstr := h.GetString("id")
+	var devrel *models.QcDevRel
+	var err error
+	if len(sn) > 0 {
+		devrel, err = h.dbSync.GetQcDevRel(sn)
+		if err != nil {
+			h.logger.LogError("database operation err: ", err)
+			h.Data["json"] = "database operation err: " + err.Error()
+			h.ServeJSON()
+			return
+		}
+	} else if len(idstr) > 0 {
+		id, err := strconv.Atoi(idstr)
+		if err != nil {
+			h.logger.LogError("invalid id value to get devrel")
+			h.Data["json"] = "invalid id value to get devrel"
+			h.ServeJSON()
+			return
+		}
+		devrel, err = h.dbSync.GetQcDevRelWithId(id)
+		if err != nil {
+			h.logger.LogError("database operation err: ", err)
+			h.Data["json"] = "database operation err: " + err.Error()
+			h.ServeJSON()
+			return
+		}
+	} else {
+		h.Data["json"] = "invalid parameter for devrel get"
 		h.ServeJSON()
 		return
 	}

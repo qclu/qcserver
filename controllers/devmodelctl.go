@@ -63,12 +63,37 @@ func (h *QcDevModelCtl) Delete() {
 // @router / [get]
 func (h *QcDevModelCtl) Get() {
 	hname := h.GetString("name")
-	devmodel, err := h.dbSync.GetQcDevmodel(hname)
-	if err != nil {
-		h.logger.LogError("database operation err: ", err)
-		h.Data["json"] = "database operation err: " + err.Error()
+	idstr := h.GetString("id")
+	var devmodel *models.QcDevModel
+	var err error
+	if len(hname) > 0 {
+		devmodel, err = h.dbSync.GetQcDevmodel(hname)
+		if err != nil {
+			h.logger.LogError("database operation err: ", err)
+			h.Data["json"] = "database operation err: " + err.Error()
+			h.ServeJSON()
+			return
+		}
+	} else if len(idstr) > 0 {
+		id, err := strconv.Atoi(idstr)
+		if err != nil {
+			h.logger.LogError("invalid id value to get devmodel")
+			h.Data["json"] = "invalid id value to get devmodel"
+			h.ServeJSON()
+			return
+		}
+		devmodel, err = h.dbSync.GetQcDevmodelWithId(id)
+		if err != nil {
+			h.logger.LogError("database operation err: ", err)
+			h.Data["json"] = "database operation err: " + err.Error()
+			h.ServeJSON()
+			return
+		}
+	} else {
+		h.Data["json"] = "invalid parameter for devmodel get"
 		h.ServeJSON()
 		return
+
 	}
 	h.Data["json"] = devmodel
 	h.ServeJSON()

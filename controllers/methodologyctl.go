@@ -67,7 +67,6 @@ func (h *QcMethodologyCtl) Get() {
 			return
 		}
 	} else if len(idstr) > 0 {
-		h.logger.LogInfo("id: ", idstr)
 		id, err := strconv.Atoi(idstr)
 		if err != nil {
 			h.logger.LogError("invalid id value to get methodology")

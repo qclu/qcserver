@@ -60,11 +60,34 @@ func (h *QcHospitalCtl) Delete() {
 // @router / [get]
 func (h *QcHospitalCtl) Get() {
 	hname := h.GetString("name")
-	h.logger.LogInfo("get hospital info, name: ", hname)
-	hospital, err := h.dbSync.GetQcHospital(hname)
-	if err != nil {
-		h.logger.LogError("database operation err: ", err)
-		h.Abort("501")
+	idstr := h.GetString("id")
+	var hospital *models.QcHospital
+	var err error
+	if len(hname) > 0 {
+		hospital, err = h.dbSync.GetQcHospital(hname)
+		if err != nil {
+			h.logger.LogError("database operation err: ", err)
+			h.Abort("501")
+		}
+	} else if len(idstr) > 0 {
+		id, err := strconv.Atoi(idstr)
+		if err != nil {
+			h.logger.LogError("invalid id value to get hospital")
+			h.Data["json"] = "invalid id value to get hospital"
+			h.ServeJSON()
+			return
+		}
+		hospital, err = h.dbSync.GetQcHospitalWithId(id)
+		if err != nil {
+			h.logger.LogError("database operation err: ", err)
+			h.Data["json"] = "database operation err: " + err.Error()
+			h.ServeJSON()
+			return
+		}
+	} else {
+		h.Data["json"] = "invalid parameter for hospital get"
+		h.ServeJSON()
+		return
 	}
 	h.Data["json"] = hospital
 	h.ServeJSON()

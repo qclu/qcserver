@@ -62,13 +62,38 @@ func (h *QcHwVersionCtl) Delete() {
 // @router / [get]
 func (h *QcHwVersionCtl) Get() {
 	version := h.GetString("version")
-	hwv, err := h.dbSync.GetQcHwVersion(version)
-	if err != nil {
-		h.logger.LogError("database operation err: ", err)
-		h.Data["json"] = "database operation err: " + err.Error()
+	idstr := h.GetString("id")
+	var hwv *models.QcHwVersion
+	var err error
+	if len(version) > 0 {
+		hwv, err = h.dbSync.GetQcHwVersion(version)
+		if err != nil {
+			h.logger.LogError("database operation err: ", err)
+			h.Data["json"] = "database operation err: " + err.Error()
+			h.ServeJSON()
+			return
+		}
+	} else if len(idstr) > 0 {
+		id, err := strconv.Atoi(idstr)
+		if err != nil {
+			h.logger.LogError("invalid id value to get hardware version")
+			h.Data["json"] = "invalid id value to get hardware version"
+			h.ServeJSON()
+			return
+		}
+		hwv, err = h.dbSync.GetQcHwVersionWithId(id)
+		if err != nil {
+			h.logger.LogError("database operation err: ", err)
+			h.Data["json"] = "database operation err: " + err.Error()
+			h.ServeJSON()
+			return
+		}
+	} else {
+		h.Data["json"] = "invalid parameter for hardware version get"
 		h.ServeJSON()
 		return
 	}
+
 	h.Data["json"] = hwv
 	h.ServeJSON()
 	return

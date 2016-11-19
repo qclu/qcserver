@@ -62,10 +62,34 @@ func (h *QcQcProductCtl) Delete() {
 // @router / [get]
 func (h *QcQcProductCtl) Get() {
 	hname := h.GetString("name")
-	qcp, err := h.dbSync.GetQcQcProduct(hname)
-	if err != nil {
-		h.logger.LogError("database operation err: ", err)
-		h.Data["json"] = "database operation err: " + err.Error()
+	idstr := h.GetString("id")
+	var qcp *models.QcQcProduct
+	var err error
+	if len(hname) > 0 {
+		qcp, err = h.dbSync.GetQcQcProduct(hname)
+		if err != nil {
+			h.logger.LogError("database operation err: ", err)
+			h.Data["json"] = "database operation err: " + err.Error()
+			h.ServeJSON()
+			return
+		}
+	} else if len(idstr) > 0 {
+		id, err := strconv.Atoi(idstr)
+		if err != nil {
+			h.logger.LogError("invalid id value to get qcproduct")
+			h.Data["json"] = "invalid id value to get qcproduct"
+			h.ServeJSON()
+			return
+		}
+		qcp, err = h.dbSync.GetQcQcProductWithId(id)
+		if err != nil {
+			h.logger.LogError("database operation err: ", err)
+			h.Data["json"] = "database operation err: " + err.Error()
+			h.ServeJSON()
+			return
+		}
+	} else {
+		h.Data["json"] = "invalid parameter for qcproduct get"
 		h.ServeJSON()
 		return
 	}

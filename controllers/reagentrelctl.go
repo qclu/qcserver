@@ -58,10 +58,34 @@ func (h *QcReagentRelCtl) Delete() {
 // @router / [get]
 func (h *QcReagentRelCtl) Get() {
 	serial := h.GetString("serial")
-	regrel, err := h.dbSync.GetQcReagentRel(serial)
-	if err != nil {
-		h.logger.LogError("database operation err: ", err)
-		h.Data["json"] = "database operation err: " + err.Error()
+	idstr := h.GetString("id")
+	var regrel *models.QcReagentRel
+	var err error
+	if len(serial) > 0 {
+		regrel, err = h.dbSync.GetQcReagentRel(serial)
+		if err != nil {
+			h.logger.LogError("database operation err: ", err)
+			h.Data["json"] = "database operation err: " + err.Error()
+			h.ServeJSON()
+			return
+		}
+	} else if len(idstr) > 0 {
+		id, err := strconv.Atoi(idstr)
+		if err != nil {
+			h.logger.LogError("invalid id value to get reagent rel")
+			h.Data["json"] = "invalid id value to get reagent rel"
+			h.ServeJSON()
+			return
+		}
+		regrel, err = h.dbSync.GetQcReagentRelWithId(id)
+		if err != nil {
+			h.logger.LogError("database operation err: ", err)
+			h.Data["json"] = "database operation err: " + err.Error()
+			h.ServeJSON()
+			return
+		}
+	} else {
+		h.Data["json"] = "invalid parameter for reagentrel get"
 		h.ServeJSON()
 		return
 	}
