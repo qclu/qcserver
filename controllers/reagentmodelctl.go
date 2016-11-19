@@ -118,8 +118,19 @@ func (h *QcReagentModelCtl) GetList() {
 		h.ServeJSON()
 		return
 	}
-	h.logger.LogInfo("list hospital info(pageidx: ", pgidx, ", pagesize: ", pgsize, ")")
-	regmodels, err := h.dbSync.GetQcReagentModels(pgidx, pgsize, "")
+	h.logger.LogInfo("list regmodel info(pageidx: ", pgidx, ", pagesize: ", pgsize, ")")
+	devmodelid_str := h.GetString("devmodelid")
+	if len(devmodelid_str) > 0 {
+		_, err = strconv.Atoi(devmodelid_str)
+		if err != nil {
+			h.logger.LogError("failed to parse 'devmodelid' from request, err: ", err)
+			h.Data["json"] = "invalid value for 'devmodel' from request, err: " + err.Error()
+			h.ServeJSON()
+			return
+		}
+	}
+	name := h.GetString("name")
+	regmodels, err := h.dbSync.GetQcReagentModelsCond(pgidx_str, pgsize_str, devmodelid_str, name)
 	if err != nil {
 		h.logger.LogError("database operation err: ", err)
 		h.Data["json"] = "failed to get reagent models, err: " + err.Error()

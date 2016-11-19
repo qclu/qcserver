@@ -72,6 +72,36 @@ func NewDBSync(dbDriver, dbDataSource string) (*DBSync, error) {
 	return &DBSync{logger: logger}, nil
 }
 
+func (d *DBSync) GetQcReagentModelsCond(pgid, pgsize, devid, name string) ([]*QcReagentModel, error) {
+	currentpage, _ := strconv.Atoi(pgid)
+	if currentpage <= 0 {
+		currentpage = 0
+	}
+	pagesize, _ := strconv.Atoi(pgsize)
+	var rs orm.RawSeter
+	o := orm.NewOrm()
+	fromsql := " FROM " + DB_T_REGMODEL + " as a where 1>0 "
+	if len(devid) > 0 {
+		fromsql += " and a.dev_model_id=" + devid
+	}
+	if len(name) > 0 {
+		fromsql += " and a.name = '" + name + "'"
+	}
+	var regmodels []*QcReagentModel
+	selsql := "select * "
+	var limitsql string = ""
+	if pagesize > 0 {
+		limitsql = " limit " + con.Itoa((currentpage)*pagesize) + "," + con.Itoa(pagesize)
+	}
+	rs = o.Raw(selsql + fromsql + limitsql)
+	dbSync.logger.LogInfo("Exec Sql: ", selsql+fromsql+limitsql)
+	var err error
+	if _, err = rs.QueryRows(&regmodels); err != nil {
+		d.logger.LogError("Failed to list regmodels, err:", err)
+	}
+	return regmodels, err
+}
+
 func (d *DBSync) GetQcDevRelsCond(pgid, pgsize, devid, serial, startdate, enddate, departmentid, hospitalid string) ([]*QcDevRel, error) {
 	currentpage, _ := strconv.Atoi(pgid)
 	if currentpage <= 0 {

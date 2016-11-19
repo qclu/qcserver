@@ -840,6 +840,12 @@ ReagentModel
 		  "Updated": "2016-11-14 00:12:17"
 		}
 	4. 列表
+	params:
+		name 			试剂模型名称
+		devmodel 		仪器型号id
+		如：
+		curl -X  GET  127.0.0.1:8088/reagentmodel/list?pageidx=0\&pagesize=0\&devmodelid=4
+		curl -X  GET  127.0.0.1:8088/reagentmodel/list?pageidx=0\&pagesize=0\&devmodelid=4\&name=regmodel1
 	CURL:
 		curl -X  GET  127.0.0.1:8088/reagentmodel/list?pageidx=1\&pagesize=2
 	Result:
