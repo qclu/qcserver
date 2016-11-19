@@ -695,6 +695,14 @@ DevRel
 		  "Updated": "2016-11-13 22:57:59"
 		}
 	4. 列表
+	param:
+		devid					仪器型号id
+		serial 					出厂序列号
+		startdate/enddate		起止日期，格式“2016-11-19 18:15:30”，可以没有后面的时分秒信息
+		departmentid			科室id
+		hospitalid				医院id
+		如：
+		curl -X  GET  127.0.0.1:8088/devrel/list?pageidx=0\&pagesize=0\&hospitalid=1
 	CURL:
 		curl -X  GET  127.0.0.1:8088/devrel/list?pageidx=1\&pagesize=2
 	Result:

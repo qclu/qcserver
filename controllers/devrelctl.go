@@ -129,7 +129,41 @@ func (h *QcDevRelCtl) GetList() {
 		return
 	}
 	h.logger.LogInfo("list hospital info(pageidx: ", pgidx, ", pagesize: ", pgsize, ")")
-	devrels, err := h.dbSync.GetQcDevRels(pgidx, pgsize, "")
+	devid_str := h.GetString("devid")
+	if len(devid_str) > 0 {
+		_, err = strconv.Atoi(devid_str)
+		if err != nil {
+			h.logger.LogError("failed to parse 'devid' from request, err: ", err)
+			h.Data["json"] = "invalid value for 'devid' from request, err: " + err.Error()
+			h.ServeJSON()
+			return
+		}
+	}
+	serial := h.GetString("serial")
+	start_date := h.GetString("startdate")
+	end_date := h.GetString("enddate")
+	departmentid_str := h.GetString("departmentid")
+	if len(departmentid_str) > 0 {
+		_, err = strconv.Atoi(departmentid_str)
+		if err != nil {
+			h.logger.LogError("failed to parse 'departmentid' from request, err: ", err)
+			h.Data["json"] = "invalid value for 'departmentid' from request, err: " + err.Error()
+			h.ServeJSON()
+			return
+		}
+	}
+	hid_str := h.GetString("hospitalid")
+	if len(hid_str) > 0 {
+		_, err = strconv.Atoi(hid_str)
+		if err != nil {
+			h.logger.LogError("failed to parse 'hospitalid' from request, err: ", err)
+			h.Data["json"] = "invalid value for 'hospitalid' from request, err: " + err.Error()
+			h.ServeJSON()
+			return
+		}
+	}
+
+	devrels, err := h.dbSync.GetQcDevRelsCond(pgidx_str, pgsize_str, devid_str, serial, start_date, end_date, departmentid_str, hid_str)
 	if err != nil {
 		h.logger.LogError("database operation err: ", err)
 		h.Data["json"] = "failed to get dev rels list, err: " + err.Error()

@@ -72,6 +72,49 @@ func NewDBSync(dbDriver, dbDataSource string) (*DBSync, error) {
 	return &DBSync{logger: logger}, nil
 }
 
+func (d *DBSync) GetQcDevRelsCond(pgid, pgsize, devid, serial, startdate, enddate, departmentid, hospitalid string) ([]*QcDevRel, error) {
+	currentpage, _ := strconv.Atoi(pgid)
+	if currentpage <= 0 {
+		currentpage = 0
+	}
+	pagesize, _ := strconv.Atoi(pgsize)
+	var rs orm.RawSeter
+	o := orm.NewOrm()
+	//select * from qc_dev_rel as a left join qc_sw_version as b on a.sw_version_id=b.id left join qc_hw_version as c on b.hw_version_id=c.id where c.dev_model_id=6;
+	fromsql := " FROM " + DB_T_DEVREL + " as a left join " + DB_T_SWVERSION + " as b on " + "a.sw_version_id=b.id left join  " + DB_T_HWVERSION + " as c on b.hw_version_id=c.id left join " + DB_T_DEPARTMENT + " as d on a.receiver_id=d.id where 1>0 "
+	if len(devid) > 0 {
+		fromsql += " and c.dev_model_id=" + devid
+	}
+	if len(serial) > 0 {
+		fromsql += " and a.sn = '" + serial + "'"
+	}
+	if len(startdate) > 0 {
+		fromsql += " and STR_TO_DATE(a.date, '%Y-%m-%d %H:%i:%s') >= STR_TO_DATE(" + startdate + ") "
+	}
+	if len(enddate) > 0 {
+		fromsql += " and STR_TO_DATE(a.date, '%Y-%m-%d %H:%i:%s') <= STR_TO_DATE(" + enddate + ") "
+	}
+	if len(departmentid) > 0 {
+		fromsql += " and a.receiver_id=" + departmentid
+	}
+	if len(hospitalid) > 0 {
+		fromsql += " and d.hospital_id=" + hospitalid
+	}
+	var devrels []*QcDevRel
+	selsql := "select * "
+	var limitsql string = ""
+	if pagesize > 0 {
+		limitsql = " limit " + con.Itoa((currentpage)*pagesize) + "," + con.Itoa(pagesize)
+	}
+	rs = o.Raw(selsql + fromsql + limitsql)
+	dbSync.logger.LogInfo("Exec Sql: ", selsql+fromsql+limitsql)
+	var err error
+	if _, err = rs.QueryRows(&devrels); err != nil {
+		d.logger.LogError("Failed to list devrels, err:", err)
+	}
+	return devrels, err
+}
+
 func (d *DBSync) GetQcSwVersionsCond(pgid, pgsize, devid, hwvid, version string) ([]*QcSwVersion, error) {
 	currentpage, _ := strconv.Atoi(pgid)
 	if currentpage <= 0 {
