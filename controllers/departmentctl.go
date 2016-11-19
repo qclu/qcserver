@@ -58,7 +58,7 @@ func (h *QcDepartmentCtl) Delete() {
 			return
 		}
 	}
-	err := h.dbSync.DeleteQcDepartmentSQL(idstr)
+	err := h.dbSync.DeleteQcObjectSQL(idstr, models.DB_T_DEPARTMENT)
 	if err != nil {
 		h.logger.LogError("database operation err: ", err)
 		h.Data["json"] = "database operation err: " + err.Error()

@@ -46,8 +46,8 @@ func (o *QcQcProductCtl) Post() {
 
 // @router / [delete]
 func (h *QcQcProductCtl) Delete() {
-	hname := h.GetString("name")
-	err := h.dbSync.DeleteQcQcProductSQL(hname)
+	idstr := h.GetString("id")
+	err := h.dbSync.DeleteQcObjectSQL(idstr, models.DB_T_QCPRODUCT)
 	if err != nil {
 		h.logger.LogError("database operation err: ", err)
 		h.Data["json"] = "database operation err: " + err.Error()

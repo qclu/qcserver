@@ -486,10 +486,20 @@ func (d *DBSync) DeleteQcMethdologySQL(name string) error {
 	return err
 }
 
-func (d *DBSync) DeleteQcAdminSQL(username string) error {
+func (d *DBSync) DeleteQcObjectSQL(id, table string) error {
 	d.mutex.Lock()
 	defer d.mutex.Unlock()
-	sql := "delete from " + DB_T_ADMINISTRATOR + " where username='" + username + "'"
+	sql := "delete from " + table + " where id=" + id
+	o := orm.NewOrm()
+	d.logger.LogInfo(sql)
+	_, err := o.Raw(sql).Exec()
+	return err
+}
+
+func (d *DBSync) DeleteQcAdminSQL(id string) error {
+	d.mutex.Lock()
+	defer d.mutex.Unlock()
+	sql := "delete from " + DB_T_ADMINISTRATOR + " where id=" + id
 	o := orm.NewOrm()
 	d.logger.LogInfo(sql)
 	_, err := o.Raw(sql).Exec()
@@ -727,17 +737,6 @@ func (d *DBSync) DeleteQcMethdology(m *QcMethodology) error {
 			return err
 		}
 	}
-	return err
-}
-
-func (d *DBSync) DeleteQcDepartmentSQL(id string) error {
-	d.mutex.Lock()
-	defer d.mutex.Unlock()
-	sql := "delete from " + DB_T_DEPARTMENT + " where id=" + id
-	o := orm.NewOrm()
-	d.logger.LogInfo(sql)
-	_, err := o.Raw(sql).Exec()
-	d.logger.LogInfo("delete department")
 	return err
 }
 

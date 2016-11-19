@@ -46,8 +46,8 @@ func (o *QcReagentModelCtl) Post() {
 
 // @router / [delete]
 func (h *QcReagentModelCtl) Delete() {
-	hname := h.GetString("name")
-	err := h.dbSync.DeleteQcReagentModelSQL(hname)
+	idstr := h.GetString("id")
+	err := h.dbSync.DeleteQcObjectSQL(idstr, models.DB_T_REGMODEL)
 	if err != nil {
 		h.logger.LogError("database operation err: ", err)
 		h.Data["json"] = "database operation err: " + err.Error()

@@ -46,8 +46,8 @@ func (o *QcSwVersionCtl) Post() {
 
 // @router / [delete]
 func (h *QcSwVersionCtl) Delete() {
-	version := h.GetString("version")
-	err := h.dbSync.DeleteQcSwVersionSQL(version)
+	id := h.GetString("id")
+	err := h.dbSync.DeleteQcObjectSQL(id, models.DB_T_SWVERSION)
 	if err != nil {
 		h.logger.LogError("database operation err: ", err)
 		h.Data["json"] = "database operation err: " + err.Error()
