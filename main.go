@@ -655,7 +655,7 @@ func main_department() {
 		fmt.Println("Department info: ", department, "   ", department.Hospital.Name)
 	}
 	fmt.Println("Delete department ...")
-	err = dbSync.DeleteQcDepartmentSQL(hs[0].Name, "department_1")
+	//err = dbSync.DeleteQcDepartmentSQL(hs[0]., "department_1")
 	fmt.Println("err: ", err)
 }
 

@@ -48,15 +48,26 @@ func (o *QcDepartmentCtl) Post() {
 
 // @router / [delete]
 func (h *QcDepartmentCtl) Delete() {
-	hname := h.GetString("hname")
-	dname := h.GetString("dname")
-	err := h.dbSync.DeleteQcDepartmentSQL(hname, dname)
+	idstr := h.GetString("id")
+	if len(idstr) > 0 {
+		_, err := strconv.Atoi(idstr)
+		if err != nil {
+			h.logger.LogError("failed to parse 'id' value from request, err:", err)
+			h.Data["json"] = "invalid 'id' value from request"
+			h.ServeJSON()
+			return
+		}
+	}
+	err := h.dbSync.DeleteQcDepartmentSQL(idstr)
 	if err != nil {
 		h.logger.LogError("database operation err: ", err)
-		h.Abort("501")
+		h.Data["json"] = "database operation err: " + err.Error()
+		h.ServeJSON()
+		return
 	}
 	h.Data["json"] = "delete success"
 	h.ServeJSON()
+	return
 }
 
 // @router / [get]
@@ -102,8 +113,7 @@ func (h *QcDepartmentCtl) Get() {
 // @router /list [get]
 func (h *QcDepartmentCtl) GetList() {
 	pgidx_str := h.GetString("pageidx")
-	h.logger.LogInfo("pageidx: ", pgidx_str)
-	pgidx, err := strconv.Atoi(pgidx_str)
+	_, err := strconv.Atoi(pgidx_str)
 	if err != nil {
 		h.logger.LogError("failed to parse 'pageidx' from request, err: ", err)
 		h.Data["json"] = "invalid parse 'pageidx' from request, err: " + err.Error()
@@ -111,16 +121,24 @@ func (h *QcDepartmentCtl) GetList() {
 		return
 	}
 	pgsize_str := h.GetString("pagesize")
-	h.logger.LogInfo("pagesize: ", pgsize_str)
-	pgsize, err := strconv.Atoi(pgsize_str)
+	_, err = strconv.Atoi(pgsize_str)
 	if err != nil {
 		h.logger.LogError("failed to parse 'pagesize' from request, err: ", err)
 		h.Data["json"] = "invalid parse 'pagesize' from request, err: " + err.Error()
 		h.ServeJSON()
 		return
 	}
-	h.logger.LogInfo("list hospital info(pageidx: ", pgidx, ", pagesize: ", pgsize, ")")
-	departments, err := h.dbSync.GetQcDepartments(pgidx, pgsize, "")
+	hid_str := h.GetString("hospitalid")
+	if len(hid_str) > 0 {
+		_, err = strconv.Atoi(hid_str)
+		if err != nil {
+			h.logger.LogError("failed to parse 'hospitalid' from request, err: ", err)
+			h.Data["json"] = "invalid value for 'hospitalid' from request, err: " + err.Error()
+			h.ServeJSON()
+			return
+		}
+	}
+	departments, err := h.dbSync.GetQcDepartmentsCond(pgidx_str, pgsize_str, hid_str)
 	if err != nil {
 		h.logger.LogError("database operation err: ", err)
 		h.Data["json"] = "invalid parse 'pagesize' from request, err: " + err.Error()

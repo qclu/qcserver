@@ -30,20 +30,20 @@ func CreateQcDepartment(dbSync *DBSync, name string, hospital *QcHospital) (*QcD
 	return h, nil
 }
 
-func DeleteQcDepartment(dbSync *DBSync, dname, hname string) error {
-	department, err := dbSync.GetQcDepartment(dname, hname)
-	if err != nil {
-		dbSync.logger.LogError("Failed to delete department[", dname, "] hospital[", hname, "], error: ", err)
-		return err
-	}
-	dbSync.logger.LogInfo("delete department: ", department)
-	//err = department.Delete(dbSync)
-	err = dbSync.DeleteQcDepartmentSQL(hname, dname)
-	if err != nil {
-		dbSync.logger.LogError("Failed to delete department, error: ", err)
-	}
-	return err
-}
+//func DeleteQcDepartment(dbSync *DBSync, dname, hname string) error {
+//	department, err := dbSync.GetQcDepartment(dname, hname)
+//	if err != nil {
+//		dbSync.logger.LogError("Failed to delete department[", dname, "] hospital[", hname, "], error: ", err)
+//		return err
+//	}
+//	dbSync.logger.LogInfo("delete department: ", department)
+//	//err = department.Delete(dbSync)
+//	err = dbSync.DeleteQcDepartmentSQL(hname, dname)
+//	if err != nil {
+//		dbSync.logger.LogError("Failed to delete department, error: ", err)
+//	}
+//	return err
+//}
 
 func (h *QcDepartment) UpdateName(dbSync *DBSync, name string) error {
 	h.mutex.Lock()

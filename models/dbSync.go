@@ -72,6 +72,33 @@ func NewDBSync(dbDriver, dbDataSource string) (*DBSync, error) {
 	return &DBSync{logger: logger}, nil
 }
 
+func (d *DBSync) GetQcDepartmentsCond(pgid, pgsize, hid string) ([]*QcDepartment, error) {
+	currentpage, _ := strconv.Atoi(pgid)
+	if currentpage <= 0 {
+		currentpage = 0
+	}
+	pagesize, _ := strconv.Atoi(pgsize)
+	var rs orm.RawSeter
+	o := orm.NewOrm()
+	fromsql := " FROM " + DB_T_DEPARTMENT + " as a where 1>0 "
+	if len(hid) > 0 {
+		fromsql += " and a.hospital_id=" + hid
+	}
+	var departments []*QcDepartment
+	selsql := "select * "
+	var limitsql string = ""
+	if pagesize > 0 {
+		limitsql = " limit " + con.Itoa((currentpage)*pagesize) + "," + con.Itoa(pagesize)
+	}
+	rs = o.Raw(selsql + fromsql + limitsql)
+	dbSync.logger.LogInfo("Exec Sql: ", selsql+fromsql+limitsql)
+	var err error
+	if _, err = rs.QueryRows(&departments); err != nil {
+		d.logger.LogError("Failed to list departments, err:", err)
+	}
+	return departments, err
+}
+
 func (d *DBSync) GetQcReagentModelsCond(pgid, pgsize, devid, name string) ([]*QcReagentModel, error) {
 	currentpage, _ := strconv.Atoi(pgid)
 	if currentpage <= 0 {
@@ -703,11 +730,10 @@ func (d *DBSync) DeleteQcMethdology(m *QcMethodology) error {
 	return err
 }
 
-func (d *DBSync) DeleteQcDepartmentSQL(hname, dname string) error {
+func (d *DBSync) DeleteQcDepartmentSQL(id string) error {
 	d.mutex.Lock()
 	defer d.mutex.Unlock()
-	sql := "delete from " + DB_T_DEPARTMENT + " using " + DB_T_DEPARTMENT + ", " + DB_T_HOSPITAL +
-		" where " + DB_T_DEPARTMENT + ".hospital_id=" + DB_T_HOSPITAL + ".id and " + DB_T_HOSPITAL + ".name='" + hname + "'"
+	sql := "delete from " + DB_T_DEPARTMENT + " where id=" + id
 	o := orm.NewOrm()
 	d.logger.LogInfo(sql)
 	_, err := o.Raw(sql).Exec()
