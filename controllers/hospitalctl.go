@@ -120,9 +120,9 @@ func (h *QcHospitalCtl) GetList() {
 		h.logger.LogError("database operation err: ", err)
 		h.Abort("501")
 	}
-	entcnt, _ := h.dbSync.GetTotalCnt(models.DB_T_HOSPITAL)
+	//entcnt, _ := h.dbSync.GetTotalCnt(models.DB_T_HOSPITAL)
 	res_data := make(map[string]interface{})
-	res_data["totalnum"] = entcnt
+	res_data["totalnum"] = len(hospitals)
 	res_data["objects"] = hospitals
 	h.Data["json"] = res_data
 	h.ServeJSON()

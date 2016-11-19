@@ -136,9 +136,9 @@ func (h *QcDevRelCtl) GetList() {
 		h.ServeJSON()
 		return
 	}
-	entcnt, _ := h.dbSync.GetTotalCnt(models.DB_T_DEVREL)
+	//entcnt, _ := h.dbSync.GetTotalCnt(models.DB_T_DEVREL)
 	res_data := make(map[string]interface{})
-	res_data["totalnum"] = entcnt
+	res_data["totalnum"] = len(devrels)
 	res_data["objects"] = devrels
 	h.Data["json"] = res_data
 	h.ServeJSON()

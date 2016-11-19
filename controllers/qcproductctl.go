@@ -125,9 +125,9 @@ func (h *QcQcProductCtl) GetList() {
 		h.ServeJSON()
 		return
 	}
-	entcnt, _ := h.dbSync.GetTotalCnt(models.DB_T_QCPRODUCT)
+	//entcnt, _ := h.dbSync.GetTotalCnt(models.DB_T_QCPRODUCT)
 	res_data := make(map[string]interface{})
-	res_data["totalnum"] = entcnt
+	res_data["totalnum"] = len(qcps)
 	res_data["objects"] = qcps
 	h.Data["json"] = res_data
 	h.ServeJSON()

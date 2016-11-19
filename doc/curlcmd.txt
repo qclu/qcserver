@@ -296,6 +296,10 @@ DevModel
 		}
 	
 	4. 列表
+	param:
+		name, model
+		如：curl -X  GET  127.0.0.1:8088/devmodel/list?pageidx=0\&pagesize=2\&name=devmodel1\&model=xxx1
+			curl -X  GET  127.0.0.1:8088/devmodel/list?pageidx=0\&pagesize=2\&name=devmodel2
 	CURL:
 		curl -X  GET  127.0.0.1:8088/devmodel/list?pageidx=0\&pagesize=2
 	Result:
@@ -409,6 +413,13 @@ HwVersion
 		  "Updated": "2016-11-13 20:38:58"
 		}
 	4. 列表
+	Params:
+		devid			仪器型号id
+		version			硬件版本号
+		如：
+		curl -X  GET  127.0.0.1:8088/hwversion/list?pageidx=0\&pagesize=0\&devid=1
+		curl -X  GET  127.0.0.1:8088/hwversion/list?pageidx=0\&pagesize=0\&version=v1
+		curl -X  GET  127.0.0.1:8088/hwversion/list?pageidx=0\&pagesize=0\&version=v1\&devid=1
 	CURL:
 		curl -X  GET  127.0.0.1:8088/hwversion/list?pageidx=0\&pagesize=3
 	Result:
@@ -543,6 +554,12 @@ SwVersion
 		  "Updated": "2016-11-13 21:16:50"
 		}
 	4. 列表
+	params:
+		version				软件版本号
+		hwvid				硬件版本号id
+		devid				仪器型号id
+		如：
+		curl -X  GET  127.0.0.1:8088/swversion/list?pageidx=0\&pagesize=0\&devid=6
 	CURL:
 		curl -X  GET  127.0.0.1:8088/swversion/list?pageidx=1\&pagesize=2
 	Release:
@@ -1006,4 +1023,6 @@ QcProduct
 	3. 查找	curl -X GET 127.0.0.1:8088/qcproduct?name="name1"
 	4. 列表 curl -X  GET  127.0.0.1:8088/qcproduct/list?pageidx=0\&pagesize=2
 	5. 更新	curl -X  PUT 127.0.0.1:8088/qcproduct?org_name="name1"\&tea=0.899
+	
+
 		

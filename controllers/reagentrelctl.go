@@ -122,9 +122,9 @@ func (h *QcReagentRelCtl) GetList() {
 		h.ServeJSON()
 		return
 	}
-	entcnt, _ := h.dbSync.GetTotalCnt(models.DB_T_DEPARTMENT)
+	//entcnt, _ := h.dbSync.GetTotalCnt(models.DB_T_DEPARTMENT)
 	res_data := make(map[string]interface{})
-	res_data["totalnum"] = entcnt
+	res_data["totalnum"] = len(regrels)
 	res_data["objects"] = regrels
 	h.Data["json"] = res_data
 	h.ServeJSON()

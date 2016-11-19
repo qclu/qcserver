@@ -103,7 +103,6 @@ func (h *QcDevModelCtl) Get() {
 // @router /list [get]
 func (h *QcDevModelCtl) GetList() {
 	pgidx_str := h.GetString("pageidx")
-	h.logger.LogInfo("pageidx: ", pgidx_str)
 	pgidx, err := strconv.Atoi(pgidx_str)
 	if err != nil {
 		h.logger.LogError("failed to parse 'pageidx' from request, err: ", err)
@@ -112,7 +111,6 @@ func (h *QcDevModelCtl) GetList() {
 		return
 	}
 	pgsize_str := h.GetString("pagesize")
-	h.logger.LogInfo("pagesize: ", pgsize_str)
 	pgsize, err := strconv.Atoi(pgsize_str)
 	if err != nil {
 		h.logger.LogError("failed to parse 'pagesize' from request, err: ", err)
@@ -120,17 +118,31 @@ func (h *QcDevModelCtl) GetList() {
 		h.ServeJSON()
 		return
 	}
-	h.logger.LogInfo("list hospital info(pageidx: ", pgidx, ", pagesize: ", pgsize, ")")
-	devmodels, err := h.dbSync.GetQcDevmodels(pgidx, pgsize, "")
+	name_str := h.GetString("name")
+	h.logger.LogInfo("name:", name_str)
+	var condition string
+	if len(name_str) > 0 {
+		condition = " and name='" + name_str + "'"
+	}
+	model_str := h.GetString("model")
+	if len(model_str) > 0 {
+		if len(condition) > 0 {
+			condition = condition + " and " + "model='" + model_str + "'"
+		} else {
+			condition = " and model='" + model_str + "'"
+		}
+	}
+	h.logger.LogInfo("condition:", condition)
+	devmodels, err := h.dbSync.GetQcDevmodels(pgidx, pgsize, condition)
 	if err != nil {
 		h.logger.LogError("database operation err: ", err)
 		h.Data["json"] = "invalid parse 'pagesize' from request, err: " + err.Error()
 		h.ServeJSON()
 		return
 	}
-	entcnt, _ := h.dbSync.GetTotalCnt(models.DB_T_DEVMODEL)
+	//entcnt, _ := h.dbSync.GetTotalCnt(models.DB_T_DEVMODEL)
 	res_data := make(map[string]interface{})
-	res_data["totalnum"] = entcnt
+	res_data["totalnum"] = len(devmodels)
 	res_data["objects"] = devmodels
 	h.Data["json"] = res_data
 	h.ServeJSON()

@@ -120,16 +120,32 @@ func (h *QcHwVersionCtl) GetList() {
 		return
 	}
 	h.logger.LogInfo("list hospital info(pageidx: ", pgidx, ", pagesize: ", pgsize, ")")
-	hwvs, err := h.dbSync.GetQcHwVersions(pgidx, pgsize, "")
+	devid_str := h.GetString("devid")
+	var condition string
+	if len(devid_str) > 0 {
+		_, err := strconv.Atoi(devid_str)
+		if err != nil {
+			h.logger.LogError("invalid value for param 'devid' in request, err: ", err)
+			h.Data["json"] = "invalid value for 'devid' in request, err: " + err.Error()
+			h.ServeJSON()
+			return
+		}
+		condition = " and dev_model_id=" + devid_str
+	}
+	version := h.GetString("version")
+	if len(version) > 0 {
+		condition += " and version='" + version + "'"
+	}
+	hwvs, err := h.dbSync.GetQcHwVersions(pgidx, pgsize, condition)
 	if err != nil {
 		h.logger.LogError("database operation err: ", err)
 		h.Data["json"] = "invalid parse 'pagesize' from request, err: " + err.Error()
 		h.ServeJSON()
 		return
 	}
-	entcnt, _ := h.dbSync.GetTotalCnt(models.DB_T_HWVERSION)
+	//entcnt, _ := h.dbSync.GetTotalCnt(models.DB_T_HWVERSION, condition)
 	res_data := make(map[string]interface{})
-	res_data["totalnum"] = entcnt
+	res_data["totalnum"] = len(hwvs)
 	res_data["objects"] = hwvs
 	h.Data["json"] = res_data
 	h.ServeJSON()

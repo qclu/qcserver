@@ -120,9 +120,9 @@ func (h *QcAdministratorCtl) GetList() {
 		h.ServeJSON()
 		return
 	}
-	entcnt, _ := h.dbSync.GetTotalCnt(models.DB_T_ADMINISTRATOR)
+	//entcnt, _ := h.dbSync.GetTotalCnt(models.DB_T_ADMINISTRATOR)
 	res_data := make(map[string]interface{})
-	res_data["totalnum"] = entcnt
+	res_data["totalnum"] = len(admins)
 	res_data["objects"] = admins
 	h.Data["json"] = res_data
 	h.ServeJSON()

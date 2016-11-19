@@ -7,8 +7,8 @@ import (
 	"errors"
 	"fmt"
 	_ "github.com/go-sql-driver/mysql"
-	//"strconv"
 	"qcserver/util/log"
+	"strconv"
 	con "strconv"
 	"sync"
 	"time"
@@ -72,14 +72,48 @@ func NewDBSync(dbDriver, dbDataSource string) (*DBSync, error) {
 	return &DBSync{logger: logger}, nil
 }
 
+func (d *DBSync) GetQcSwVersionsCond(pgid, pgsize, devid, hwvid, version string) ([]*QcSwVersion, error) {
+	currentpage, _ := strconv.Atoi(pgid)
+	if currentpage <= 0 {
+		currentpage = 0
+	}
+	pagesize, _ := strconv.Atoi(pgsize)
+	var rs orm.RawSeter
+	o := orm.NewOrm()
+	fromsql := " FROM " + DB_T_SWVERSION + " inner join " + DB_T_HWVERSION + " on " + DB_T_SWVERSION + ".hw_version_id = " + DB_T_HWVERSION + ".id where 1 > 0"
+	if len(devid) > 0 {
+		fromsql += " and " + DB_T_HWVERSION + ".dev_model_id=" + devid
+	}
+	if len(hwvid) > 0 {
+		fromsql += " and " + DB_T_HWVERSION + ".id = " + hwvid
+	}
+	if len(version) > 0 {
+		fromsql += " and " + DB_T_SWVERSION + ".version = '" + version + "'"
+	}
+	var swvs []*QcSwVersion
+	selsql := "select " + DB_T_SWVERSION + ".*  "
+	var limitsql string = ""
+	if pagesize > 0 {
+		limitsql = " limit " + con.Itoa((currentpage)*pagesize) + "," + con.Itoa(pagesize)
+	}
+	rs = o.Raw(selsql + fromsql + limitsql)
+	dbSync.logger.LogInfo("Exec Sql: ", selsql+fromsql+limitsql)
+	var err error
+	if _, err = rs.QueryRows(&swvs); err != nil {
+		d.logger.LogError("Failed to list swversion, err:", err)
+	}
+	return swvs, err
+}
+
 func (d *DBSync) GetPagesInfo(tableName string, currentpage int, pagesize int, conditions string) (int, int, orm.RawSeter) {
+	d.logger.LogInfo(conditions)
 	if currentpage <= 0 {
 		currentpage = 0
 	}
 	var rs orm.RawSeter
 	o := orm.NewOrm()
-	var totalItem, totalpages int = 0, 0                                                          //×ÜÌõÊý,×ÜÒ³Êý
-	o.Raw("SELECT count(*) FROM " + tableName + "  where 1>0 " + conditions).QueryRow(&totalItem) //»ñÈ¡×ÜÌõÊý
+	var totalItem, totalpages int = 0, 0
+	o.Raw("SELECT count(*) FROM " + tableName + "  where 1>0 " + conditions).QueryRow(&totalItem)
 	if pagesize == 0 {
 		pagesize = totalItem
 	}
@@ -93,6 +127,7 @@ func (d *DBSync) GetPagesInfo(tableName string, currentpage int, pagesize int, c
 		totalpages = temp
 	}
 	rs = o.Raw("select *  from  " + tableName + "  where id >0 " + conditions + " LIMIT " + con.Itoa((currentpage)*pagesize) + "," + con.Itoa(pagesize))
+	d.logger.LogInfo("select *  from  ", tableName, "  where id >0 ", conditions, " LIMIT ", con.Itoa((currentpage)*pagesize), ",", con.Itoa(pagesize))
 	return totalItem, totalpages, rs
 }
 
@@ -1667,21 +1702,20 @@ func (d *DBSync) GetQcHwVersions(pgidx, pgsize int, conditions string) ([]*QcHwV
 	return objs, nil
 }
 
-func (d *DBSync) GetTotalCnt(table string) (int, error) {
-	d.mutex.Lock()
-	defer d.mutex.Unlock()
-	var totalcnt int
-	totalcnt = 0
-	sql := "select count(*) from " + table
-	o := orm.NewOrm()
-	d.logger.LogInfo(sql)
-	err := o.Raw(sql).QueryRow(&totalcnt)
-	if err != nil {
-		d.logger.LogError("Failed to get elements count from ", table, ", error: ", err)
-		return 0, err
-	}
-	return totalcnt, nil
-}
+//func (d *DBSync) GetTotalCnt(table string) (int, error) {
+//	d.mutex.Lock()
+//	defer d.mutex.Unlock()
+//	var totalcnt int
+//	totalcnt = 0
+//	sql := "select count(*) from " + table
+//	o := orm.NewOrm()
+//	err := o.Raw(sql).QueryRow(&totalcnt)
+//	if err != nil {
+//		d.logger.LogError("Failed to get elements count from ", table, ", error: ", err)
+//		return 0, err
+//	}
+//	return totalcnt, nil
+//}
 
 func (d *DBSync) GetQcDepartments(pgidx, pgsize int, conditions string) ([]*QcDepartment, error) {
 	var objs []*QcDepartment

@@ -119,9 +119,9 @@ func (h *QcMethodologyCtl) GetList() {
 		h.ServeJSON()
 		return
 	}
-	entcnt, _ := h.dbSync.GetTotalCnt(models.DB_T_METHODOLOGY)
+	//entcnt, _ := h.dbSync.GetTotalCnt(models.DB_T_METHODOLOGY)
 	res_data := make(map[string]interface{})
-	res_data["totalnum"] = entcnt
+	res_data["totalnum"] = len(ms)
 	res_data["objects"] = ms
 	h.Data["json"] = res_data
 	h.ServeJSON()

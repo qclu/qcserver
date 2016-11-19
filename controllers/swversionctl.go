@@ -103,7 +103,7 @@ func (h *QcSwVersionCtl) Get() {
 func (h *QcSwVersionCtl) GetList() {
 	pgidx_str := h.GetString("pageidx")
 	h.logger.LogInfo("pageidx: ", pgidx_str)
-	pgidx, err := strconv.Atoi(pgidx_str)
+	_, err := strconv.Atoi(pgidx_str)
 	if err != nil {
 		h.logger.LogError("failed to parse 'pageidx' from request, err: ", err)
 		h.Data["json"] = "invalid parse 'pageidx' from request, err: " + err.Error()
@@ -112,24 +112,47 @@ func (h *QcSwVersionCtl) GetList() {
 	}
 	pgsize_str := h.GetString("pagesize")
 	h.logger.LogInfo("pagesize: ", pgsize_str)
-	pgsize, err := strconv.Atoi(pgsize_str)
+	_, err = strconv.Atoi(pgsize_str)
 	if err != nil {
 		h.logger.LogError("failed to parse 'pagesize' from request, err: ", err)
 		h.Data["json"] = "invalid parse 'pagesize' from request, err: " + err.Error()
 		h.ServeJSON()
 		return
 	}
-	h.logger.LogInfo("list hospital info(pageidx: ", pgidx, ", pagesize: ", pgsize, ")")
-	swvs, err := h.dbSync.GetQcSwVersions(pgidx, pgsize, "")
+	h.logger.LogInfo("list hospital info(pageidx: ", pgidx_str, ", pagesize: ", pgsize_str, ")")
+	devid_str := h.GetString("devid")
+	if len(devid_str) > 0 {
+		_, err = strconv.Atoi(devid_str)
+		if err != nil {
+			h.logger.LogError("invalid value for param 'devid' from request, err: ", err)
+			h.Data["json"] = "invalid value for param 'devid' from request, err: " + err.Error()
+			h.ServeJSON()
+			return
+		}
+	}
+
+	hwv_str := h.GetString("hwvid")
+	if len(hwv_str) > 0 {
+		_, err = strconv.Atoi(hwv_str)
+		if err != nil {
+			h.logger.LogError("invalid value for param 'hwvid' from request, err: ", err)
+			h.Data["json"] = "invalid value for param 'hwvid' from request, err: " + err.Error()
+			h.ServeJSON()
+			return
+		}
+	}
+
+	version := h.GetString("version")
+	swvs, err := h.dbSync.GetQcSwVersionsCond(pgidx_str, pgsize_str, devid_str, hwv_str, version)
 	if err != nil {
 		h.logger.LogError("database operation err: ", err)
 		h.Data["json"] = "invalid parse 'pagesize' from request, err: " + err.Error()
 		h.ServeJSON()
 		return
 	}
-	entcnt, _ := h.dbSync.GetTotalCnt(models.DB_T_SWVERSION)
+	//entcnt, _ := h.dbSync.GetTotalCnt(models.DB_T_SWVERSION)
 	res_data := make(map[string]interface{})
-	res_data["totalnum"] = entcnt
+	res_data["totalnum"] = len(swvs)
 	res_data["objects"] = swvs
 	h.Data["json"] = res_data
 	h.ServeJSON()
