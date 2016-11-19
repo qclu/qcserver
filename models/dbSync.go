@@ -102,6 +102,45 @@ func (d *DBSync) GetQcReagentModelsCond(pgid, pgsize, devid, name string) ([]*Qc
 	return regmodels, err
 }
 
+func (d *DBSync) GetQcRegRelsCond(pgid, pgsize, regmodelid, startdate, enddate, hid, did string) ([]*QcReagentRel, error) {
+	currentpage, _ := strconv.Atoi(pgid)
+	if currentpage <= 0 {
+		currentpage = 0
+	}
+	pagesize, _ := strconv.Atoi(pgsize)
+	var rs orm.RawSeter
+	o := orm.NewOrm()
+	fromsql := " FROM " + DB_T_REGREL + " as a left join " + DB_T_REGPRODUCE + " as b on " + "a.produce_serial_id=b.id left join  " + DB_T_REGMODEL + " as c on b.reg_model_id=c.id left join " + DB_T_DEPARTMENT + " as d on a.department_id=d.id where 1>0 "
+	if len(regmodelid) > 0 {
+		fromsql += " and b.reg_model_id=" + regmodelid
+	}
+	if len(hid) > 0 {
+		fromsql += " and d.hospital_id = " + hid
+	}
+	if len(startdate) > 0 {
+		fromsql += " and STR_TO_DATE(a.release_time, '%Y-%m-%d %H:%i:%s') >= STR_TO_DATE(" + startdate + ") "
+	}
+	if len(enddate) > 0 {
+		fromsql += " and STR_TO_DATE(a.release_time, '%Y-%m-%d %H:%i:%s') <= STR_TO_DATE(" + enddate + ") "
+	}
+	if len(did) > 0 {
+		fromsql += " and a.department_id=" + did
+	}
+	var regrels []*QcReagentRel
+	selsql := "select * "
+	var limitsql string = ""
+	if pagesize > 0 {
+		limitsql = " limit " + con.Itoa((currentpage)*pagesize) + "," + con.Itoa(pagesize)
+	}
+	rs = o.Raw(selsql + fromsql + limitsql)
+	dbSync.logger.LogInfo("Exec Sql: ", selsql+fromsql+limitsql)
+	var err error
+	if _, err = rs.QueryRows(&regrels); err != nil {
+		d.logger.LogError("Failed to list regrels, err:", err)
+	}
+	return regrels, err
+}
+
 func (d *DBSync) GetQcDevRelsCond(pgid, pgsize, devid, serial, startdate, enddate, departmentid, hospitalid string) ([]*QcDevRel, error) {
 	currentpage, _ := strconv.Atoi(pgid)
 	if currentpage <= 0 {

@@ -32,18 +32,17 @@ func (o *QcReagentRelCtl) Post() {
 		o.ServeJSON()
 		return
 	}
-	regmodelname := o.GetString("regmodel")
-	o.logger.LogInfo("regmodel: ", regmodelname)
-	regmodel, err := o.dbSync.GetQcReagentModel(regmodelname)
+	produceserial := o.GetString("produceserial")
+	regproduce, err := o.dbSync.GetQcReagentProduce(produceserial)
 	if err != nil {
 		o.logger.LogError("database operation err: ", err)
-		o.Data["json"] = "failed to get regmodel[" + regmodelname + "] info, err: " + err.Error()
+		o.Data["json"] = "failed to get regproduce[" + produceserial + "] info, err: " + err.Error()
 		o.ServeJSON()
 		return
 	}
 	var ob models.QcReagentRel
 	json.Unmarshal(o.Ctx.Input.RequestBody, &ob)
-	pob, err := models.CreateQcReagentRel(o.dbSync, ob.ReleaseTime, ob.ReleaseSerial, ob.Annotation, ob.Amounts, regmodel, department_obj)
+	pob, err := models.CreateQcReagentRel(o.dbSync, ob.ReleaseTime, ob.ReleaseSerial, ob.Annotation, ob.Amounts, regproduce, department_obj)
 	if err != nil {
 		o.logger.LogError("database operation err: ", err)
 		o.Data["json"] = string("database operation err:") + err.Error()
@@ -110,7 +109,7 @@ func (h *QcReagentRelCtl) Get() {
 func (h *QcReagentRelCtl) GetList() {
 	pgidx_str := h.GetString("pageidx")
 	h.logger.LogInfo("pageidx: ", pgidx_str)
-	pgidx, err := strconv.Atoi(pgidx_str)
+	_, err := strconv.Atoi(pgidx_str)
 	if err != nil {
 		h.logger.LogError("failed to parse 'pageidx' from request, err: ", err)
 		h.Data["json"] = "invalid parse 'pageidx' from request, err: " + err.Error()
@@ -119,15 +118,46 @@ func (h *QcReagentRelCtl) GetList() {
 	}
 	pgsize_str := h.GetString("pagesize")
 	h.logger.LogInfo("pagesize: ", pgsize_str)
-	pgsize, err := strconv.Atoi(pgsize_str)
+	_, err = strconv.Atoi(pgsize_str)
 	if err != nil {
 		h.logger.LogError("failed to parse 'pagesize' from request, err: ", err)
 		h.Data["json"] = "invalid parse 'pagesize' from request, err: " + err.Error()
 		h.ServeJSON()
 		return
 	}
-	h.logger.LogInfo("list hospital info(pageidx: ", pgidx, ", pagesize: ", pgsize, ")")
-	regrels, err := h.dbSync.GetQcReagentRels(pgidx, pgsize, "")
+	did_str := h.GetString("departmentid")
+	if len(did_str) > 0 {
+		_, err = strconv.Atoi(did_str)
+		if err != nil {
+			h.logger.LogError("failed to parse 'departmentid' from request, err: ", err)
+			h.Data["json"] = "invalid value for 'departmentid' from request, err: " + err.Error()
+			h.ServeJSON()
+			return
+		}
+	}
+	hid_str := h.GetString("hospitalid")
+	if len(hid_str) > 0 {
+		_, err = strconv.Atoi(hid_str)
+		if err != nil {
+			h.logger.LogError("failed to parse 'hospitalid' from request, err: ", err)
+			h.Data["json"] = "invalid value for 'hospitalid' from request, err: " + err.Error()
+			h.ServeJSON()
+			return
+		}
+	}
+	regmodelid_str := h.GetString("regmodelid")
+	if len(regmodelid_str) > 0 {
+		_, err = strconv.Atoi(regmodelid_str)
+		if err != nil {
+			h.logger.LogError("failed to parse 'regmodelid' from request, err: ", err)
+			h.Data["json"] = "invalid value for 'regmodelid' from request, err: " + err.Error()
+			h.ServeJSON()
+			return
+		}
+	}
+	start_date := h.GetString("startdate")
+	end_date := h.GetString("enddate")
+	regrels, err := h.dbSync.GetQcRegRelsCond(pgidx_str, pgsize_str, regmodelid_str, start_date, end_date, hid_str, did_str)
 	if err != nil {
 		h.logger.LogError("database operation err: ", err)
 		h.Data["json"] = "invalid parse 'pagesize' from request, err: " + err.Error()

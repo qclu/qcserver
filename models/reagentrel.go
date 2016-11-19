@@ -7,25 +7,25 @@ import (
 )
 
 type QcReagentRel struct {
-	Id            int64           `orm: "pk;auto"`
-	ReleaseTime   string          `orm:"size(20)"`
-	ReleaseSerial string          `orm:"size(256);unique"`
-	Department    *QcDepartment   `orm:"rel(fk);on_delete(do_nothing)"` // RelForeignKey relation
-	RegModel      *QcReagentModel `orm:"rel(fk);on_delete(do_nothing)"` // RelForeignKey relation
-	Amounts       float64         `orm:"digits(12);decimals(4)"`
-	Annotation    string          `orm:"size(4096)"`
-	Consumption   float64         `orm:"digits(12);decimals(4)"`
-	Created       string          `orm:"size(20)"`
-	Updated       string          `orm:"size(20)"`
-	mutex         sync.Mutex      `orm:"-"`
+	Id            int64             `orm: "pk;auto"`
+	ReleaseTime   string            `orm:"size(20)"`
+	ReleaseSerial string            `orm:"size(256);unique"`
+	Department    *QcDepartment     `orm:"rel(fk);on_delete(do_nothing)"` // RelForeignKey relation
+	ProduceSerial *QcReagentProduce `orm:"rel(fk);on_delete(do_nothing)"` // RelForeignKey relation
+	Amounts       float64           `orm:"digits(12);decimals(4)"`
+	Annotation    string            `orm:"size(4096)"`
+	Consumption   float64           `orm:"digits(12);decimals(4)"`
+	Created       string            `orm:"size(20)"`
+	Updated       string            `orm:"size(20)"`
+	mutex         sync.Mutex        `orm:"-"`
 }
 
-func CreateQcReagentRel(dbSync *DBSync, rel_time, rel_serial, anno string, amounts float64, regmodel *QcReagentModel, department *QcDepartment) (*QcReagentRel, error) {
+func CreateQcReagentRel(dbSync *DBSync, rel_time, rel_serial, anno string, amounts float64, proserial *QcReagentProduce, department *QcDepartment) (*QcReagentRel, error) {
 	obj := &QcReagentRel{
 		ReleaseTime:   rel_time,
 		ReleaseSerial: rel_serial,
 		Department:    department,
-		RegModel:      regmodel,
+		ProduceSerial: proserial,
 		Amounts:       amounts,
 		Annotation:    anno,
 		Consumption:   0.0,

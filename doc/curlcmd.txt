@@ -1039,4 +1039,12 @@ QcProduct
 	5. 更新	curl -X  PUT 127.0.0.1:8088/qcproduct?org_name="name1"\&tea=0.899
 	
 
-		
+QcReagentRel
+	1. 创建 curl -XPOST  -d '{"ReleaseTime":"2016-01-01 00:00:00", "ReleaseSerial":"xxxxxxx1", "Amounts":10000}' 127.0.0.1:8088/reagentrel?hospital="Beijing+Hospital"\&department=Xiaohuaneike\&produceserial=serial1
+	2. 删除 
+	3. 查找
+	4. 列表
+		参数： 	1. regmodelid 试剂型号id curl -X  GET  127.0.0.1:8088/reagentrel/list?pageidx=0\&pagesize=0\&regmodelid=4
+				2. startdate/enddate 	c出厂日期
+				3. hospitalid 		医院id
+				4. departmentid		科室id
