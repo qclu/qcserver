@@ -154,7 +154,7 @@ func (d *DBSync) GetQcRegRelsCond(pgid, pgsize, regmodelid, startdate, enddate, 
 		fromsql += " and a.department_id=" + did
 	}
 	var regrels []*QcReagentRel
-	selsql := "select * "
+	selsql := "select a.* "
 	var limitsql string = ""
 	if pagesize > 0 {
 		limitsql = " limit " + con.Itoa((currentpage)*pagesize) + "," + con.Itoa(pagesize)
@@ -197,7 +197,7 @@ func (d *DBSync) GetQcDevRelsCond(pgid, pgsize, devid, serial, startdate, enddat
 		fromsql += " and d.hospital_id=" + hospitalid
 	}
 	var devrels []*QcDevRel
-	selsql := "select * "
+	selsql := "select a.* "
 	var limitsql string = ""
 	if pagesize > 0 {
 		limitsql = " limit " + con.Itoa((currentpage)*pagesize) + "," + con.Itoa(pagesize)
