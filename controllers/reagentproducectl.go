@@ -137,17 +137,18 @@ func (h *QcReagentProduceCtl) GetList() {
 
 // @router / [PUT]
 func (h *QcReagentProduceCtl) Update() {
-	serial := h.GetString("org_serialnum")
-	if len(serial) == 0 {
-		h.logger.LogError("failed to parse regproduce serial from request")
-		h.Data["json"] = "failed to parse regproduce serial from request"
+	idstr := h.GetString("id")
+	if len(idstr) == 0 {
+		h.logger.LogError("failed to parse regproduce id from request")
+		h.Data["json"] = "failed to parse regproduce id from request"
 		h.ServeJSON()
 		return
 	}
-	regproduce, err := h.dbSync.GetQcReagentProduce(serial)
+	id, _ := strconv.Atoi(idstr)
+	regproduce, err := h.dbSync.GetQcReagentProduceWithId(id)
 	if err != nil {
-		h.logger.LogError("failed to get reagent produce[", serial, "] from database, err: ", err)
-		h.Data["json"] = "failed to get reagent produce[" + serial + "] from database, err: " + err.Error()
+		h.logger.LogError("failed to get reagent produce[", id, "] from database, err: ", err)
+		h.Data["json"] = "failed to get reagent produce[" + idstr + "] from database, err: " + err.Error()
 		h.ServeJSON()
 		return
 	}
@@ -176,8 +177,8 @@ func (h *QcReagentProduceCtl) Update() {
 	}
 	err = h.dbSync.UpdateQcReagentProduce(regproduce)
 	if err != nil {
-		h.logger.LogError("failed to update reagent produce[", serial, "], err: ", err)
-		h.Data["json"] = "failed to update reagent model[" + serial + "], err: " + err.Error()
+		h.logger.LogError("failed to update reagent produce[", id, "], err: ", err)
+		h.Data["json"] = "failed to update reagent model[" + idstr + "], err: " + err.Error()
 		h.ServeJSON()
 		return
 	}

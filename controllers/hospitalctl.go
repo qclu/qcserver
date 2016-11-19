@@ -139,18 +139,18 @@ func (h *QcHospitalCtl) GetList() {
 
 // @router / [PUT]
 func (h *QcHospitalCtl) Update() {
-	hname := h.GetString("org_name")
-	h.logger.LogInfo("update hospital ", hname)
-	if len(hname) == 0 {
-		h.logger.LogError("failed to parse hospital name from request")
-		h.Data["json"] = "failed to parse hospital name from request"
+	idstr := h.GetString("id")
+	if len(idstr) == 0 {
+		h.logger.LogError("failed to parse hospital id from request")
+		h.Data["json"] = "failed to parse hospital id from request"
 		h.ServeJSON()
 		return
 	}
-	hospital, err := h.dbSync.GetQcHospital(hname)
+	id, _ := strconv.Atoi(idstr)
+	hospital, err := h.dbSync.GetQcHospitalWithId(id)
 	if err != nil {
-		h.logger.LogError("failed to get hospital[", hname, "] from database, err: ", err)
-		h.Data["json"] = "failed to get hospital[" + hname + "] from database, err: " + err.Error()
+		h.logger.LogError("failed to get hospital[", id, "] from database, err: ", err)
+		h.Data["json"] = "failed to get hospital[" + idstr + "] from database, err: " + err.Error()
 		h.ServeJSON()
 		return
 	}
@@ -168,8 +168,8 @@ func (h *QcHospitalCtl) Update() {
 	}
 	err = h.dbSync.UpdateQcHospital(hospital)
 	if err != nil {
-		h.logger.LogError("failed to update hospital[", hname, "], err: ", err)
-		h.Data["json"] = "failed to update hospital[" + hname + "], err: " + err.Error()
+		h.logger.LogError("failed to update hospital[", id, "], err: ", err)
+		h.Data["json"] = "failed to update hospital[" + idstr + "], err: " + err.Error()
 		h.ServeJSON()
 		return
 	}

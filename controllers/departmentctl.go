@@ -156,24 +156,24 @@ func (h *QcDepartmentCtl) GetList() {
 
 // @router / [PUT]
 func (h *QcDepartmentCtl) Update() {
-	hname := h.GetString("org_hname")
-	if len(hname) == 0 {
-		h.logger.LogError("failed to parse department hospital name from request")
-		h.Data["json"] = "failed to parse department hospital name from request"
+	idstr := h.GetString("id")
+	if len(idstr) == 0 {
+		h.logger.LogError("failed to parse department id from request")
+		h.Data["json"] = "failed to parse department id from request"
 		h.ServeJSON()
 		return
 	}
-	dname := h.GetString("org_dname")
-	if len(hname) == 0 {
-		h.logger.LogError("failed to parse department name from request")
-		h.Data["json"] = "failed to parse department name from request"
-		h.ServeJSON()
-		return
-	}
-	department, err := h.dbSync.GetQcDepartment(dname, hname)
+	id, err := strconv.Atoi(idstr)
 	if err != nil {
-		h.logger.LogError("failed to get department[", hname, ":", dname, "] from database, err: ", err)
-		h.Data["json"] = "failed to get devmodel[" + hname + ":" + dname + "] from database, err: " + err.Error()
+		h.logger.LogError("invalid value for department id from request")
+		h.Data["json"] = "invalid value department id from request"
+		h.ServeJSON()
+		return
+	}
+	department, err := h.dbSync.GetQcDepartmentWithId(id)
+	if err != nil {
+		h.logger.LogError("failed to get department[", idstr, "] from database, err: ", err)
+		h.Data["json"] = "failed to get devmodel[" + idstr + "] from database, err: " + err.Error()
 		h.ServeJSON()
 		return
 	}
@@ -194,8 +194,8 @@ func (h *QcDepartmentCtl) Update() {
 	}
 	err = h.dbSync.UpdateQcDepartment(department)
 	if err != nil {
-		h.logger.LogError("failed to update department[", hname, ":", dname, "], err: ", err)
-		h.Data["json"] = "failed to update department[" + hname + ":" + dname + "], err: " + err.Error()
+		h.logger.LogError("failed to update department[", idstr, "], err: ", err)
+		h.Data["json"] = "failed to update department[" + idstr + "], err: " + err.Error()
 		h.ServeJSON()
 		return
 	}

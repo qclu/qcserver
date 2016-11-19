@@ -151,17 +151,18 @@ func (h *QcDevModelCtl) GetList() {
 
 // @router / [PUT]
 func (h *QcDevModelCtl) Update() {
-	hname := h.GetString("org_name")
-	if len(hname) == 0 {
-		h.logger.LogError("failed to parse devmodel name from request")
-		h.Data["json"] = "failed to parse devmodel name from request"
+	idstr := h.GetString("id")
+	if len(idstr) == 0 {
+		h.logger.LogError("failed to parse devmodel id from request")
+		h.Data["json"] = "failed to parse devmodel id from request"
 		h.ServeJSON()
 		return
 	}
-	devmodel, err := h.dbSync.GetQcDevModel(hname)
+	id, err := strconv.Atoi(idstr)
+	devmodel, err := h.dbSync.GetQcDevModelWithId(id)
 	if err != nil {
-		h.logger.LogError("failed to get devmodel[", hname, "] from database, err: ", err)
-		h.Data["json"] = "failed to get devmodel[" + hname + "] from database, err: " + err.Error()
+		h.logger.LogError("failed to get devmodel[", idstr, "] from database, err: ", err)
+		h.Data["json"] = "failed to get devmodel[" + idstr + "] from database, err: " + err.Error()
 		h.ServeJSON()
 		return
 	}
@@ -190,8 +191,8 @@ func (h *QcDevModelCtl) Update() {
 	}
 	err = h.dbSync.UpdateQcDevModel(devmodel)
 	if err != nil {
-		h.logger.LogError("failed to update devmodel[", hname, "], err: ", err)
-		h.Data["json"] = "failed to update devmodel[" + hname + "], err: " + err.Error()
+		h.logger.LogError("failed to update devmodel[", idstr, "], err: ", err)
+		h.Data["json"] = "failed to update devmodel[" + idstr + "], err: " + err.Error()
 		h.ServeJSON()
 		return
 	}

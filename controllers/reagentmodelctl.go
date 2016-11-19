@@ -148,17 +148,18 @@ func (h *QcReagentModelCtl) GetList() {
 
 // @router / [PUT]
 func (h *QcReagentModelCtl) Update() {
-	hname := h.GetString("org_name")
-	if len(hname) == 0 {
-		h.logger.LogError("failed to parse regmodel name from request")
-		h.Data["json"] = "failed to parse regmodel name from request"
+	idstr := h.GetString("id")
+	if len(idstr) == 0 {
+		h.logger.LogError("failed to parse regmodel id from request")
+		h.Data["json"] = "failed to parse regmodel id from request"
 		h.ServeJSON()
 		return
 	}
-	regmodel, err := h.dbSync.GetQcReagentModel(hname)
+	id, _ := strconv.Atoi(idstr)
+	regmodel, err := h.dbSync.GetQcReagentModelWithId(id)
 	if err != nil {
-		h.logger.LogError("failed to get reagent model[", hname, "] from database, err: ", err)
-		h.Data["json"] = "failed to get reagent model[" + hname + "] from database, err: " + err.Error()
+		h.logger.LogError("failed to get reagent model[", id, "] from database, err: ", err)
+		h.Data["json"] = "failed to get reagent model[" + idstr + "] from database, err: " + err.Error()
 		h.ServeJSON()
 		return
 	}
@@ -183,8 +184,8 @@ func (h *QcReagentModelCtl) Update() {
 	}
 	err = h.dbSync.UpdateQcReagentModel(regmodel)
 	if err != nil {
-		h.logger.LogError("failed to update regmodel[", hname, "], err: ", err)
-		h.Data["json"] = "failed to update regmodel[" + hname + "], err: " + err.Error()
+		h.logger.LogError("failed to update regmodel[", id, "], err: ", err)
+		h.Data["json"] = "failed to update regmodel[" + idstr + "], err: " + err.Error()
 		h.ServeJSON()
 		return
 	}

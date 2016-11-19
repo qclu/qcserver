@@ -175,17 +175,18 @@ func (h *QcReagentRelCtl) GetList() {
 
 // @router / [PUT]
 func (h *QcReagentRelCtl) Update() {
-	serial := h.GetString("org_serial")
-	if len(serial) == 0 {
-		h.logger.LogError("failed to parse reagentrel serial from request")
-		h.Data["json"] = "failed to parse reagentrel serial from request"
+	idstr := h.GetString("id")
+	if len(idstr) == 0 {
+		h.logger.LogError("failed to parse reagentrel id from request")
+		h.Data["json"] = "failed to parse reagentrel id from request"
 		h.ServeJSON()
 		return
 	}
-	regrel, err := h.dbSync.GetQcReagentRel(serial)
+	id, _ := strconv.Atoi(idstr)
+	regrel, err := h.dbSync.GetQcReagentRelWithId(id)
 	if err != nil {
-		h.logger.LogError("failed to get regrel[", serial, "] from database, err: ", err)
-		h.Data["json"] = "failed to get regrel[" + serial + "] from database, err: " + err.Error()
+		h.logger.LogError("failed to get regrel[", id, "] from database, err: ", err)
+		h.Data["json"] = "failed to get regrel[" + idstr + "] from database, err: " + err.Error()
 		h.ServeJSON()
 		return
 	}
@@ -211,8 +212,8 @@ func (h *QcReagentRelCtl) Update() {
 	}
 	err = h.dbSync.UpdateQcReagentRel(regrel)
 	if err != nil {
-		h.logger.LogError("failed to update reagentrel[", serial, "], err: ", err)
-		h.Data["json"] = "failed to update reagentrel[" + serial + "], err: " + err.Error()
+		h.logger.LogError("failed to update reagentrel[", id, "], err: ", err)
+		h.Data["json"] = "failed to update reagentrel[" + idstr + "], err: " + err.Error()
 		h.ServeJSON()
 		return
 	}

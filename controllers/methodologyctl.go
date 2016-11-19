@@ -130,17 +130,18 @@ func (h *QcMethodologyCtl) GetList() {
 
 // @router / [PUT]
 func (h *QcMethodologyCtl) Update() {
-	hname := h.GetString("org_name")
-	if len(hname) == 0 {
-		h.logger.LogError("failed to parse admin name from request")
-		h.Data["json"] = "failed to parse admin name from request"
+	idstr := h.GetString("id")
+	if len(idstr) == 0 {
+		h.logger.LogError("failed to parse admin id from request")
+		h.Data["json"] = "failed to parse admin id from request"
 		h.ServeJSON()
 		return
 	}
-	mth, err := h.dbSync.GetQcMethodology(hname)
+	id, _ := strconv.Atoi(idstr)
+	mth, err := h.dbSync.GetQcMethodologyWithId(id)
 	if err != nil {
-		h.logger.LogError("failed to get methodology[", hname, "] from database, err: ", err)
-		h.Data["json"] = "failed to get methodology[" + hname + "] from database, err: " + err.Error()
+		h.logger.LogError("failed to get methodology[", id, "] from database, err: ", err)
+		h.Data["json"] = "failed to get methodology[" + idstr + "] from database, err: " + err.Error()
 		h.ServeJSON()
 		return
 	}
@@ -154,8 +155,8 @@ func (h *QcMethodologyCtl) Update() {
 	}
 	err = h.dbSync.UpdateQcMethodology(mth)
 	if err != nil {
-		h.logger.LogError("failed to update methodology[", hname, "], err: ", err)
-		h.Data["json"] = "failed to update methodology[" + hname + "], err: " + err.Error()
+		h.logger.LogError("failed to update methodology[", id, "], err: ", err)
+		h.Data["json"] = "failed to update methodology[" + idstr + "], err: " + err.Error()
 		h.ServeJSON()
 		return
 	}

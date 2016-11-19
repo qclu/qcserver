@@ -161,17 +161,18 @@ func (h *QcSwVersionCtl) GetList() {
 
 // @router / [PUT]
 func (h *QcSwVersionCtl) Update() {
-	version := h.GetString("org_version")
-	if len(version) == 0 {
-		h.logger.LogError("failed to parse version info from request")
-		h.Data["json"] = "failed to parse version info from request"
+	idstr := h.GetString("id")
+	if len(idstr) == 0 {
+		h.logger.LogError("failed to parse id info from request")
+		h.Data["json"] = "failed to parse id info from request"
 		h.ServeJSON()
 		return
 	}
-	swv, err := h.dbSync.GetQcSwVersion(version)
+	id, _ := strconv.Atoi(idstr)
+	swv, err := h.dbSync.GetQcSwVersionWithId(id)
 	if err != nil {
-		h.logger.LogError("failed to get swversion[", version, "] from database, err: ", err)
-		h.Data["json"] = "failed to get swversion[" + version + "] from database, err: " + err.Error()
+		h.logger.LogError("failed to get swversion[", id, "] from database, err: ", err)
+		h.Data["json"] = "failed to get swversion[" + idstr + "] from database, err: " + err.Error()
 		h.ServeJSON()
 		return
 	}
@@ -200,8 +201,8 @@ func (h *QcSwVersionCtl) Update() {
 	}
 	err = h.dbSync.UpdateQcSwVersion(swv)
 	if err != nil {
-		h.logger.LogError("failed to update swversion[", version, "], err: ", err)
-		h.Data["json"] = "failed to update swversion[" + version + "], err: " + err.Error()
+		h.logger.LogError("failed to update swversion[", id, "], err: ", err)
+		h.Data["json"] = "failed to update swversion[" + idstr + "], err: " + err.Error()
 		h.ServeJSON()
 		return
 	}

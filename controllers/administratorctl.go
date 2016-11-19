@@ -131,17 +131,24 @@ func (h *QcAdministratorCtl) GetList() {
 
 // @router / [PUT]
 func (h *QcAdministratorCtl) Update() {
-	hname := h.GetString("org_name")
-	if len(hname) == 0 {
-		h.logger.LogError("failed to parse admin name from request")
-		h.Data["json"] = "failed to parse admin name from request"
+	idstr := h.GetString("id")
+	if len(idstr) == 0 {
+		h.logger.LogError("failed to parse admin id from request")
+		h.Data["json"] = "failed to parse admin id from request"
 		h.ServeJSON()
 		return
 	}
-	admin, err := h.dbSync.GetQcAdmin(hname)
+	id, err := strconv.Atoi(idstr)
 	if err != nil {
-		h.logger.LogError("failed to get admin[", hname, "] from database, err: ", err)
-		h.Data["json"] = "failed to get admin[" + hname + "] from database, err: " + err.Error()
+		h.logger.LogError("invalid value for admin id from request")
+		h.Data["json"] = "invalid value for admin id from request"
+		h.ServeJSON()
+		return
+	}
+	admin, err := h.dbSync.GetQcAdminWithId(id)
+	if err != nil {
+		h.logger.LogError("failed to get admin[", id, "] from database, err: ", err)
+		h.Data["json"] = "failed to get admin[" + idstr + "] from database, err: " + err.Error()
 		h.ServeJSON()
 		return
 	}
@@ -166,8 +173,8 @@ func (h *QcAdministratorCtl) Update() {
 	}
 	err = h.dbSync.UpdateQcAdmin(admin)
 	if err != nil {
-		h.logger.LogError("failed to update hospital[", hname, "], err: ", err)
-		h.Data["json"] = "failed to update hospital[" + hname + "], err: " + err.Error()
+		h.logger.LogError("failed to update hospital[", idstr, "], err: ", err)
+		h.Data["json"] = "failed to update hospital[" + idstr + "], err: " + err.Error()
 		h.ServeJSON()
 		return
 	}

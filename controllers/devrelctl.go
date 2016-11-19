@@ -181,17 +181,18 @@ func (h *QcDevRelCtl) GetList() {
 
 // @router / [PUT]
 func (h *QcDevRelCtl) Update() {
-	sn := h.GetString("org_sn")
-	if len(sn) == 0 {
-		h.logger.LogError("failed to parse sn info from request")
-		h.Data["json"] = "failed to parse sn info from request"
+	idstr := h.GetString("id")
+	if len(idstr) == 0 {
+		h.logger.LogError("failed to parse id info from request")
+		h.Data["json"] = "failed to parse id info from request"
 		h.ServeJSON()
 		return
 	}
-	devrel, err := h.dbSync.GetQcDevRel(sn)
+	id, _ := strconv.Atoi(idstr)
+	devrel, err := h.dbSync.GetQcDevRelWithId(id)
 	if err != nil {
-		h.logger.LogError("failed to get devrel[sn: ", sn, "] from database, err: ", err)
-		h.Data["json"] = "failed to get devrel[sn:" + sn + "] from database, err: " + err.Error()
+		h.logger.LogError("failed to get devrel[id: ", idstr, "] from database, err: ", err)
+		h.Data["json"] = "failed to get devrel[id:" + idstr + "] from database, err: " + err.Error()
 		h.ServeJSON()
 		return
 	}
@@ -236,8 +237,8 @@ func (h *QcDevRelCtl) Update() {
 	}
 	err = h.dbSync.UpdateQcDevRel(devrel)
 	if err != nil {
-		h.logger.LogError("failed to update devrel[", sn, "], err: ", err)
-		h.Data["json"] = "failed to update devrel[" + sn + "], err: " + err.Error()
+		h.logger.LogError("failed to update devrel[", idstr, "], err: ", err)
+		h.Data["json"] = "failed to update devrel[" + idstr + "], err: " + err.Error()
 		h.ServeJSON()
 		return
 	}

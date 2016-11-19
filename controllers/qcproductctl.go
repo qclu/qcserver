@@ -136,17 +136,18 @@ func (h *QcQcProductCtl) GetList() {
 
 // @router / [PUT]
 func (h *QcQcProductCtl) Update() {
-	hname := h.GetString("org_name")
-	if len(hname) == 0 {
+	idstr := h.GetString("id")
+	if len(idstr) == 0 {
 		h.logger.LogError("failed to parse qcproduct name from request")
 		h.Data["json"] = "failed to parse qcproduct name from request"
 		h.ServeJSON()
 		return
 	}
-	qcp, err := h.dbSync.GetQcQcProduct(hname)
+	id, _ := strconv.Atoi(idstr)
+	qcp, err := h.dbSync.GetQcQcProductWithId(id)
 	if err != nil {
-		h.logger.LogError("failed to get qcproduct[", hname, "] from database, err: ", err)
-		h.Data["json"] = "failed to get qcproduct[" + hname + "] from database, err: " + err.Error()
+		h.logger.LogError("failed to get qcproduct[", id, "] from database, err: ", err)
+		h.Data["json"] = "failed to get qcproduct[" + idstr + "] from database, err: " + err.Error()
 		h.ServeJSON()
 		return
 	}
@@ -230,8 +231,8 @@ func (h *QcQcProductCtl) Update() {
 	}
 	err = h.dbSync.UpdateQcQcProduct(qcp)
 	if err != nil {
-		h.logger.LogError("failed to update qcproduct[", hname, "], err: ", err)
-		h.Data["json"] = "failed to update qcproduct[" + hname + "], err: " + err.Error()
+		h.logger.LogError("failed to update qcproduct[", id, "], err: ", err)
+		h.Data["json"] = "failed to update qcproduct[" + idstr + "], err: " + err.Error()
 		h.ServeJSON()
 		return
 	}
