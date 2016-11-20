@@ -145,10 +145,10 @@ func (d *DBSync) GetQcRegRelsCond(pgid, pgsize, regmodelid, startdate, enddate, 
 		fromsql += " and d.hospital_id = " + hid
 	}
 	if len(startdate) > 0 {
-		fromsql += " and STR_TO_DATE(a.release_time, '%Y-%m-%d %H:%i:%s') >= STR_TO_DATE(" + startdate + ") "
+		fromsql += " and STR_TO_DATE(a.release_time, '%Y-%m-%d %H:%i:%s') >= STR_TO_DATE('" + startdate + "', '%Y-%m-%d %H:%i:%s') "
 	}
 	if len(enddate) > 0 {
-		fromsql += " and STR_TO_DATE(a.release_time, '%Y-%m-%d %H:%i:%s') <= STR_TO_DATE(" + enddate + ") "
+		fromsql += " and STR_TO_DATE(a.release_time, '%Y-%m-%d %H:%i:%s') <= STR_TO_DATE('" + enddate + "', '%Y-%m-%d %H:%i:%s') "
 	}
 	if len(did) > 0 {
 		fromsql += " and a.department_id=" + did

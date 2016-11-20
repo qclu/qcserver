@@ -118,8 +118,14 @@ func (h *QcReagentProduceCtl) GetList() {
 		h.ServeJSON()
 		return
 	}
-	h.logger.LogInfo("list hospital info(pageidx: ", pgidx, ", pagesize: ", pgsize, ")")
-	regproduces, err := h.dbSync.GetQcReagentProduces(pgidx, pgsize, "")
+	reg_str := h.GetString("reagentid")
+	h.logger.LogInfo("reagent: ", reg_str)
+	var condition string
+	if len(reg_str) > 0 {
+		condition = "AND reg_model_id=" + reg_str
+	}
+	h.logger.LogInfo("list reagentproduce info(pageidx: ", pgidx, ", pagesize: ", pgsize, ")")
+	regproduces, err := h.dbSync.GetQcReagentProduces(pgidx, pgsize, condition)
 	if err != nil {
 		h.logger.LogError("database operation err: ", err)
 		h.Data["json"] = "failed to get reagent produces, err: " + err.Error()
@@ -159,6 +165,10 @@ func (h *QcReagentProduceCtl) Update() {
 	new_lotnum := h.GetString("lotnum")
 	if len(new_lotnum) > 0 {
 		regproduce.LotNum = new_lotnum
+	}
+	new_expiredtime := h.GetString("expiredtime")
+	if len(new_expiredtime) > 0 {
+		regproduce.ExpiredTime = new_expiredtime
 	}
 	new_regmodel := h.GetString("regmodl")
 	if len(new_regmodel) > 0 {

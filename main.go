@@ -17,7 +17,7 @@ import (
 
 func main_start() {
 	fmt.Println("start...")
-	orm.RegisterDataBase("default", "mysql", "root:123qwe@/orm_test?charset=utf8", 30)
+	orm.RegisterDataBase("default", "mysql", "root:root@/orm_test?charset=utf8", 30)
 	orm.RegisterModel(new(models.QcAdministrator))
 	orm.RunSyncdb("default", false, true)
 
@@ -44,7 +44,7 @@ func main_admin() {
 		return
 	}
 	logger.LogInfo("Info: log module start...")
-	dbSync, err := models.NewDBSync("mysql", "root:123qwe@/orm_test?charset=utf8")
+	dbSync, err := models.NewDBSync("mysql", "root:root@/orm_test?charset=utf8")
 	if err != nil {
 		logger.LogError("Failed to init database module, error:", err)
 		return
@@ -117,7 +117,7 @@ func main_hospital1() {
 		return
 	}
 	logger.LogInfo("Info: log module start...")
-	dbSync, err := models.NewDBSync("mysql", "root:123qwe@/orm_test?charset=utf8")
+	dbSync, err := models.NewDBSync("mysql", "root:root@/orm_test?charset=utf8")
 	if err != nil {
 		logger.LogError("Failed to init database module, error:", err)
 		return
@@ -236,7 +236,7 @@ func main_devmodel() {
 		return
 	}
 	logger.LogInfo("Info: log module start...")
-	dbSync, err := models.NewDBSync("mysql", "root:123qwe@/orm_test?charset=utf8")
+	dbSync, err := models.NewDBSync("mysql", "root:root@/orm_test?charset=utf8")
 	if err != nil {
 		logger.LogError("Failed to init database module, error:", err)
 		return
@@ -328,7 +328,7 @@ func main_devmodel1() {
 		return
 	}
 	logger.LogInfo("Info: log module start...")
-	dbSync, err := models.NewDBSync("mysql", "root:123qwe@/orm_test?charset=utf8")
+	dbSync, err := models.NewDBSync("mysql", "root:root@/orm_test?charset=utf8")
 	if err != nil {
 		logger.LogError("Failed to init database module, error:", err)
 		return
@@ -424,7 +424,7 @@ func main_shwversion() {
 		return
 	}
 	logger.LogInfo("Info: log module start...")
-	dbSync, err := models.NewDBSync("mysql", "root:123qwe@/orm_test?charset=utf8")
+	dbSync, err := models.NewDBSync("mysql", "root:root@/orm_test?charset=utf8")
 	if err != nil {
 		logger.LogError("Failed to init database module, error:", err)
 		return
@@ -555,7 +555,7 @@ func main_hospital() {
 		return
 	}
 	logger.LogInfo("Info: log module start...")
-	dbSync, err := models.NewDBSync("mysql", "root:123qwe@/orm_test?charset=utf8")
+	dbSync, err := models.NewDBSync("mysql", "root:root@/orm_test?charset=utf8")
 	if err != nil {
 		logger.LogError("Failed to init database module, error:", err)
 		return
@@ -600,7 +600,7 @@ func main_department() {
 		return
 	}
 	logger.LogInfo("Info: log module start...")
-	dbSync, err := models.NewDBSync("mysql", "root:123qwe@/orm_test?charset=utf8")
+	dbSync, err := models.NewDBSync("mysql", "root:root@/orm_test?charset=utf8")
 	if err != nil {
 		logger.LogError("Failed to init database module, error:", err)
 		return
@@ -668,7 +668,7 @@ func main_devrel() {
 		return
 	}
 	logger.LogInfo("Info: log module start...")
-	dbSync, err := models.NewDBSync("mysql", "root:123qwe@/orm_test?charset=utf8")
+	dbSync, err := models.NewDBSync("mysql", "root:root@/orm_test?charset=utf8")
 	if err != nil {
 		logger.LogError("Failed to init database module, error:", err)
 		return
@@ -879,7 +879,7 @@ func main() {
 		return
 	}
 	logger.LogInfo("Info: log module start...")
-	models.DBSyncInit("mysql", "root:123qwe@/orm_test?charset=utf8")
+	models.DBSyncInit("mysql", "root:root@/orm_test?charset=utf8")
 	beego.BConfig.RunMode = "dev"
 	beego.Run()
 }
