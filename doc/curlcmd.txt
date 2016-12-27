@@ -1,7 +1,7 @@
 Hospital
 1.	创建
 	CURL:
-	curl -X POST  -d '{"Name":"BeiJing Hospital","Addr":"haidianqu", "Gis":"123.22, 64.12123"}' 127.0.0.1:8088/qcserver/hospital
+	curl -X POST  -d '{"Name":"BeiJing Hospital","Addr":"haidianqu", "Gis":"123.22, 64.12123"}' 127.0.0.1:8088/hospital
 	Result:
 	{
 	  "Object": {
@@ -245,6 +245,10 @@ Administrator
 	  "Created": "2016-11-13 00:18:52",
 	  "Updated": "2016-11-13 00:20:52"
 	}
+
+Methodology
+	1. 创建
+	curl - POST  -d '{"Name":"mth1","Annotation":"123.22, 64.12123"}' 127.0.0.1:8088/methodology
 	
 DevModel
 	1. 创建

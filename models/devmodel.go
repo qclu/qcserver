@@ -10,7 +10,7 @@ type QcDevModel struct {
 	Id          int64          `orm: "pk;auto"`
 	Name        string         `orm:"size(256);unique"`
 	Model       string         `orm:"size(256);unique"`
-	Release     string         `orm:"size(10)"`
+	RelDate     string         `orm:"size(10)"`                      //first release date
 	Methodology *QcMethodology `orm:"rel(fk);on_delete(do_nothing)"` // RelForeignKey relation
 	Annotation  string         `orm:"size(4096)"`
 	Created     string         `orm:"size(20)"`
@@ -22,7 +22,7 @@ func CreateQcDevModel(dbSync *DBSync, name, model, release string, meth *QcMetho
 	obj := &QcDevModel{
 		Name:        name,
 		Model:       model,
-		Release:     release,
+		RelDate:     release,
 		Methodology: meth,
 		Annotation:  anno,
 		Created:     time.Now().Format(TIME_FMT),

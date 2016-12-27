@@ -42,7 +42,7 @@ func (o *QcDevRelCtl) Post() {
 	o.logger.LogInfo("department info: ", department)
 	var devrel models.QcDevRel
 	json.Unmarshal(o.Ctx.Input.RequestBody, &devrel)
-	pob, err := models.CreateQcDevRel(o.dbSync, devrel.Sn, devrel.SmCard, devrel.Date, swv, department)
+	pob, err := models.CreateQcDevRel(o.dbSync, devrel.Sn, devrel.Date, swv, department)
 	if err != nil {
 		o.logger.LogError("database operation err: ", err)
 		o.Data["json"] = string("database operation err:") + err.Error()
@@ -57,7 +57,7 @@ func (o *QcDevRelCtl) Post() {
 // @router / [delete]
 func (h *QcDevRelCtl) Delete() {
 	idstr := h.GetString("id")
-	err := h.dbSync.DeleteQcObjectSQL(idstr, models.DB_T_DEVREL)
+	err := h.dbSync.DeleteQcObjectWithID(idstr, models.DB_T_DEVREL)
 	if err != nil {
 		h.logger.LogError("database operation err: ", err)
 		h.Data["json"] = "database operation err: " + err.Error()
@@ -204,10 +204,10 @@ func (h *QcDevRelCtl) Update() {
 	if len(new_date) > 0 {
 		devrel.Date = new_date
 	}
-	new_smcard := h.GetString("smcard")
-	if len(new_smcard) > 0 {
-		devrel.SmCard = new_smcard
-	}
+	//new_smcard := h.GetString("smcard")
+	//if len(new_smcard) > 0 {
+	//	devrel.SmCard = new_smcard
+	//}
 	new_swv := h.GetString("swversion")
 	if len(new_swv) > 0 {
 		new_swv_obj, err := h.dbSync.GetQcSwVersion(new_swv)

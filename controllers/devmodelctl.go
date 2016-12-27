@@ -33,7 +33,7 @@ func (o *QcDevModelCtl) Post() {
 	var ob models.QcDevModel
 	json.Unmarshal(o.Ctx.Input.RequestBody, &ob)
 	o.logger.LogInfo("devmodel: ", ob)
-	pob, err := models.CreateQcDevModel(o.dbSync, ob.Name, ob.Model, ob.Release, mth, ob.Annotation)
+	pob, err := models.CreateQcDevModel(o.dbSync, ob.Name, ob.Model, ob.RelDate, mth, ob.Annotation)
 	if err != nil {
 		o.logger.LogError("database operation err: ", err)
 		o.Data["json"] = string("database operation err:") + err.Error()
@@ -48,7 +48,7 @@ func (o *QcDevModelCtl) Post() {
 // @router / [delete]
 func (h *QcDevModelCtl) Delete() {
 	idstr := h.GetString("id")
-	err := h.dbSync.DeleteQcObjectSQL(idstr, models.DB_T_DEVMODEL)
+	err := h.dbSync.DeleteQcObjectWithID(idstr, models.DB_T_DEVMODEL)
 	if err != nil {
 		h.logger.LogError("database operation err: ", err)
 		h.Data["json"] = "database operation err: " + err.Error()
@@ -172,7 +172,7 @@ func (h *QcDevModelCtl) Update() {
 	}
 	new_release := h.GetString("release")
 	if len(new_release) > 0 {
-		devmodel.Release = new_release
+		devmodel.RelDate = new_release
 	}
 	new_mth := h.GetString("methodology")
 	if len(new_mth) > 0 {

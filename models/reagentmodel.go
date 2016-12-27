@@ -10,16 +10,20 @@ type QcReagentModel struct {
 	Id         int64       `orm: "pk;auto"`
 	Name       string      `orm:"size(256);unique"`
 	DevModel   *QcDevModel `orm:"rel(fk);on_delete(do_nothing)"` // RelForeignKey relation
-	Annotation string      `orm:"size(4096)"`
-	Created    string      `orm:"size(20)"`
-	Updated    string      `orm:"size(20)"`
-	mutex      sync.Mutex  `orm:"-"`
+	PrjId      int64
+	Unit       string     `orm:"size(20)"`
+	Annotation string     `orm:"size(4096)"`
+	Created    string     `orm:"size(20)"`
+	Updated    string     `orm:"size(20)"`
+	mutex      sync.Mutex `orm:"-"`
 }
 
-func CreateQcReagentModel(dbSync *DBSync, name, anno string, devmodel *QcDevModel) (*QcReagentModel, error) {
+func CreateQcReagentModel(dbSync *DBSync, name, unit, anno string, prjid int64, devmodel *QcDevModel) (*QcReagentModel, error) {
 	obj := &QcReagentModel{
 		Name:       name,
 		DevModel:   devmodel,
+		PrjId:      prjid,
+		Unit:       unit,
 		Annotation: anno,
 		Created:    time.Now().Format(TIME_FMT),
 		Updated:    time.Now().Format(TIME_FMT),

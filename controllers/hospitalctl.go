@@ -25,13 +25,13 @@ func (o *QcHospitalCtl) Post() {
 	var ob models.QcHospital
 	var err error
 	json.Unmarshal(o.Ctx.Input.RequestBody, &ob)
-	o.logger.LogInfo("RequestBody: ", o.Ctx.Request)
+	o.logger.LogInfo("RequestBody: ", string(o.Ctx.Input.RequestBody))
 	o.logger.LogInfo("Hospital create request: ", ob)
 	if o.dbSync == nil {
 		o.logger.LogError("dbSync is uninitialized when trying to create QcHospital, request: ", o.Ctx)
 		o.Abort("501")
 	}
-	pob, err := models.CreateQcHospital(o.dbSync, ob.Name, ob.Addr, ob.Gis)
+	pob, err := models.CreateQcHospital(o.dbSync, ob.Name, ob.Prov, ob.City, ob.Addr, ob.Gis)
 	if err != nil {
 		o.logger.LogError("database operation err: ", err)
 		o.Data["json"] = string("database operation err:") + err.Error()
@@ -53,7 +53,7 @@ func (h *QcHospitalCtl) Delete() {
 		h.ServeJSON()
 		return
 	}
-	err = h.dbSync.DeleteQcHospitalSQL(idstr)
+	err = h.dbSync.DeleteQcObjectWithID(idstr, models.DB_T_HOSPITAL)
 	if err != nil {
 		h.logger.LogError("database operation err: ", err)
 		h.Data["json"] = "internal database operation error"

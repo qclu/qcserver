@@ -44,6 +44,8 @@ func NewDBSync(dbDriver, dbDataSource string) (*DBSync, error) {
 	//fmt.Println(dbDriver,dbDataSource)
 	orm.RegisterDataBase(database, dbDriver, dbDataSource)
 
+	orm.SetMaxOpenConns(database, 10)
+	orm.SetMaxIdleConns(database, 10)
 	orm.RegisterModel(new(QcAdministrator))
 	orm.RegisterModel(new(QcHospital))
 	orm.RegisterModel(new(QcMethodology))
@@ -57,8 +59,6 @@ func NewDBSync(dbDriver, dbDataSource string) (*DBSync, error) {
 	orm.RegisterModel(new(QcReagentRel))
 	orm.RegisterModel(new(QcQcProduct))
 
-	orm.SetMaxOpenConns(database, 10)
-	orm.SetMaxIdleConns(database, 10)
 	//create table
 	forceCreate := false
 	verbose := true
@@ -466,17 +466,7 @@ func (d *DBSync) InsertQcHospital(hospital *QcHospital) error {
 	return err
 }
 
-func (d *DBSync) DeleteQcHospitalSQL(id string) error {
-	d.mutex.Lock()
-	defer d.mutex.Unlock()
-	sql := "delete from " + DB_T_HOSPITAL + " where id=" + id
-	o := orm.NewOrm()
-	d.logger.LogInfo(sql)
-	_, err := o.Raw(sql).Exec()
-	return err
-}
-
-func (d *DBSync) DeleteQcMethdologySQL(name string) error {
+func (d *DBSync) DeleteQcMethdologyWithName(name string) error {
 	d.mutex.Lock()
 	defer d.mutex.Unlock()
 	sql := "delete from " + DB_T_METHODOLOGY + " where name='" + name + "'"
@@ -486,20 +476,10 @@ func (d *DBSync) DeleteQcMethdologySQL(name string) error {
 	return err
 }
 
-func (d *DBSync) DeleteQcObjectSQL(id, table string) error {
+func (d *DBSync) DeleteQcObjectWithID(id, table string) error {
 	d.mutex.Lock()
 	defer d.mutex.Unlock()
 	sql := "delete from " + table + " where id=" + id
-	o := orm.NewOrm()
-	d.logger.LogInfo(sql)
-	_, err := o.Raw(sql).Exec()
-	return err
-}
-
-func (d *DBSync) DeleteQcAdminSQL(id string) error {
-	d.mutex.Lock()
-	defer d.mutex.Unlock()
-	sql := "delete from " + DB_T_ADMINISTRATOR + " where id=" + id
 	o := orm.NewOrm()
 	d.logger.LogInfo(sql)
 	_, err := o.Raw(sql).Exec()
@@ -520,7 +500,7 @@ func (d *DBSync) DeleteQcAdmin(admin *QcAdministrator) error {
 	return err
 }
 
-func (d *DBSync) DeleteQcSwVersionSQL(version string) error {
+func (d *DBSync) DeleteQcSwVersionWithVersion(version string) error {
 	d.mutex.Lock()
 	defer d.mutex.Unlock()
 	sql := "delete from " + DB_T_SWVERSION + " where version='" + version + "'"
@@ -642,7 +622,7 @@ func (d *DBSync) DeleteQcReagentModel(obj *QcReagentModel) error {
 	return err
 }
 
-func (d *DBSync) DeleteQcReagentRelSQL(serial string) error {
+func (d *DBSync) DeleteQcReagentRelWithSerial(serial string) error {
 	d.mutex.Lock()
 	defer d.mutex.Unlock()
 	sql := "delete from " + DB_T_REGREL + " where release_serial='" + serial + "'"
@@ -652,7 +632,7 @@ func (d *DBSync) DeleteQcReagentRelSQL(serial string) error {
 	return err
 }
 
-func (d *DBSync) DeleteQcQcProductSQL(name string) error {
+func (d *DBSync) DeleteQcQcProductWithName(name string) error {
 	d.mutex.Lock()
 	defer d.mutex.Unlock()
 	sql := "delete from " + DB_T_QCPRODUCT + " where name='" + name + "'"
@@ -662,7 +642,7 @@ func (d *DBSync) DeleteQcQcProductSQL(name string) error {
 	return err
 }
 
-func (d *DBSync) DeleteQcReagentProduceSQL(serial string) error {
+func (d *DBSync) DeleteQcReagentProduceWithSerial(serial string) error {
 	d.mutex.Lock()
 	defer d.mutex.Unlock()
 	sql := "delete from " + DB_T_REGPRODUCE + " where serial_num='" + serial + "'"
@@ -672,7 +652,7 @@ func (d *DBSync) DeleteQcReagentProduceSQL(serial string) error {
 	return err
 }
 
-func (d *DBSync) DeleteQcReagentModelSQL(name string) error {
+func (d *DBSync) DeleteQcReagentModelWithName(name string) error {
 	d.mutex.Lock()
 	defer d.mutex.Unlock()
 	sql := "delete from " + DB_T_REGMODEL + " where name='" + name + "'"
@@ -682,7 +662,7 @@ func (d *DBSync) DeleteQcReagentModelSQL(name string) error {
 	return err
 }
 
-func (d *DBSync) DeleteQcDevRelSQL(sn string) error {
+func (d *DBSync) DeleteQcDevRelWithSn(sn string) error {
 	d.mutex.Lock()
 	defer d.mutex.Unlock()
 	sql := "delete from " + DB_T_DEVREL + " where sn='" + sn + "'"
@@ -692,20 +672,10 @@ func (d *DBSync) DeleteQcDevRelSQL(sn string) error {
 	return err
 }
 
-func (d *DBSync) DeleteQcHwVersionSQL(version string) error {
+func (d *DBSync) DeleteQcHwVersionWithVersion(version string) error {
 	d.mutex.Lock()
 	defer d.mutex.Unlock()
 	sql := "delete from " + DB_T_HWVERSION + " where version='" + version + "'"
-	o := orm.NewOrm()
-	d.logger.LogInfo(sql)
-	_, err := o.Raw(sql).Exec()
-	return err
-}
-
-func (d *DBSync) DeleteQcDevModelSQL(name string) error {
-	d.mutex.Lock()
-	defer d.mutex.Unlock()
-	sql := "delete from " + DB_T_DEVMODEL + " where name='" + name + "'"
 	o := orm.NewOrm()
 	d.logger.LogInfo(sql)
 	_, err := o.Raw(sql).Exec()

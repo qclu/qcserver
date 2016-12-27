@@ -7,21 +7,21 @@ import (
 )
 
 type QcDevRel struct {
-	Id        int64         `orm: "pk;auto"`
-	SwVersion *QcSwVersion  `orm:"rel(fk);on_delete(do_nothing)"` // RelForeignKey relation
-	Sn        string        `orm:"size(256);unique"`
-	Date      string        `orm:"size(10)"`
-	SmCard    string        `orm:"size(128)"`
-	Receiver  *QcDepartment `orm:"rel(fk);on_delete(do_nothing)"` // RelForeignKey relation
-	Created   string        `orm:"size(20)"`
-	Updated   string        `orm:"size(20)"`
-	mutex     sync.Mutex    `orm:"-"`
+	Id        int64        `orm: "pk;auto"`
+	SwVersion *QcSwVersion `orm:"rel(fk);on_delete(do_nothing)"` // RelForeignKey relation
+	Sn        string       `orm:"size(256);unique"`
+	Date      string       `orm:"size(10)"`
+	//SmCard    string        `orm:"size(128)"`
+	Receiver *QcDepartment `orm:"rel(fk);on_delete(do_nothing)"` // RelForeignKey relation
+	Created  string        `orm:"size(20)"`
+	Updated  string        `orm:"size(20)"`
+	mutex    sync.Mutex    `orm:"-"`
 }
 
-func CreateQcDevRel(dbSync *DBSync, sn, smcard, date string, swv *QcSwVersion, department *QcDepartment) (*QcDevRel, error) {
+func CreateQcDevRel(dbSync *DBSync, sn, date string, swv *QcSwVersion, department *QcDepartment) (*QcDevRel, error) {
 	obj := &QcDevRel{
-		Sn:        sn,
-		SmCard:    smcard,
+		Sn: sn,
+		//SmCard:    smcard,
 		SwVersion: swv,
 		Date:      date,
 		Receiver:  department,
@@ -76,9 +76,9 @@ func (obj *QcDevRel) Update(dbSync *DBSync, swv *QcSwVersion, sn, date, smcard s
 	if len(date) == 0 {
 		obj.Date = date
 	}
-	if len(smcard) == 0 {
-		obj.SmCard = smcard
-	}
+	//if len(smcard) == 0 {
+	//	obj.SmCard = smcard
+	//}
 	if recv != nil {
 		obj.Receiver = recv
 	}

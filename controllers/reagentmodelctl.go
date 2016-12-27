@@ -32,7 +32,7 @@ func (o *QcReagentModelCtl) Post() {
 	}
 	var ob models.QcReagentModel
 	json.Unmarshal(o.Ctx.Input.RequestBody, &ob)
-	pob, err := models.CreateQcReagentModel(o.dbSync, ob.Name, ob.Annotation, devmodel)
+	pob, err := models.CreateQcReagentModel(o.dbSync, ob.Name, ob.Unit, ob.Annotation, ob.PrjId, devmodel)
 	if err != nil {
 		o.logger.LogError("database operation err: ", err)
 		o.Data["json"] = string("database operation err:") + err.Error()
@@ -47,7 +47,7 @@ func (o *QcReagentModelCtl) Post() {
 // @router / [delete]
 func (h *QcReagentModelCtl) Delete() {
 	idstr := h.GetString("id")
-	err := h.dbSync.DeleteQcObjectSQL(idstr, models.DB_T_REGMODEL)
+	err := h.dbSync.DeleteQcObjectWithID(idstr, models.DB_T_REGMODEL)
 	if err != nil {
 		h.logger.LogError("database operation err: ", err)
 		h.Data["json"] = "database operation err: " + err.Error()

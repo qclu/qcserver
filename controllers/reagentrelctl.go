@@ -57,7 +57,7 @@ func (o *QcReagentRelCtl) Post() {
 // @router / [delete]
 func (h *QcReagentRelCtl) Delete() {
 	idstr := h.GetString("id")
-	err := h.dbSync.DeleteQcObjectSQL(idstr, models.DB_T_REGREL)
+	err := h.dbSync.DeleteQcObjectWithID(idstr, models.DB_T_REGREL)
 	if err != nil {
 		h.logger.LogError("database operation err: ", err)
 		h.Abort("501")

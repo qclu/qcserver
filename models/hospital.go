@@ -9,6 +9,8 @@ import (
 type QcHospital struct {
 	Id      int64      `orm: "pk;auto"`
 	Name    string     `orm:"size(256);unique"`
+	Prov    string     `orm:"size(2048)"`
+	City    string     `orm:"size(2048)"`
 	Addr    string     `orm:"size(2048)"`
 	Gis     string     `orm:"size(128)"`
 	Created string     `orm:"size(20)"`
@@ -16,14 +18,17 @@ type QcHospital struct {
 	mutex   sync.Mutex `orm:"-"`
 }
 
-func CreateQcHospital(dbSync *DBSync, name, addr, gis string) (*QcHospital, error) {
+func CreateQcHospital(dbSync *DBSync, name, prov, city, addr, gis string) (*QcHospital, error) {
 	h := &QcHospital{
 		Name:    name,
+		Prov:    prov,
+		City:    city,
 		Addr:    addr,
 		Gis:     gis,
 		Created: time.Now().Format(TIME_FMT),
 		Updated: time.Now().Format(TIME_FMT),
 	}
+	dbSync.logger.LogInfo("Hospital to create: ", h)
 	err := dbSync.InsertQcHospital(h)
 	if err != nil {
 		dbSync.logger.LogError("Failed to add new hospital info to database, error: ", err)

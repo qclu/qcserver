@@ -32,7 +32,14 @@ func (o *QcDepartmentCtl) Post() {
 		return
 	}
 	var ob models.QcDepartment
-	json.Unmarshal(o.Ctx.Input.RequestBody, &ob)
+	err = json.Unmarshal(o.Ctx.Input.RequestBody, &ob)
+	if err != nil {
+		o.logger.LogError("invalid parameter, err: ", err)
+		o.Data["json"] = string("invalid parameter, err:") + err.Error()
+		o.ServeJSON()
+		return
+	}
+	o.logger.LogInfo("department:", string(o.Ctx.Input.RequestBody))
 	o.logger.LogInfo("Department create request: ", ob)
 	pob, err := models.CreateQcDepartment(o.dbSync, ob.Name, hospital)
 	if err != nil {
@@ -58,7 +65,7 @@ func (h *QcDepartmentCtl) Delete() {
 			return
 		}
 	}
-	err := h.dbSync.DeleteQcObjectSQL(idstr, models.DB_T_DEPARTMENT)
+	err := h.dbSync.DeleteQcObjectWithID(idstr, models.DB_T_DEPARTMENT)
 	if err != nil {
 		h.logger.LogError("database operation err: ", err)
 		h.Data["json"] = "database operation err: " + err.Error()

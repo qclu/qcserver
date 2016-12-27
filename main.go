@@ -857,8 +857,8 @@ func main_devrel() {
 	fmt.Println("Create device release info...")
 	for i := 0; i < 10; i++ {
 		sn := fmt.Sprintf("0xBC%vDXE%vAOO%v", i+3, i+1, i)
-		smcard := fmt.Sprintf("SMCARD_%v", i)
-		department, err := models.CreateQcDevRel(dbSync, sn, smcard,
+		//smcard := fmt.Sprintf("SMCARD_%v", i)
+		department, err := models.CreateQcDevRel(dbSync, sn,
 			time.Now().Format(models.TIME_FMT), swversions[i%len(swversions)], departments[i%len(departments)])
 		if err != nil {
 			logger.LogError("Failed to create department, error: ", err)
@@ -879,7 +879,8 @@ func main() {
 		return
 	}
 	logger.LogInfo("Info: log module start...")
-	models.DBSyncInit("mysql", "root:root@/orm_test?charset=utf8")
+	models.DBSyncInit("mysql", "root:123qwe@/orm_test?charset=utf8")
 	beego.BConfig.RunMode = "dev"
+	beego.ViewsPath = "views"
 	beego.Run()
 }
