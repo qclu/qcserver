@@ -17,13 +17,15 @@
 	// 百度地图API功能
 	//var map = new BMap.Map("allmap");  // 创建Map实例
 	var map = new BMap.Map("allmap",{minZoom:4,maxZoom:24}); 
-	map.centerAndZoom("南京",15);      // 初始化地图,用城市名设置地图中心点
+	map.centerAndZoom({{.City}},15);      // 初始化地图,用城市名设置地图中心点
 	map.enableScrollWheelZoom(true);
 	map.setZoom(14);   
 	map.enableScrollWheelZoom(true);
-	var new_point = new BMap.Point(120.01, 30.22);
-	var marker = new BMap.Marker(new_point);  // 创建标注
-	map.addOverlay(marker);              // 将标注添加到地图中
+    {{range .Gis}}
+	    var new_point = new BMap.Point({{.Longitude}}, {{.Latitude}});
+	    var marker = new BMap.Marker(new_point);  // 创建标注
+	    map.addOverlay(marker);              // 将标注添加到地图中
+    {{end}}
 	map.panTo(new_point);      
 </script>
 

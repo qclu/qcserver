@@ -1,3 +1,17 @@
+MapLocationGen
+url: http://192.168.86.135:8088/location
+method: POST
+data:
+{
+	"City":"杭州",
+	"Gis": [
+		{"Longitude":120.16, "Latitude":30.25},
+		{"Longitude":120.21, "Latitude":30.15},
+		{"Longitude":120.06, "Latitude":30.35}
+	]
+}
+
+
 Hospital
 1.	创建
 	CURL:

@@ -86,4 +86,10 @@ func init() {
 		),
 	)
 	beego.AddNamespace(qcpns)
+	qcmaploc := beego.NewNamespace("/location",
+		beego.NSInclude(
+			&controllers.QcMapGeneratorCtl{},
+		),
+	)
+	beego.AddNamespace(qcmaploc)
 }

@@ -881,6 +881,6 @@ func main() {
 	logger.LogInfo("Info: log module start...")
 	models.DBSyncInit("mysql", "root:123qwe@/orm_test?charset=utf8")
 	beego.BConfig.RunMode = "dev"
-	beego.ViewsPath = "views"
+	beego.SetViewsPath("views")
 	beego.Run()
 }
