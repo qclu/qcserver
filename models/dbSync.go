@@ -99,6 +99,42 @@ func (d *DBSync) GetQcDepartmentsCond(pgid, pgsize, hid string) ([]*QcDepartment
 	return departments, err
 }
 
+func (d *DBSync) GetQcDevLogCond(pgid, pgsize, msgtype, devsn string) ([]*QcDevLog, error) {
+	currentpage, _ := strconv.Atoi(pgid)
+	if currentpage <= 0 {
+		currentpage = 0
+	}
+	pagesize, _ := strconv.Atoi(pgsize)
+	var rs orm.RawSeter
+	o := orm.NewOrm()
+	fromsql := " FROM " + DB_T_DEVLOG + " as a where 1>0 "
+	if len(msgtype) > 0 {
+		fromsql += " and a.type=" + msgtype
+	}
+	var logents []*QcDevLog
+	var err error
+	if len(devsn) > 0 {
+		devrel, err := d.GetQcDevRel(devsn)
+		if err != nil {
+			dbSync.logger.LogError("Failed to get dev rel with sn[", devsn, "], err: ", err)
+			return logents, err
+		}
+		devid := strconv.FormatInt(devrel.Id, 10)
+		fromsql += " and a.dev_id= '" + devid + "'"
+	}
+	selsql := "select * "
+	var limitsql string = ""
+	if pagesize > 0 {
+		limitsql = " limit " + con.Itoa((currentpage)*pagesize) + "," + con.Itoa(pagesize)
+	}
+	rs = o.Raw(selsql + fromsql + limitsql)
+	dbSync.logger.LogInfo("Exec Sql: ", selsql+fromsql+limitsql)
+	if _, err = rs.QueryRows(&logents); err != nil {
+		d.logger.LogError("Failed to list regmodels, err:", err)
+	}
+	return logents, err
+}
+
 func (d *DBSync) GetQcReagentModelsCond(pgid, pgsize, devid, name string) ([]*QcReagentModel, error) {
 	currentpage, _ := strconv.Atoi(pgid)
 	if currentpage <= 0 {

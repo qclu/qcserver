@@ -17,6 +17,7 @@ const (
 	DB_T_DEVREL        = "qc_dev_rel"
 	DB_T_HWVERSION     = "qc_hw_version"
 	DB_T_SWVERSION     = "qc_sw_version"
+	DB_T_DEVLOG        = "qc_dev_log"
 )
 
 //error definition

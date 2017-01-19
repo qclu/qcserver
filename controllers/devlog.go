@@ -1,0 +1,168 @@
+package controllers
+
+import (
+	"encoding/json"
+	"github.com/astaxie/beego"
+	"qcserver/models"
+	"qcserver/util/log"
+	"strconv"
+)
+
+// Operations about object
+type QcDevLogCtl struct {
+	beego.Controller
+	logger *log.Log
+	dbSync *models.DBSync
+}
+
+func (this *QcDevLog) Prepare() {
+	this.logger = log.GetLog()
+	this.dbSync = models.GetDBSync()
+}
+
+// @router /list [get]
+func (h *QcDevLog) GetList() {
+	pgidx_str := h.GetString("pageidx")
+	h.logger.LogInfo("pageidx: ", pgidx_str)
+	pgidx, err := strconv.Atoi(pgidx_str)
+	if err != nil {
+		h.logger.LogError("failed to parse 'pageidx' from request, err: ", err)
+		h.Data["json"] = "invalid parse 'pageidx' from request, err: " + err.Error()
+		h.ServeJSON()
+		return
+	}
+	pgsize_str := h.GetString("pagesize")
+	h.logger.LogInfo("pagesize: ", pgsize_str)
+	pgsize, err := strconv.Atoi(pgsize_str)
+	if err != nil {
+		h.logger.LogError("failed to parse 'pagesize' from request, err: ", err)
+		h.Data["json"] = "invalid parse 'pagesize' from request, err: " + err.Error()
+		h.ServeJSON()
+		return
+	}
+	msgtype := h.GetString("type")
+	h.logger.LogInfo("type: ", msgtype)
+	devsn := h.GetString("sn")
+	h.logger.LogInfo("sn: ", devsn)
+	logs, err := h.dbSync.GetQcDevLogCond(pgidx, pgsize, msgtype, devsn)
+	if err != nil {
+		h.logger.LogError("database operation err: ", err)
+		h.Data["json"] = "failed to get dev logs, err: " + err.Error()
+		h.ServeJSON()
+		return
+	}
+	//entcnt, _ := h.dbSync.GetTotalCnt(models.DB_T_QCPRODUCT)
+	res_data := make(map[string]interface{})
+	res_data["totalnum"] = len(qcps)
+	res_data["objects"] = qcps
+	h.Data["json"] = res_data
+	h.ServeJSON()
+	return
+}
+
+// @router / [PUT]
+func (h *QcQcProductCtl) Update() {
+	idstr := h.GetString("id")
+	if len(idstr) == 0 {
+		h.logger.LogError("failed to parse qcproduct name from request")
+		h.Data["json"] = "failed to parse qcproduct name from request"
+		h.ServeJSON()
+		return
+	}
+	id, _ := strconv.Atoi(idstr)
+	qcp, err := h.dbSync.GetQcQcProductWithId(id)
+	if err != nil {
+		h.logger.LogError("failed to get qcproduct[", id, "] from database, err: ", err)
+		h.Data["json"] = "failed to get qcproduct[" + idstr + "] from database, err: " + err.Error()
+		h.ServeJSON()
+		return
+	}
+	new_name := h.GetString("name")
+	if len(new_name) > 0 {
+		qcp.Name = new_name
+	}
+	new_regmodel := h.GetString("reagentmodel")
+	if len(new_regmodel) > 0 {
+		new_regmodel_obj, err := h.dbSync.GetQcReagentModel(new_regmodel)
+		if err != nil {
+			h.logger.LogError("failed to get regmodel[", new_regmodel, "] info, err: ", err)
+			h.Data["json"] = "failed to get regmodel[" + new_regmodel + "] info, err: " + err.Error()
+			h.ServeJSON()
+			return
+		}
+		qcp.RegModel = new_regmodel_obj
+	}
+	new_anno := h.GetString("annotation")
+	if len(new_anno) > 0 {
+		qcp.Annotation = new_anno
+	}
+	new_tea := h.GetString("tea")
+	if len(new_tea) > 0 {
+		tea, err := strconv.ParseFloat(new_tea, 64)
+		if err != nil {
+			h.logger.LogError("invalid parameter for 'tea'[", new_tea, "] info, err: ", err)
+			h.Data["json"] = "invalid parameter for 'tea'[" + new_tea + "] info, err: " + err.Error()
+			h.ServeJSON()
+			return
+		}
+		qcp.Tea = tea
+	}
+	new_rg := h.GetString("range")
+	if len(new_rg) > 0 {
+		qcp.Range = new_rg
+	}
+	new_nsd := h.GetString("nsd")
+	if len(new_nsd) > 0 {
+		nsd, err := strconv.ParseFloat(new_nsd, 64)
+		if err != nil {
+			h.logger.LogError("invalid parameter for 'nsd'[", new_nsd, "] info, err: ", err)
+			h.Data["json"] = "invalid parameter for 'nsd'[" + new_nsd + "] info, err: " + err.Error()
+			h.ServeJSON()
+			return
+		}
+		qcp.Nsd = nsd
+	}
+	new_fixd := h.GetString("fixdeviation")
+	if len(new_fixd) > 0 {
+		fixd, err := strconv.ParseFloat(new_fixd, 64)
+		if err != nil {
+			h.logger.LogError("invalid parameter for 'fixdeviation'[", new_fixd, "] info, err: ", err)
+			h.Data["json"] = "invalid parameter for 'fixdeviation'[" + new_fixd + "] info, err: " + err.Error()
+			h.ServeJSON()
+			return
+		}
+		qcp.FixedDeviation = fixd
+	}
+	new_percent := h.GetString("percent")
+	if len(new_percent) > 0 {
+		percent, err := strconv.ParseFloat(new_percent, 64)
+		if err != nil {
+			h.logger.LogError("invalid parameter for 'percent'[", new_percent, "] info, err: ", err)
+			h.Data["json"] = "invalid parameter for 'percent'[" + new_percent + "] info, err: " + err.Error()
+			h.ServeJSON()
+			return
+		}
+		qcp.Percent = percent
+	}
+	new_cv := h.GetString("cv")
+	if len(new_cv) > 0 {
+		cv, err := strconv.ParseFloat(new_cv, 64)
+		if err != nil {
+			h.logger.LogError("invalid parameter for 'cv'[", new_cv, "] info, err: ", err)
+			h.Data["json"] = "invalid parameter for 'cv'[" + new_cv + "] info, err: " + err.Error()
+			h.ServeJSON()
+			return
+		}
+		qcp.Cv = cv
+	}
+	err = h.dbSync.UpdateQcQcProduct(qcp)
+	if err != nil {
+		h.logger.LogError("failed to update qcproduct[", id, "], err: ", err)
+		h.Data["json"] = "failed to update qcproduct[" + idstr + "], err: " + err.Error()
+		h.ServeJSON()
+		return
+	}
+	h.Data["json"] = qcp
+	h.ServeJSON()
+	return
+}
