@@ -3,32 +3,33 @@ package models
 import (
 	_ "github.com/go-sql-driver/mysql"
 	"sync"
-	"time"
 )
 
-type QcDevLog struct {
-	Id       int64     `orm: "pk;auto"`
-	Dev      *QcDevRel `orm:"rel(fk);on_delete(do_nothing)"`
-	Type     uint16
-	Reported string     `orm:"size(20)"`
-	Content  string     `orm:"size(4096)"`
-	mutex    sync.Mutex `orm:"-"`
+type QcDevStat struct {
+	Id        int64     `orm: "pk;auto"`
+	Dev       *QcDevRel `orm:"rel(fk);on_delete(do_nothing)"`
+	Latitude  string    `orm:"size(20)"`
+	Longitude string    `orm:"size(20)"`
+	WorkCnt   int64
+	Reported  string     `orm:"size(20)"`
+	mutex     sync.Mutex `orm:"-"`
 }
 
-func CreateQcDevLog(dbSync *DBSync, log_type uint16, content string, dev *QcDevRel) (*QcDevLog, error) {
-	obj := &QcDevLog{
-		Dev:      dev,
-		Type:     log_type,
-		Content:  content,
-		Reported: time.Now().Format(TIME_FMT),
-	}
-	err := dbSync.InsertQcDevLog(obj)
-	if err != nil {
-		dbSync.logger.LogError("Failed to add new dev log entry to database, error: ", err)
-		return nil, err
-	}
-	return obj, nil
-}
+//func CreateQcDevStat(dbSync *DBSync, latitude, longitude, reported string, dev *QcDevRel, workcnt int64) (*QcDevLog, error) {
+//	obj := &QcDevStat{
+//		Dev:       dev,
+//		Latitude: latitude,
+//		Longitude: longitude,
+//		WorkCnt: workcnt,
+//		Reported:  time.Now().Format(TIME_FMT),
+//	}
+//	err := dbSync.InsertQcDevLog(obj)
+//	if err != nil {
+//		dbSync.logger.LogError("Failed to add new dev log entry to database, error: ", err)
+//		return nil, err
+//	}
+//	return obj, nil
+//}
 
 //func DeleteQcDepartment(dbSync *DBSync, dname, hname string) error {
 //	department, err := dbSync.GetQcDepartment(dname, hname)
