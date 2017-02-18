@@ -22,7 +22,7 @@
 	map.setZoom(14);   
 	map.enableScrollWheelZoom(true);
     {{range .Gis}}
-	    var new_point = new BMap.Point({{.Longitude}}, {{.Latitude}});
+	    var new_point = new BMap.Point({{.Latitude}}, {{.Longitude}});
 	    var marker = new BMap.Marker(new_point);  // 创建标注
 	    map.addOverlay(marker);              // 将标注添加到地图中
     {{end}}

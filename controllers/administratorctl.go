@@ -24,7 +24,9 @@ func (this *QcAdministratorCtl) Prepare() {
 func (o *QcAdministratorCtl) Post() {
 	var ob models.QcAdministrator
 	var err error
+	o.logger.LogInfo("request body:", string(o.Ctx.Input.RequestBody))
 	json.Unmarshal(o.Ctx.Input.RequestBody, &ob)
+	o.logger.LogInfo("username: ", ob.Username)
 	pob, err := models.CreateQcAdmin(o.dbSync, ob.Username, ob.Password, ob.Role)
 	if err != nil {
 		o.logger.LogError("database operation err: ", err)

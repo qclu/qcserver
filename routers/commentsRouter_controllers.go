@@ -76,6 +76,13 @@ func init() {
 			AllowHTTPMethods: []string{"PUT"},
 			Params: nil})
 
+	beego.GlobalControllerRouter["qcserver/controllers:QcDevLogCtl"] = append(beego.GlobalControllerRouter["qcserver/controllers:QcDevLogCtl"],
+		beego.ControllerComments{
+			Method: "GetList",
+			Router: `/list`,
+			AllowHTTPMethods: []string{"get"},
+			Params: nil})
+
 	beego.GlobalControllerRouter["qcserver/controllers:QcDevModelCtl"] = append(beego.GlobalControllerRouter["qcserver/controllers:QcDevModelCtl"],
 		beego.ControllerComments{
 			Method: "Post",
@@ -218,9 +225,9 @@ func init() {
 
 	beego.GlobalControllerRouter["qcserver/controllers:QcMapGeneratorCtl"] = append(beego.GlobalControllerRouter["qcserver/controllers:QcMapGeneratorCtl"],
 		beego.ControllerComments{
-			Method: "Post",
+			Method: "Get",
 			Router: `/`,
-			AllowHTTPMethods: []string{"post"},
+			AllowHTTPMethods: []string{"get"},
 			Params: nil})
 
 	beego.GlobalControllerRouter["qcserver/controllers:QcMethodologyCtl"] = append(beego.GlobalControllerRouter["qcserver/controllers:QcMethodologyCtl"],

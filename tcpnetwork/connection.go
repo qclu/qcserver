@@ -2,7 +2,7 @@ package tcpnetwork
 
 import (
 	"errors"
-	"github.com/golang/protobuf/proto"
+	//"github.com/golang/protobuf/proto"
 	"net"
 	"qcserver/util/log"
 	"sync/atomic"
@@ -84,7 +84,7 @@ type ConnEvent struct {
 	Conn      *Connection
 	Msg       *QcMessage
 	Userdata  interface{}
-	PbM       proto.Message
+	//PbM       proto.Message
 }
 
 func newConnEvent(et int, c *Connection, msg *QcMessage) *ConnEvent {
@@ -160,17 +160,17 @@ func (c *Connection) pushEvent(et int, msg *QcMessage) {
 	c.eventQueue.Push(evt)
 }
 
-func (c *Connection) pushPbEvent(pb proto.Message) {
-	if nil == c.eventQueue {
-		panic("Nil event queue")
-		return
-	}
-	c.eventQueue.Push(&ConnEvent{
-		EventType: KConnEvent_Data,
-		Conn:      c,
-		PbM:       pb,
-	})
-}
+//func (c *Connection) pushPbEvent(pb proto.Message) {
+//	if nil == c.eventQueue {
+//		panic("Nil event queue")
+//		return
+//	}
+//	c.eventQueue.Push(&ConnEvent{
+//		EventType: KConnEvent_Data,
+//		Conn:      c,
+//		PbM:       pb,
+//	})
+//}
 
 // SetSyncExecuteFunc , you can set a callback that you can synchoronously process the event in every connection's event routine
 // If the callback function return true, the event will not be dispatched
@@ -460,6 +460,7 @@ func (c *Connection) unpack() (msg *QcMessage, err error) {
 	}
 	//	check length
 	msg.MsgHeader = c.UnserializeHeader(headBuf)
+	c.logger.LogInfo("header datalen: ", msg.MsgHeader.DataLen)
 	packetLength := msg.MsgHeader.DataLen + ProtocolMsgTailLength + ProtocolMsgHeaderLength
 	if packetLength > c.maxReadBufferLength {
 		c.logger.LogError("The stream data is too long")

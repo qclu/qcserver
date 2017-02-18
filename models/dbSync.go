@@ -1999,3 +1999,22 @@ func (d *DBSync) GetDevmodelCntOfMethodologyName(mth_name string) (int64, error)
 	}
 	return d.GetDevmodelCntOfMethodologyId(mth.Id)
 }
+
+type QcGisInfo struct {
+	Longitude string
+	Latitude  string
+}
+
+func (d *DBSync) GetAllGisInfo() ([]*QcGisInfo, error) {
+	var gisdata []*QcGisInfo
+	var err error
+	d.mutex.Lock()
+	defer d.mutex.Unlock()
+	o := orm.NewOrm()
+	rs := o.Raw("select latitude, longitude from  " + DB_T_DEVSTAT + "  where id >=0 ")
+	if _, err = rs.QueryRows(&gisdata); err != nil {
+		d.logger.LogError("Failed to list gis info, error: ", err)
+		return nil, err
+	}
+	return gisdata, nil
+}

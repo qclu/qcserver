@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"encoding/json"
 	"fmt"
 	"os"
 	"os/signal"
@@ -13,7 +14,7 @@ import (
 )
 
 var (
-	kServerAddress  = "localhost:14444"
+	kServerAddress  = "118.178.188.139:14444"
 	serverConnected int32
 	stopFlag        int32
 )
@@ -99,8 +100,23 @@ func routineInput(wg *sync.WaitGroup, clientConn *tcpnetwork.Connection) {
 			log.Println("Not connected")
 			continue
 		}
-		msg.MsgData = []byte(str)
+		statinfo := &tcpnetwork.StatInfo{
+			DevName:   "dev1",
+			Hospital:  "协和医院",
+			Location:  str,
+			PostCode:  "100010",
+			HwVersion: "HW1111",
+			SwVersion: "SW0101",
+			WorkCnt:   1000,
+		}
+		var err error
+		msg.MsgData, err = json.Marshal(statinfo)
+		if err != nil {
+			fmt.Println("Failed to marshal statinfo, err: ", err)
+			continue
+		}
 		msg.MsgHeader.DataLen = uint32(len(msg.MsgData))
+		msg.MsgHeader.SrvId = 1
 		log.Println("Send data[", str, "], tid: ", msg.MsgHeader.TransactionId, ", len: ", msg.MsgHeader.DataLen)
 		clientConn.Send(&msg, 0)
 		msg.MsgHeader.TransactionId++

@@ -20,7 +20,6 @@ type TCPNetworkConf struct {
 type TCPNetwork struct {
 	streamProtocol  *StreamProtocol
 	eventQueue      chan *ConnEvent
-	rplQueue        chan *ConnEvent
 	listener        net.Listener
 	Conf            TCPNetworkConf
 	connIdForServer int
@@ -35,7 +34,6 @@ type TCPNetwork struct {
 func NewTCPNetwork(eventQueueSize int, sp *StreamProtocol) *TCPNetwork {
 	s := &TCPNetwork{}
 	s.eventQueue = make(chan *ConnEvent, eventQueueSize)
-	s.rplQueue = make(chan *ConnEvent, eventQueueSize)
 	s.streamProtocol = sp
 	s.connsForServer = make(map[int]*Connection)
 	s.connsForClient = make(map[int]*Connection)
@@ -44,26 +42,6 @@ func NewTCPNetwork(eventQueueSize int, sp *StreamProtocol) *TCPNetwork {
 	s.Conf.SendBufferSize = kServerConf_SendBufferSize
 	s.logger = log.GetLog()
 	return s
-}
-
-// Push implements the IEventQueue interface
-func (t *TCPNetwork) PushRpl(evt *ConnEvent) {
-	if nil == t.rplQueue {
-		return
-	}
-
-	//	push timeout
-	select {
-	case t.rplQueue <- evt:
-		{
-
-		}
-	case <-time.After(time.Second * 5):
-		{
-			evt.Conn.close()
-		}
-	}
-
 }
 
 // Push implements the IEventQueue interface
@@ -84,17 +62,6 @@ func (t *TCPNetwork) Push(evt *ConnEvent) {
 		}
 	}
 
-}
-
-// Pop the event in event queue
-func (t *TCPNetwork) PopRpl() *ConnEvent {
-	evt, ok := <-t.rplQueue
-	if !ok {
-		//	event queue already closed
-		return nil
-	}
-
-	return evt
 }
 
 // Pop the event in event queue
@@ -208,6 +175,7 @@ SERVE_LOOP:
 			{
 				if !ok {
 					//	channel closed or shutdown
+					t.logger.LogError("channel closed or shutdown")
 					break SERVE_LOOP
 				}
 

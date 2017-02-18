@@ -18,6 +18,7 @@ const (
 	DB_T_HWVERSION     = "qc_hw_version"
 	DB_T_SWVERSION     = "qc_sw_version"
 	DB_T_DEVLOG        = "qc_dev_log"
+	DB_T_DEVSTAT       = "qc_dev_stat"
 )
 
 //error definition

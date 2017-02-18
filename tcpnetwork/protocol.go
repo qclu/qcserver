@@ -60,3 +60,13 @@ func NewMsgTail() *QcMessageTail {
 	tail := &QcMessageTail{}
 	return tail
 }
+
+type StatInfo struct {
+	DevName   string `json: dev_name`
+	Hospital  string `json: hosp_name`
+	Location  string `json: location`
+	PostCode  string `json: postcode`
+	HwVersion string `json: h_ver`
+	SwVersion string `json: s_ver`
+	WorkCnt   int64  `json: work_cnt`
+}

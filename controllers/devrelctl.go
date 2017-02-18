@@ -91,7 +91,7 @@ func (h *QcDevRelCtl) Get() {
 			h.ServeJSON()
 			return
 		}
-		devrel, err = h.dbSync.GetQcDevRelWithId(id)
+		devrel, err = h.dbSync.GetQcDevRelWithId(uint64(id))
 		if err != nil {
 			h.logger.LogError("database operation err: ", err)
 			h.Data["json"] = "database operation err: " + err.Error()
@@ -189,7 +189,7 @@ func (h *QcDevRelCtl) Update() {
 		return
 	}
 	id, _ := strconv.Atoi(idstr)
-	devrel, err := h.dbSync.GetQcDevRelWithId(id)
+	devrel, err := h.dbSync.GetQcDevRelWithId(uint64(id))
 	if err != nil {
 		h.logger.LogError("failed to get devrel[id: ", idstr, "] from database, err: ", err)
 		h.Data["json"] = "failed to get devrel[id:" + idstr + "] from database, err: " + err.Error()
