@@ -153,6 +153,20 @@ func init() {
 			AllowHTTPMethods: []string{"PUT"},
 			Params: nil})
 
+	beego.GlobalControllerRouter["qcserver/controllers:QcFileServiceCtl"] = append(beego.GlobalControllerRouter["qcserver/controllers:QcFileServiceCtl"],
+		beego.ControllerComments{
+			Method: "Post",
+			Router: `/`,
+			AllowHTTPMethods: []string{"post"},
+			Params: nil})
+
+	beego.GlobalControllerRouter["qcserver/controllers:QcFileServiceCtl"] = append(beego.GlobalControllerRouter["qcserver/controllers:QcFileServiceCtl"],
+		beego.ControllerComments{
+			Method: "Get",
+			Router: `/`,
+			AllowHTTPMethods: []string{"get"},
+			Params: nil})
+
 	beego.GlobalControllerRouter["qcserver/controllers:QcHospitalCtl"] = append(beego.GlobalControllerRouter["qcserver/controllers:QcHospitalCtl"],
 		beego.ControllerComments{
 			Method: "Post",

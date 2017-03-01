@@ -1071,3 +1071,6 @@ QcReagentRel
 QcDepartment
 	根据hospitalid list		医院id
 		curl -X  GET  127.0.0.1:8088/department/list?pageidx=0\&pagesize=0\&hospitalid=2
+		
+		
+

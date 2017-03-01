@@ -140,6 +140,7 @@ func (h *QcDevModelCtl) GetList() {
 		h.ServeJSON()
 		return
 	}
+	h.logger.LogInfo("devmodel: ", devmodels[0])
 	//entcnt, _ := h.dbSync.GetTotalCnt(models.DB_T_DEVMODEL)
 	res_data := make(map[string]interface{})
 	res_data["totalnum"] = len(devmodels)

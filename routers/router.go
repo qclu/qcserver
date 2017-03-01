@@ -92,4 +92,10 @@ func init() {
 		),
 	)
 	beego.AddNamespace(qcmaploc)
+	fileserviceloc := beego.NewNamespace("/fileservice",
+		beego.NSInclude(
+			&controllers.QcFileServiceCtl{},
+		),
+	)
+	beego.AddNamespace(fileserviceloc)
 }

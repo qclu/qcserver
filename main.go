@@ -882,6 +882,7 @@ func main() {
 	logger.LogInfo("Info: log module start...")
 
 	err = models.DBSyncInit("mysql", "root:1qaz@WSX@/qcdatabase?charset=utf8")
+	//err = models.DBSyncInit("mysql", "root:123qwe@/orm_test?charset=utf8")
 	if err != nil {
 		logger.LogError("Failed to start database process module, err:", err)
 		return
@@ -889,6 +890,7 @@ func main() {
 
 	//start tcp service
 	tcpserver := tcpnetwork.NewTcpServer("118.178.188.139:14444")
+	//tcpserver := tcpnetwork.NewTcpServer("127.0.0.1:14444")
 	err = tcpserver.Listen()
 	if err != nil {
 		logger.LogError("Failed to start tcpserver listening routine, err:", err)
@@ -898,5 +900,6 @@ func main() {
 
 	beego.BConfig.RunMode = "dev"
 	beego.SetViewsPath("views")
+	beego.SetStaticPath("/swpackage", "/data")
 	beego.Run()
 }
