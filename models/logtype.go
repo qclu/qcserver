@@ -6,26 +6,23 @@ import (
 	"time"
 )
 
-type QcDevLog struct {
-	Id       int64      `orm: "pk;auto"`
-	Dev      *QcDevRel  `orm:"rel(fk);on_delete(do_nothing)"`
-	Type     *QcLogType `orm:"rel(fk);on_delete(do_nothing)"`
-	Reported string     `orm:"size(20)"`
-	mutex    sync.Mutex `orm:"-"`
+type QcLogType struct {
+	Id      int64 `orm: "pk;auto"`
+	Type    uint16
+	Level   uint16
+	Updated string     `orm:"size(20)"`
+	Content string     `orm:"size(4096)"`
+	mutex   sync.Mutex `orm:"-"`
 }
 
-func CreateQcDevLog(dbSync *DBSync, log_type int, content string, dev *QcDevRel) (*QcDevLog, error) {
-	logtype, err := dbSync.GetQcLogTypeWithId(log_type)
-	if err != nil {
-		dbSync.logger.LogError("Failed to create new dev log as logtype with id ", log_type, " doesnot exist...")
-		return nil, err
+func CreateQcLogType(dbSync *DBSync, log_type uint16, lvl uint16, content string) (*QcLogType, error) {
+	obj := &QcLogType{
+		Type:    log_type,
+		Level:   lvl,
+		Content: content,
+		Updated: time.Now().Format(TIME_FMT),
 	}
-	obj := &QcDevLog{
-		Dev:      dev,
-		Type:     logtype,
-		Reported: time.Now().Format(TIME_FMT),
-	}
-	err = dbSync.InsertQcDevLog(obj)
+	err := dbSync.InsertQcLogType(obj)
 	if err != nil {
 		dbSync.logger.LogError("Failed to add new dev log entry to database, error: ", err)
 		return nil, err

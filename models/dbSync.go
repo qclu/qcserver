@@ -59,6 +59,7 @@ func NewDBSync(dbDriver, dbDataSource string) (*DBSync, error) {
 	orm.RegisterModel(new(QcReagentRel))
 	orm.RegisterModel(new(QcQcProduct))
 	orm.RegisterModel(new(QcDevLog))
+	orm.RegisterModel(new(QcLogType))
 	orm.RegisterModel(new(QcDevStat))
 
 	//create table
@@ -469,6 +470,20 @@ func (d *DBSync) InsertQcDevStat(devstat *QcDevStat) error {
 	var err error
 	for retry := 0; retry < RetryTime; retry++ {
 		_, err = ormer.Insert(devstat)
+		if err == nil {
+			return err
+		}
+	}
+	return err
+}
+
+func (d *DBSync) InsertQcLogType(logtype *QcLogType) error {
+	d.mutex.Lock()
+	defer d.mutex.Unlock()
+	ormer := orm.NewOrm()
+	var err error
+	for retry := 0; retry < RetryTime; retry++ {
+		_, err = ormer.Insert(logtype)
 		if err == nil {
 			return err
 		}
@@ -1424,6 +1439,35 @@ func (d *DBSync) GetQcDevRelWithId(id uint64) (*QcDevRel, error) {
 	return &m, nil
 }
 
+func (d *DBSync) GetQcLogTypeWithId(id int) (*QcLogType, error) {
+	params := map[string]interface{}{"Id": id}
+	var m QcLogType
+	d.mutex.Lock()
+	defer d.mutex.Unlock()
+	ormer := orm.NewOrm()
+	var err error
+	for retry := 0; retry < RetryTime; retry++ {
+		qs := ormer.QueryTable(DB_T_LOGTYPE)
+		for k, v := range params {
+			qs = qs.Filter(k, v)
+		}
+		err = qs.One(&m)
+		if err != nil {
+			if err == orm.ErrNoRows {
+				return nil, errors.New(ERR_OBJ_NOT_EXIST)
+			} else {
+				d.logger.LogWarn(err)
+				continue
+			}
+		}
+		break
+	}
+	if err != nil {
+		return nil, err
+	}
+	return &m, nil
+}
+
 func (d *DBSync) GetQcHospitalWithId(id int) (*QcHospital, error) {
 	params := map[string]interface{}{"Id": id}
 	var m QcHospital
@@ -1835,6 +1879,21 @@ func (d *DBSync) UpdateQcDepartment(h *QcDepartment) error {
 	return err
 }
 
+func (d *DBSync) UpdateQcLogType(h *QcLogType) error {
+	d.mutex.Lock()
+	defer d.mutex.Unlock()
+	ormer := orm.NewOrm()
+	var err error
+	h.Updated = time.Now().Format("2006-01-02 15:04:05")
+	for retry := 0; retry < RetryTime; retry++ {
+		_, err = ormer.Update(h)
+		if err == nil {
+			return err
+		}
+	}
+	return err
+}
+
 func (d *DBSync) UpdateQcHospital(h *QcHospital) error {
 	d.mutex.Lock()
 	defer d.mutex.Unlock()
@@ -1955,6 +2014,19 @@ func (d *DBSync) GetQcMethodologys(pgidx, pgsize int, conditions string) ([]*QcM
 		return nil, err
 	}
 	return ms, nil
+}
+
+func (d *DBSync) GetQcLogTypes(pgidx, pgsize int, conditions string) ([]*QcLogType, error) {
+	var logtypes []*QcLogType
+	var err error
+	d.mutex.Lock()
+	defer d.mutex.Unlock()
+	_, _, qs := d.GetPagesInfo(DB_T_LOGTYPE, pgidx, pgsize, conditions)
+	if _, err = qs.QueryRows(&logtypes); err != nil {
+		d.logger.LogError("Failed to list logtypes, error: ", err)
+		return nil, err
+	}
+	return logtypes, nil
 }
 
 func (d *DBSync) GetQcHospitals(pgidx, pgsize int, conditions string) ([]*QcHospital, error) {
