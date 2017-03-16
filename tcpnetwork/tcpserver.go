@@ -103,7 +103,7 @@ func (srv *QcTcpServer) logHandler(msg *QcMessage) (err error) {
 		srv.logger.LogError("Failed to get devrel with id: ", msg.MsgHeader.SrvId, ", err: ", err)
 		return err
 	}
-	_, err = models.CreateQcDevLog(srv.dbSync, msg.MsgHeader.Type, string(msg.MsgData), devrel)
+	_, err = models.CreateQcDevLog(srv.dbSync, int(msg.MsgHeader.Type), string(msg.MsgData), devrel)
 	if err != nil {
 		srv.logger.LogError("Failed to create devlog, err: ", err)
 		return err

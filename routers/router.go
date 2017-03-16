@@ -98,4 +98,10 @@ func init() {
 		),
 	)
 	beego.AddNamespace(fileserviceloc)
+	logtypeloc := beego.NewNamespace("/logtype",
+		beego.NSInclude(
+			&controllers.QcLogTypeCtl{},
+		),
+	)
+	beego.AddNamespace(logtypeloc)
 }

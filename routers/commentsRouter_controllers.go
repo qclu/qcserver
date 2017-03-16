@@ -237,6 +237,41 @@ func init() {
 			AllowHTTPMethods: []string{"PUT"},
 			Params: nil})
 
+	beego.GlobalControllerRouter["qcserver/controllers:QcLogTypeCtl"] = append(beego.GlobalControllerRouter["qcserver/controllers:QcLogTypeCtl"],
+		beego.ControllerComments{
+			Method: "Post",
+			Router: `/`,
+			AllowHTTPMethods: []string{"post"},
+			Params: nil})
+
+	beego.GlobalControllerRouter["qcserver/controllers:QcLogTypeCtl"] = append(beego.GlobalControllerRouter["qcserver/controllers:QcLogTypeCtl"],
+		beego.ControllerComments{
+			Method: "Delete",
+			Router: `/`,
+			AllowHTTPMethods: []string{"delete"},
+			Params: nil})
+
+	beego.GlobalControllerRouter["qcserver/controllers:QcLogTypeCtl"] = append(beego.GlobalControllerRouter["qcserver/controllers:QcLogTypeCtl"],
+		beego.ControllerComments{
+			Method: "Get",
+			Router: `/`,
+			AllowHTTPMethods: []string{"get"},
+			Params: nil})
+
+	beego.GlobalControllerRouter["qcserver/controllers:QcLogTypeCtl"] = append(beego.GlobalControllerRouter["qcserver/controllers:QcLogTypeCtl"],
+		beego.ControllerComments{
+			Method: "GetList",
+			Router: `/list`,
+			AllowHTTPMethods: []string{"get"},
+			Params: nil})
+
+	beego.GlobalControllerRouter["qcserver/controllers:QcLogTypeCtl"] = append(beego.GlobalControllerRouter["qcserver/controllers:QcLogTypeCtl"],
+		beego.ControllerComments{
+			Method: "Update",
+			Router: `/`,
+			AllowHTTPMethods: []string{"PUT"},
+			Params: nil})
+
 	beego.GlobalControllerRouter["qcserver/controllers:QcMapGeneratorCtl"] = append(beego.GlobalControllerRouter["qcserver/controllers:QcMapGeneratorCtl"],
 		beego.ControllerComments{
 			Method: "Get",
