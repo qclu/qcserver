@@ -1,0 +1,54 @@
+1. 日志类型管理
+创建
+curl  -X POST 127.0.0.1:8080/logtype -d '{"Type":1,"Level":1, "Content":"device stat info"}'
+{
+  "Object": {
+    "Id": 1,
+    "Type": 1,
+    "Level": 1,
+    "Updated": "2017-03-15 17:08:37",
+    "Content": "device stat info"
+  }
+}
+删除
+curl  -X DELETE 127.0.0.1:8080/logtype?id=1
+"delete success"[root@bogon:qcserver git(master)]$ curl  -X POST 127.0.0.1:8080/logtype -d '{"Type":1,"Level":1, "Content":"device stat info"}'
+{
+  "Object": {
+    "Id": 3,
+    "Type": 1,
+    "Level": 1,
+    "Updated": "2017-03-15 17:13:46",
+    "Content": "device stat info"
+  }
+}
+查找
+curl -X  GET http://127.0.0.1:8080/logtype/list?pageidx=0\&pagesize=0
+{
+  "objects": [
+    {
+      "Id": 2,
+      "Type": 2,
+      "Level": 5,
+      "Updated": "2017-03-15 17:09:44",
+      "Content": "print with no paper"
+    },
+    {
+      "Id": 3,
+      "Type": 1,
+      "Level": 1,
+      "Updated": "2017-03-15 17:13:46",
+      "Content": "device stat info"
+    }
+  ],
+  "totalnum": 2
+}
+更新
+curl  -X PUT 127.0.0.1:8080/logtype -d '{"Id":3, "Type":5,"Level":3, "Content":"device stat info"}'
+{
+  "Id": 3,
+  "Type": 5,
+  "Level": 3,
+  "Updated": "2017-03-16 14:35:11",
+  "Content": "device stat info"
+}

@@ -131,22 +131,23 @@ func (h *QcLogTypeCtl) GetList() {
 
 // @router / [PUT]
 func (h *QcLogTypeCtl) Update() {
-	idstr := h.GetString("id")
-	if len(idstr) == 0 {
-		h.logger.LogError("failed to parse logtype id from request")
-		h.Data["json"] = "failed to parse logtype id from request"
-		h.ServeJSON()
-		return
-	}
-	id, _ := strconv.Atoi(idstr)
-	_, err := h.dbSync.GetQcLogTypeWithId(id)
-	if err != nil {
-		h.logger.LogError("failed to get logtype[", id, "] from database, err: ", err)
-		h.Data["json"] = "failed to get logtype[" + idstr + "] from database, err: " + err.Error()
-		h.ServeJSON()
-		return
-	}
+	//idstr := h.GetString("id")
+	//if len(idstr) == 0 {
+	//	h.logger.LogError("failed to parse logtype id from request")
+	//	h.Data["json"] = "failed to parse logtype id from request"
+	//	h.ServeJSON()
+	//	return
+	//}
+	//id, _ := strconv.Atoi(idstr)
+	//_, err := h.dbSync.GetQcLogTypeWithId(id)
+	//if err != nil {
+	//	h.logger.LogError("failed to get logtype[", id, "] from database, err: ", err)
+	//	h.Data["json"] = "failed to get logtype[" + idstr + "] from database, err: " + err.Error()
+	//	h.ServeJSON()
+	//	return
+	//}
 	var newdata models.QcLogType
+	var err error
 	err = json.Unmarshal(h.Ctx.Input.RequestBody, &newdata)
 	if err != nil {
 		h.logger.LogError("failed to unmarshal new logtype data, err: ", err)
@@ -154,11 +155,11 @@ func (h *QcLogTypeCtl) Update() {
 		h.ServeJSON()
 		return
 	}
-
+	h.logger.LogInfo("data to update: ", newdata)
 	err = h.dbSync.UpdateQcLogType(&newdata)
 	if err != nil {
-		h.logger.LogError("failed to update logtype[", id, "], err: ", err)
-		h.Data["json"] = "failed to update logtype[" + idstr + "], err: " + err.Error()
+		h.logger.LogError("failed to update logtype[", newdata, "], err: ", err)
+		h.Data["json"] = "failed to update logtype[" + string(h.Ctx.Input.RequestBody) + "], err: " + err.Error()
 		h.ServeJSON()
 		return
 	}

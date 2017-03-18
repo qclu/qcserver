@@ -207,7 +207,7 @@ func (d *DBSync) GetQcRegRelsCond(pgid, pgsize, regmodelid, startdate, enddate, 
 	return regrels, err
 }
 
-func (d *DBSync) GetQcDevRelsCond(pgid, pgsize, devid, serial, startdate, enddate, departmentid, hospitalid string) ([]*QcDevRel, error) {
+func (d *DBSync) GetQcDevRelsCond(pgid, pgsize, devid, serial, startdate, enddate, departmentid, hospitalid, prov, city string) ([]*QcDevRel, error) {
 	currentpage, _ := strconv.Atoi(pgid)
 	if currentpage <= 0 {
 		currentpage = 0
@@ -216,7 +216,7 @@ func (d *DBSync) GetQcDevRelsCond(pgid, pgsize, devid, serial, startdate, enddat
 	var rs orm.RawSeter
 	o := orm.NewOrm()
 	//select * from qc_dev_rel as a left join qc_sw_version as b on a.sw_version_id=b.id left join qc_hw_version as c on b.hw_version_id=c.id where c.dev_model_id=6;
-	fromsql := " FROM " + DB_T_DEVREL + " as a left join " + DB_T_SWVERSION + " as b on " + "a.sw_version_id=b.id left join  " + DB_T_HWVERSION + " as c on b.hw_version_id=c.id left join " + DB_T_DEPARTMENT + " as d on a.receiver_id=d.id where 1>0 "
+	fromsql := " FROM " + DB_T_DEVREL + " as a left join " + DB_T_SWVERSION + " as b on " + "a.sw_version_id=b.id left join  " + DB_T_HWVERSION + " as c on b.hw_version_id=c.id left join " + DB_T_DEPARTMENT + " as d on a.receiver_id=d.id left join " + DB_T_HOSPITAL + " as e on d.hospital_id=e.id where 1>0 "
 	if len(devid) > 0 {
 		fromsql += " and c.dev_model_id=" + devid
 	}
@@ -234,6 +234,12 @@ func (d *DBSync) GetQcDevRelsCond(pgid, pgsize, devid, serial, startdate, enddat
 	}
 	if len(hospitalid) > 0 {
 		fromsql += " and d.hospital_id=" + hospitalid
+	}
+	if len(prov) > 0 {
+		fromsql += " and e.prov='" + prov + "'"
+	}
+	if len(city) > 0 {
+		fromsql += " and e.city='" + city + "'"
 	}
 	var devrels []*QcDevRel
 	selsql := "select a.* "

@@ -31,7 +31,7 @@ func (o *QcHospitalCtl) Post() {
 		o.logger.LogError("dbSync is uninitialized when trying to create QcHospital, request: ", o.Ctx)
 		o.Abort("501")
 	}
-	pob, err := models.CreateQcHospital(o.dbSync, ob.Name, ob.Prov, ob.City, ob.Addr, ob.Gis)
+	pob, err := models.CreateQcHospital(o.dbSync, ob.Name, ob.Prov, ob.City, ob.Addr, ob.Gis, ob.Level)
 	if err != nil {
 		o.logger.LogError("database operation err: ", err)
 		o.Data["json"] = string("database operation err:") + err.Error()

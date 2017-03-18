@@ -806,7 +806,7 @@ DevRel
 ReagentModel
 	1. 创建
 	CURL：
-		curl -X POST -d '{"Name":"regmodel1", "Annotation":"anno1"}' 127.0.0.1:8088/reagentmodel?devmodel=devmodel1
+		curl -X POST -d '{"Name":"regmodel1", "Annotation":"anno1", "PrjId":10, "Unit":"ng/ml"}' 127.0.0.1:8080/reagentmodel?devmodel=devmodel1
 	Result:
 		{
 		  "Id": 1,

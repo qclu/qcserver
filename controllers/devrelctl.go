@@ -162,8 +162,10 @@ func (h *QcDevRelCtl) GetList() {
 			return
 		}
 	}
+	prov := h.GetString("prov")
+	city := h.GetString("city")
 
-	devrels, err := h.dbSync.GetQcDevRelsCond(pgidx_str, pgsize_str, devid_str, serial, start_date, end_date, departmentid_str, hid_str)
+	devrels, err := h.dbSync.GetQcDevRelsCond(pgidx_str, pgsize_str, devid_str, serial, start_date, end_date, departmentid_str, hid_str, prov, city)
 	if err != nil {
 		h.logger.LogError("database operation err: ", err)
 		h.Data["json"] = "failed to get dev rels list, err: " + err.Error()

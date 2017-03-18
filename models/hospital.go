@@ -9,6 +9,7 @@ import (
 type QcHospital struct {
 	Id      int64      `orm: "pk;auto"`
 	Name    string     `orm:"size(256);unique"`
+	Level   string     `orm:"size(64)"`
 	Prov    string     `orm:"size(2048)"`
 	City    string     `orm:"size(2048)"`
 	Addr    string     `orm:"size(2048)"`
@@ -18,10 +19,11 @@ type QcHospital struct {
 	mutex   sync.Mutex `orm:"-"`
 }
 
-func CreateQcHospital(dbSync *DBSync, name, prov, city, addr, gis string) (*QcHospital, error) {
+func CreateQcHospital(dbSync *DBSync, name, prov, city, addr, gis, level string) (*QcHospital, error) {
 	h := &QcHospital{
 		Name:    name,
 		Prov:    prov,
+		Level:   level,
 		City:    city,
 		Addr:    addr,
 		Gis:     gis,

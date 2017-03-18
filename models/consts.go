@@ -20,6 +20,8 @@ const (
 	DB_T_DEVLOG        = "qc_dev_log"
 	DB_T_LOGTYPE       = "qc_log_type"
 	DB_T_DEVSTAT       = "qc_dev_stat"
+
+	DB_V_DEVREL = "qc_v_dev_rel"
 )
 
 //error definition
