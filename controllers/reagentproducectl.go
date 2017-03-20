@@ -32,7 +32,7 @@ func (o *QcReagentProduceCtl) Post() {
 	}
 	var ob models.QcReagentProduce
 	json.Unmarshal(o.Ctx.Input.RequestBody, &ob)
-	pob, err := models.CreateQcReagentProduce(o.dbSync, ob.SerialNum, ob.LotNum, ob.ExpiredTime, ob.Annotation, regmodel)
+	pob, err := models.CreateQcReagentProduce(o.dbSync, ob.SerialNum, ob.ExpiredTime, ob.Annotation, regmodel)
 	if err != nil {
 		o.logger.LogError("database operation err: ", err)
 		o.Data["json"] = string("database operation err:") + err.Error()
@@ -162,10 +162,10 @@ func (h *QcReagentProduceCtl) Update() {
 	if len(new_serial) > 0 {
 		regproduce.SerialNum = new_serial
 	}
-	new_lotnum := h.GetString("lotnum")
-	if len(new_lotnum) > 0 {
-		regproduce.LotNum = new_lotnum
-	}
+	//new_lotnum := h.GetString("lotnum")
+	//if len(new_lotnum) > 0 {
+	//	regproduce.LotNum = new_lotnum
+	//}
 	new_expiredtime := h.GetString("expiredtime")
 	if len(new_expiredtime) > 0 {
 		regproduce.ExpiredTime = new_expiredtime

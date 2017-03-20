@@ -7,9 +7,9 @@ import (
 )
 
 type QcReagentProduce struct {
-	Id          int64           `orm: "pk;auto"`
-	SerialNum   string          `orm:"size(256);unique"`
-	LotNum      string          `orm:"size(256);unique"`
+	Id        int64  `orm: "pk;auto"`
+	SerialNum string `orm:"size(256);unique"`
+	//LotNum      string          `orm:"size(256);unique"`
 	RegModel    *QcReagentModel `orm:"rel(fk);on_delete(do_nothing)"` // RelForeignKey relation
 	ExpiredTime string          `orm:"size(20)"`
 	Annotation  string          `orm:"size(4096)"`
@@ -18,10 +18,10 @@ type QcReagentProduce struct {
 	mutex       sync.Mutex      `orm:"-"`
 }
 
-func CreateQcReagentProduce(dbSync *DBSync, serial, lognum, exptime, anno string, regmodel *QcReagentModel) (*QcReagentProduce, error) {
+func CreateQcReagentProduce(dbSync *DBSync, serial, exptime, anno string, regmodel *QcReagentModel) (*QcReagentProduce, error) {
 	obj := &QcReagentProduce{
-		SerialNum:   serial,
-		LotNum:      lognum,
+		SerialNum: serial,
+		//LotNum:      lognum,
 		RegModel:    regmodel,
 		ExpiredTime: exptime,
 		Annotation:  anno,
