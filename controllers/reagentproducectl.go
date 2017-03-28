@@ -22,16 +22,30 @@ func (this *QcReagentProduceCtl) Prepare() {
 
 // @router / [post]
 func (o *QcReagentProduceCtl) Post() {
-	regmodel_str := o.GetString("reagentmodel")
-	regmodel, err := o.dbSync.GetQcReagentModel(regmodel_str)
+	regmodelid_str := o.GetString("regmodel")
+	regmodelid, err := strconv.Atoi(regmodelid_str)
+	if err != nil {
+		o.logger.LogError("invalid id value to get reagent model")
+		o.Data["json"] = "invalid id value to get reagent model"
+		o.ServeJSON()
+		return
+	}
+	regmodel, err := o.dbSync.GetQcReagentModelWithId(regmodelid)
 	if err != nil {
 		o.logger.LogError("database operation err: ", err)
-		o.Data["json"] = "failed to get reagentmodel[" + regmodel_str + "] info, err: " + err.Error()
+		o.Data["json"] = "failed to get reagentmodel[" + regmodelid_str + "] info, err: " + err.Error()
 		o.ServeJSON()
 		return
 	}
 	var ob models.QcReagentProduce
-	json.Unmarshal(o.Ctx.Input.RequestBody, &ob)
+	err = json.Unmarshal(o.Ctx.Input.RequestBody, &ob)
+	if err != nil {
+		o.logger.LogError("Failed to unmarshal Reagent Produce info, err: ", err)
+		o.Data["json"] = string("Failed to unmarshal Reagent Produce info, err: ") + err.Error()
+		o.ServeJSON()
+		return
+	}
+	o.logger.LogInfo("Regproduce info: ", ob)
 	pob, err := models.CreateQcReagentProduce(o.dbSync, ob.SerialNum, ob.ExpiredTime, ob.Annotation, regmodel)
 	if err != nil {
 		o.logger.LogError("database operation err: ", err)

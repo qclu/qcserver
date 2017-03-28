@@ -1075,11 +1075,30 @@ func (d *DBSync) GetQcReagentProduces(pgidx, pgsize int, conditions string) ([]*
 	var objs []*QcReagentProduce
 	var err error
 	d.mutex.Lock()
-	defer d.mutex.Unlock()
 	_, _, qs := d.GetPagesInfo(DB_T_REGPRODUCE, pgidx, pgsize, conditions)
 	if _, err = qs.QueryRows(&objs); err != nil {
 		d.logger.LogError("Failed to list reagent products, error: ", err)
 		return nil, err
+	}
+	d.mutex.Unlock()
+
+	for idx := 0; idx < len(objs); idx++ {
+		d.logger.LogInfo("Get detailed info of regproduce [", objs[idx], "]")
+		regmodel, err := d.GetQcReagentModelWithId(int(objs[idx].RegModel.Id))
+		if err != nil {
+			d.logger.LogError("Failed to get regmodel with id ", objs[idx].RegModel.Id, ", err: ", err)
+			return objs, errors.New("Failed to get regmodel with id " + strconv.Itoa(int(objs[idx].RegModel.Id)) + ", err: " + err.Error())
+
+		}
+		d.logger.LogInfo("regmodel detailed info of [", regmodel, "]")
+		devmodel, err := d.GetQcDevModelWithId(int(regmodel.DevModel.Id))
+		if err != nil {
+			d.logger.LogError("Failed to get devmodel with id ", devmodel.Id, ", err: ", err)
+			return objs, errors.New("Failed to get regmodel with id " + strconv.Itoa(int(devmodel.Id)) + ", err: " + err.Error())
+		}
+		d.logger.LogInfo("devmodel detailed info of [", devmodel, "]")
+		regmodel.DevModel = devmodel
+		objs[idx].RegModel = regmodel
 	}
 	return objs, nil
 }
