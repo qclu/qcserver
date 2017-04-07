@@ -115,7 +115,29 @@ func (h *QcLogTypeCtl) GetList() {
 		return
 	}
 	h.logger.LogInfo("list logtype info(pageidx: ", pgidx, ", pagesize: ", pgsize, ")")
-	logtypes, err := h.dbSync.GetQcLogTypes(pgidx, pgsize, "")
+	idstr := h.GetString("id")
+	if len(idstr) > 0 {
+		h.logger.LogInfo("log id: ", idstr)
+		_, err := strconv.Atoi(idstr)
+		if err != nil {
+			h.logger.LogError("failed to parse 'id' from request, err: ", err)
+			h.Data["json"] = "invalid parse 'id' from request, err: " + err.Error()
+			h.ServeJSON()
+			return
+		}
+	}
+	lvlstr := h.GetString("level")
+	if len(lvlstr) > 0 {
+		h.logger.LogInfo("log level: ", lvlstr)
+		_, err := strconv.Atoi(lvlstr)
+		if err != nil {
+			h.logger.LogError("failed to parse 'level' from request, err: ", err)
+			h.Data["json"] = "invalid parse 'level' from request, err: " + err.Error()
+			h.ServeJSON()
+			return
+		}
+	}
+	logtypes, err := h.dbSync.GetQcLogTypeCond(pgidx_str, pgsize_str, idstr, lvlstr)
 	if err != nil {
 		h.logger.LogError("database operation err: ", err)
 		h.Abort("501")

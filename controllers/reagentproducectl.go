@@ -175,16 +175,13 @@ func (h *QcReagentProduceCtl) Update() {
 	new_serial := h.GetString("serialnum")
 	if len(new_serial) > 0 {
 		regproduce.SerialNum = new_serial
+		h.logger.LogInfo("serial updata to ", new_serial)
 	}
-	//new_lotnum := h.GetString("lotnum")
-	//if len(new_lotnum) > 0 {
-	//	regproduce.LotNum = new_lotnum
-	//}
 	new_expiredtime := h.GetString("expiredtime")
 	if len(new_expiredtime) > 0 {
 		regproduce.ExpiredTime = new_expiredtime
 	}
-	new_regmodel := h.GetString("regmodl")
+	new_regmodel := h.GetString("regmodel")
 	if len(new_regmodel) > 0 {
 		new_regmodel_obj, err := h.dbSync.GetQcReagentModel(new_regmodel)
 		if err != nil {

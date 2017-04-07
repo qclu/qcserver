@@ -18,7 +18,7 @@ import (
 
 func main_start() {
 	fmt.Println("start...")
-	orm.RegisterDataBase("default", "mysql", "root:root@/orm_test?charset=utf8", 30)
+	orm.RegisterDataBase("default", "mysql", "root:1qaz@WSX@/qcdatabase?charset=utf8", 30)
 	orm.RegisterModel(new(models.QcAdministrator))
 	orm.RunSyncdb("default", false, true)
 
@@ -881,16 +881,16 @@ func main() {
 	}
 	logger.LogInfo("Info: log module start...")
 
-	//err = models.DBSyncInit("mysql", "root:1qaz@WSX@/qcdatabase?charset=utf8")
-	err = models.DBSyncInit("mysql", "root:123qwe@/orm_test?charset=utf8")
+	err = models.DBSyncInit("mysql", "root:1qaz@WSX@/qcdatabase?charset=utf8")
+	//err = models.DBSyncInit("mysql", "root:123qwe@/orm_test?charset=utf8")
 	if err != nil {
 		logger.LogError("Failed to start database process module, err:", err)
 		return
 	}
 
 	//start tcp service
-	//tcpserver := tcpnetwork.NewTcpServer("118.178.188.139:14444")
-	tcpserver := tcpnetwork.NewTcpServer("127.0.0.1:14444")
+	tcpserver := tcpnetwork.NewTcpServer("118.178.188.139:14444")
+	//tcpserver := tcpnetwork.NewTcpServer("127.0.0.1:14444")
 	err = tcpserver.Listen()
 	if err != nil {
 		logger.LogError("Failed to start tcpserver listening routine, err:", err)

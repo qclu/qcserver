@@ -102,6 +102,36 @@ func (d *DBSync) GetQcDepartmentsCond(pgid, pgsize, hid string) ([]*QcDepartment
 	return departments, err
 }
 
+func (d *DBSync) GetQcLogTypeCond(pgid, pgsize, logid_str, loglvl_str string) ([]*QcLogType, error) {
+	currentpage, _ := strconv.Atoi(pgid)
+	if currentpage <= 0 {
+		currentpage = 0
+	}
+	pagesize, _ := strconv.Atoi(pgsize)
+	var rs orm.RawSeter
+	o := orm.NewOrm()
+	fromsql := " FROM " + DB_T_LOGTYPE + " as a where 1>0 "
+	if len(loglvl_str) > 0 {
+		fromsql += " and level =" + loglvl_str
+	}
+	var logtypes []*QcLogType
+	var err error
+	if len(logid_str) > 0 {
+		fromsql += " and id= '" + logid_str + "'"
+	}
+	selsql := "select * "
+	var limitsql string = ""
+	if pagesize > 0 {
+		limitsql = " limit " + con.Itoa((currentpage)*pagesize) + "," + con.Itoa(pagesize)
+	}
+	rs = o.Raw(selsql + fromsql + limitsql)
+	dbSync.logger.LogInfo("Exec Sql: ", selsql+fromsql+limitsql)
+	if _, err = rs.QueryRows(&logtypes); err != nil {
+		d.logger.LogError("Failed to list regmodels, err:", err)
+	}
+	return logtypes, err
+}
+
 func (d *DBSync) GetQcDevLogCond(pgid, pgsize, msgtype, devsn string) ([]*QcDevLog, error) {
 	currentpage, _ := strconv.Atoi(pgid)
 	if currentpage <= 0 {
